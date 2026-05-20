@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>红蓝机器人规则切换挑战</title>
+<style>
+  body{margin:0;font-family:"Microsoft YaHei",Arial,sans-serif;background:#f4f7fb;color:#111;display:flex;justify-content:center;align-items:center;min-height:100vh}
+  .app{width:min(900px,94vw);min-height:620px;background:white;border-radius:28px;box-shadow:0 20px 60px #0002;padding:28px;text-align:center}
+  h1{font-size:42px;margin:20px 0 10px} h2{font-size:32px;margin:16px 0} p{font-size:20px;line-height:1.7}
+  .btn{border:0;border-radius:18px;padding:15px 28px;font-size:22px;font-weight:800;cursor:pointer;margin:10px;background:#111827;color:white}
+  .btn2{background:#e5e7eb;color:#111}.key{width:220px;height:78px;font-size:28px}.blue{background:#2563eb}.red{background:#ef4444}
+  .rules{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:26px auto;max-width:720px}.rule{background:#f3f4f6;border-radius:20px;padding:18px;font-size:22px;font-weight:800}
+  .screen{display:none}.active{display:block}.note{background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;border-radius:18px;padding:16px;margin:22px auto;max-width:720px;font-size:19px;font-weight:700}
+  .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-weight:800}.bar{height:12px;background:#e5e7eb;border-radius:999px;overflow:hidden}.bar div{height:100%;background:linear-gradient(90deg,#2563eb,#ef4444);width:0}
+  #robot{height:340px;display:grid;place-items:center}.fb{height:42px;font-size:30px;font-weight:900}.timer{font-size:22px;color:#f97316;font-weight:900}
+  .score{font-size:86px;font-weight:1000;background:linear-gradient(135deg,#2563eb,#ef4444);-webkit-background-clip:text;color:transparent}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:22px auto}.card{background:#f9fafb;border-radius:22px;padding:20px}.num{font-size:46px;font-weight:950}
+  @media(max-width:700px){.rules,.grid{grid-template-columns:1fr}.key{width:90%}h1{font-size:34px}.app{padding:18px}}
+</style>
+</head>
+<body>
+<div class="app">
+  <section id="home" class="screen active">
+    <h1>🤖 红蓝机器人规则切换挑战</h1>
+    <p>儿童科普版，约 2—3 分钟。不是测智商，而是看看大脑怎样学习规则、切换规则。</p>
+    <div class="rules">
+      <div class="rule">第一关：蓝色机器人<br>看表情</div>
+      <div class="rule">第二关：红色机器人<br>看手臂</div>
+      <div class="rule">第三关：混合出现<br>先看颜色</div>
+      <div class="rule">每题 3 秒<br>按 1 或 9</div>
+    </div>
+    <button class="btn" onclick="showIntro()">开始挑战</button>
+  </section>
+
+  <section id="intro" class="screen">
+    <h2 id="introTitle"></h2>
+    <p id="introText"></p>
+    <div class="rules" id="introRules"></div>
+    <div class="note" id="introNote"></div>
+    <button class="btn" onclick="startBlock()">我明白了，开始</button>
+  </section>
+
+  <section id="trial" class="screen">
+    <div class="top"><span id="blockName"></span><span id="trialCount"></span></div>
+    <div class="bar"><div id="bar"></div></div>
+    <p class="timer" id="timer">请按 1 或 9</p>
+    <div id="robot"></div>
+    <div class="fb" id="fb"></div>
+    <button class="btn blue key" onclick="answer('1')">按 1</button>
+    <button class="btn red key" onclick="answer('9')">按 9</button>
+  </section>
+
+  <section id="blockResult" class="screen">
+    <h2 id="resultTitle"></h2>
+    <div class="score" id="acc"></div>
+    <p id="detail"></p>
+    <div class="note" id="explain"></div>
+    <button class="btn" onclick="nextBlock()" id="nextBtn">进入下一关</button>
+  </section>
+
+  <section id="summary" class="screen">
+    <h2>挑战完成！</h2>
+    <div class="grid">
+      <div class="card"><b>第一关 表情规则</b><div class="num" id="s1">0%</div></div>
+      <div class="card"><b>第二关 手臂规则</b><div class="num" id="s2">0%</div></div>
+      <div class="card"><b>第三关 规则切换</b><div class="num" id="s3">0%</div></div>
+    </div>
+    <div class="note">小发现：第三关通常更难，因为大脑要先看颜色，再决定看表情还是看手臂。这就是“认知灵活性”。</div>
+    <button class="btn" onclick="location.reload()">再玩一次</button>
+  </section>
+</div>
+
+<script>
+const blocks=[
+ {name:"第一关：蓝色机器人",short:"第一关 · 看表情",title:"第一关：蓝色机器人",text:"这一关只看表情，不看手臂。",rules:["笑脸 → 按 1","哭脸 → 按 9"],note:"小诀窍：盯住机器人的脸。",explain:"这一关主要用到观察表情的能力。",
+  practice:[["blue","smile","straight"],["blue","cry","curved"]],
+  formal:[["blue","smile","straight"],["blue","smile","curved"],["blue","cry","straight"],["blue","cry","curved"]],
+  correct:t=>t[1]=="smile"?"1":"9"},
+ {name:"第二关：红色机器人",short:"第二关 · 看手臂",title:"第二关：红色机器人",text:"规则变了！这一关只看手臂，不看表情。",rules:["直手 → 按 1","弯手 → 按 9"],note:"小诀窍：表情会干扰你，记得看手臂。",explain:"这一关主要用到忽略干扰信息的能力。",
+  practice:[["red","smile","straight"],["red","cry","curved"]],
+  formal:[["red","cry","curved"],["red","cry","straight"],["red","smile","curved"],["red","smile","straight"]],
+  correct:t=>t[2]=="straight"?"1":"9"},
+ {name:"第三关：规则切换挑战",short:"第三关 · 规则切换",title:"第三关：规则切换挑战",text:"先看颜色！蓝色看表情，红色看手臂。",rules:["蓝色：笑脸 1，哭脸 9","红色：直手 1，弯手 9"],note:"小诀窍：先判断颜色，再决定看脸还是看手。",explain:"这一关最难，因为大脑要在两条规则之间来回切换。",
+  practice:[["blue","smile","straight"],["blue","cry","curved"],["red","cry","straight"],["red","smile","curved"]],
+  formal:[["blue","smile","straight"],["blue","smile","curved"],["blue","cry","straight"],["red","cry","curved"],["red","cry","straight"],["red","smile","curved"]],
+  correct:t=>t[0]=="blue"?(t[1]=="smile"?"1":"9"):(t[2]=="straight"?"1":"9")}
+];
+let bi=0, trials=[], ti=0, ok=true, to=null, intv=null, results=[];
+function $(id){return document.getElementById(id)}
+function show(id){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));$(id).classList.add("active")}
+function shuf(a){return [...a].sort(()=>Math.random()-0.5)}
+function showIntro(){let b=blocks[bi];$("introTitle").textContent=b.title;$("introText").textContent=b.text;$("introRules").innerHTML=b.rules.map(x=>`<div class="rule">${x}</div>`).join("");$("introNote").textContent=b.note;show("intro")}
+function startBlock(){let b=blocks[bi];trials=[...shuf(b.practice).map(t=>({t,prac:true})),...shuf(b.formal).map(t=>({t,prac:false}))];ti=0;b.c=0;b.n=0;show("trial");render()}
+function render(){
+ clearTimeout(to);clearInterval(intv);ok=true;
+ let b=blocks[bi], item=trials[ti];
+ $("blockName").textContent=item.prac?b.short+" · 练习":b.short;
+ let fSeen=trials.slice(0,ti).filter(x=>!x.prac).length, fTotal=trials.filter(x=>!x.prac).length;
+ $("trialCount").textContent=item.prac?`练习 ${ti+1}/${trials.length}`:`正式 ${fSeen+1}/${fTotal}`;
+ $("bar").style.width=(ti/trials.length*100)+"%"; $("fb").textContent=""; $("timer").textContent="请快速按 1 或 9";
+ $("robot").innerHTML=svg(item.t);
+ let r=3.0; intv=setInterval(()=>{r=Math.max(0,r-.1);$("timer").textContent=`剩余 ${r.toFixed(1)} 秒`},100);
+ to=setTimeout(()=>answer(null),3000);
+}
+function answer(k){
+ if(!ok)return; ok=false; clearTimeout(to); clearInterval(intv);
+ let b=blocks[bi], item=trials[ti], ck=b.correct(item.t), correct=k===ck;
+ if(!item.prac){b.n++; if(correct)b.c++}
+ $("fb").style.color=correct?"#16a34a":"#f97316"; $("fb").textContent=k===null?"时间到":(correct?"答对啦！":`正确键是 ${ck}`);
+ setTimeout(()=>{ti++; ti>=trials.length?blockResult():render()},650);
+}
+function blockResult(){
+ let b=blocks[bi], a=b.n?Math.round(b.c/b.n*100):0; results[bi]=a;
+ $("resultTitle").textContent=b.name+"完成！"; $("acc").textContent=a+"%"; $("detail").textContent=`你救对了 ${b.c}/${b.n} 个机器人。`;
+ $("explain").textContent=b.explain; $("nextBtn").textContent=bi===2?"查看总结":"进入下一关"; show("blockResult")
+}
+function nextBlock(){bi++; if(bi>=3){$("s1").textContent=results[0]+"%";$("s2").textContent=results[1]+"%";$("s3").textContent=results[2]+"%";show("summary")}else showIntro()}
+document.addEventListener("keydown",e=>{if(e.key==="1"||e.key==="9")answer(e.key); if(e.key===" "&&$("intro").classList.contains("active"))startBlock()});
+function svg(t){
+ let [color,face,arms]=t, c=color=="blue"?"#2563eb":"#ef4444";
+ let mouth=face=="smile"?`<path d="M90 126 Q122 154 154 126" stroke="white" stroke-width="8" fill="none" stroke-linecap="round"/>`:`<path d="M90 146 Q122 118 154 146" stroke="white" stroke-width="8" fill="none" stroke-linecap="round"/>`;
+ let la=arms=="straight"?`<rect x="38" y="142" width="20" height="96" rx="10" fill="${c}"/>`:`<path d="M52 145 L30 184 L52 224" stroke="${c}" stroke-width="20" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
+ let ra=arms=="straight"?`<rect x="186" y="142" width="20" height="96" rx="10" fill="${c}"/>`:`<path d="M192 145 L214 184 L192 224" stroke="${c}" stroke-width="20" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
+ return `<svg width="245" height="315" viewBox="0 0 245 315">
+ <rect x="64" y="28" width="116" height="122" rx="35" fill="${c}"/><circle cx="96" cy="82" r="10" fill="white"/><circle cx="148" cy="82" r="10" fill="white"/><circle cx="96" cy="82" r="4"/><circle cx="148" cy="82" r="4"/>${mouth}${la}${ra}
+ <rect x="74" y="148" width="96" height="102" rx="18" fill="${c}"/><circle cx="122" cy="198" r="24" fill="white"/><path d="M122 180 V216 M104 198 H140" stroke="${c}" stroke-width="5" stroke-linecap="round"/>
+ <rect x="86" y="248" width="24" height="58" rx="10" fill="${c}"/><rect x="134" y="248" width="24" height="58" rx="10" fill="${c}"/><rect x="72" y="298" width="46" height="13" rx="7" fill="${c}"/><rect x="126" y="298" width="46" height="13" rx="7" fill="${c}"/></svg>`;
+}
+</script>
+</body>
+</html>
