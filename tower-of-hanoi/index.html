@@ -1,0 +1,752 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>汉诺塔计划大师｜心理学体验任务</title>
+<style>
+:root{
+  --text:#f4f8ff; --muted:#aebbd3; --line:#7ee7ff33;
+  --cyan:#6fe7ff; --green:#4df0a0; --yellow:#ffd45e; --pink:#ff7eb6;
+  --red:#ff4d6d; --blue:#4f8cff; --purple:#a78bfa;
+}
+*{box-sizing:border-box}
+html,body{min-height:100%}
+body{
+  margin:0;
+  font-family:"Microsoft YaHei",Arial,sans-serif;
+  color:var(--text);
+  background:
+    radial-gradient(circle at 15% 16%,#6fe7ff2b,transparent 25%),
+    radial-gradient(circle at 88% 18%,#ff7eb62b,transparent 24%),
+    radial-gradient(circle at 50% 105%,#4df0a022,transparent 30%),
+    linear-gradient(145deg,#050816,#0b1026 55%,#160820);
+  overflow-x:hidden;
+}
+body:before{
+  content:"";
+  position:fixed; inset:0;
+  background:
+    radial-gradient(circle,#ffffffcc 1px,transparent 1.6px),
+    radial-gradient(circle,#6fe7ff99 1px,transparent 1.8px),
+    linear-gradient(90deg,transparent 49px,#6fe7ff0d 50px),
+    linear-gradient(transparent 49px,#6fe7ff0b 50px);
+  background-size:92px 92px,137px 137px,50px 50px,50px 50px;
+  background-position:0 0,21px 34px,0 0,0 0;
+  mask-image:linear-gradient(to bottom,#000,transparent 82%);
+  pointer-events:none;
+  animation:starDrift 34s linear infinite;
+}
+@keyframes starDrift{to{background-position:180px 240px,-120px 180px,0 0,0 0}}
+.app{
+  position:relative;
+  z-index:1;
+  width:min(1220px,96vw);
+  min-height:720px;
+  margin:18px auto;
+  border-radius:34px;
+  border:1px solid var(--line);
+  background:linear-gradient(180deg,#0c122ade,#060a1bc7);
+  box-shadow:0 28px 90px #0008,inset 0 0 0 1px #ffffff08;
+  overflow:hidden;
+}
+.app:before{
+  content:"";
+  position:absolute;left:0;right:0;top:0;height:4px;
+  background:linear-gradient(90deg,var(--cyan),var(--green),var(--yellow),var(--pink),var(--purple));
+  box-shadow:0 0 26px #6fe7ff99;
+}
+.screen{display:none;min-height:720px;padding:28px;position:relative}
+.screen.active{display:block;animation:enter .25s ease}
+@keyframes enter{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:16px}
+.brand{display:flex;align-items:center;gap:12px;font-weight:950;font-size:23px}
+.logo{
+  width:48px;height:48px;border-radius:18px;display:grid;place-items:center;
+  background:linear-gradient(135deg,var(--cyan),var(--green),var(--yellow));
+  color:#06111c;font-size:24px;box-shadow:0 0 28px #6fe7ff55;
+}
+.pill{
+  border-radius:999px;padding:9px 14px;background:#6fe7ff14;border:1px solid #6fe7ff33;
+  color:#dff8ff;font-weight:900;font-size:14px;white-space:nowrap;
+}
+.hero{display:grid;grid-template-columns:1.04fr .96fr;gap:28px;align-items:center;padding:14px 6px 0}
+h1{font-size:clamp(42px,6vw,74px);line-height:1.04;margin:0 0 18px;letter-spacing:-1.5px}
+h2{font-size:clamp(30px,4vw,48px);line-height:1.15;margin:0 0 12px}
+h3{font-size:24px;margin:0 0 10px}
+p{font-size:19px;line-height:1.75;color:var(--muted);margin:10px 0}
+.cyan{color:var(--cyan);font-weight:950}.yellow{color:var(--yellow);font-weight:950}.pink{color:var(--pink);font-weight:950}
+.glass{
+  border-radius:28px;border:1px solid #ffffff18;background:linear-gradient(180deg,#142044bb,#071027aa);
+  padding:24px;box-shadow:0 18px 50px #0005,inset 0 0 28px #6fe7ff0a;
+}
+.rule-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin:22px 0}
+.rule-card{border-radius:22px;padding:18px;background:#ffffff10;border:1px solid #ffffff18}
+.rule-card strong{display:block;color:#fff;font-size:20px;margin-bottom:8px}
+.rule-card span{color:var(--muted);line-height:1.6}
+.btn-row{display:flex;gap:14px;flex-wrap:wrap;margin-top:24px}
+button,.btn{
+  appearance:none;border:0;cursor:pointer;border-radius:18px;padding:15px 22px;font-size:18px;font-weight:950;
+  color:#07111c;background:linear-gradient(135deg,var(--cyan),var(--green));
+  box-shadow:0 14px 30px #6fe7ff2a,inset 0 0 0 1px #ffffff26;
+  transition:transform .1s ease,filter .1s ease,opacity .1s ease;text-decoration:none;
+}
+button:hover,.btn:hover{transform:translateY(-1px);filter:brightness(1.04)}
+button:active,.btn:active{transform:translateY(1px) scale(.99)}
+.secondary{background:#ffffff12;color:var(--text);border:1px solid #ffffff20;box-shadow:none}
+.danger{background:#ff4d6d22;color:#ffdbe4;border:1px solid #ff4d6d44;box-shadow:none}
+
+.preview{min-height:420px;display:grid;place-items:center;position:relative;overflow:hidden}
+.preview:before{
+  content:"";position:absolute;width:430px;height:430px;border-radius:50%;
+  background:conic-gradient(from 0deg,#6fe7ff00,#6fe7ff40,#4df0a000,#ff7eb640,#6fe7ff00);
+  animation:spin 10s linear infinite;opacity:.7;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.preview-tower{
+  position:relative;z-index:1;width:min(470px,100%);height:320px;border-radius:28px;
+  border:1px solid #6fe7ff33;background:radial-gradient(circle at center,#6fe7ff17,transparent 58%),#ffffff09;
+  display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding:28px 22px 34px;align-items:end;
+}
+.preview-rod{position:relative;height:230px;display:flex;align-items:center;justify-content:flex-end;flex-direction:column}
+.preview-rod:before{content:"";position:absolute;bottom:0;width:8px;height:190px;border-radius:999px;background:#ffffff35;box-shadow:0 0 18px #6fe7ff55}
+.preview-rod:after{content:"";position:absolute;bottom:0;width:112px;height:12px;border-radius:999px;background:#ffffff30}
+.preview-disk{height:24px;border-radius:999px;margin:3px 0;box-shadow:0 0 18px currentColor;border:1px solid #ffffff55;z-index:1}
+.note{
+  border-radius:20px;padding:16px 18px;background:#ffd45e18;border:1px solid #ffd45e40;
+  color:#ffeab0;font-size:17px;font-weight:850;line-height:1.7;margin-top:18px;
+}
+
+/* 游戏区 */
+.game-layout{
+  display:grid;
+  grid-template-columns:310px 1fr;
+  gap:20px;
+  align-items:start;
+}
+.side{
+  border-radius:28px;
+  border:1px solid #ffffff18;
+  background:linear-gradient(180deg,#142044bb,#071027aa);
+  padding:20px;
+  box-shadow:0 18px 50px #0005,inset 0 0 28px #6fe7ff0a;
+}
+.difficulty-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0 16px}
+.diff-btn{
+  background:#ffffff10;color:#f4f8ff;border:1px solid #ffffff18;box-shadow:none;border-radius:18px;padding:13px 8px;min-height:74px;
+}
+.diff-btn.active{background:linear-gradient(135deg,var(--cyan),var(--green));color:#07111c;border-color:#4df0a0;box-shadow:0 0 24px #4df0a044}
+.diff-btn b{display:block;font-size:22px}.diff-btn span{display:block;font-size:12px;margin-top:4px;opacity:.85}
+.help-box{
+  background:#ffffff10;border:1px solid #ffffff14;border-radius:20px;padding:14px;
+  color:#d9e8ff;line-height:1.65;font-size:14px;margin:12px 0;
+}
+.main-game{
+  border-radius:30px;
+  border:1px solid #6fe7ff24;
+  background:radial-gradient(circle at center,#6fe7ff12,transparent 55%),linear-gradient(180deg,#ffffff08,#ffffff03);
+  padding:20px;
+  overflow:hidden;
+  position:relative;
+}
+.main-game:before{content:"";position:absolute;width:650px;height:650px;border-radius:50%;border:1px dashed #6fe7ff2e;left:50%;top:50%;transform:translate(-50%,-50%);animation:spin 18s linear infinite}
+.dashboard{position:relative;z-index:1;display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:14px}
+.stat{border-radius:18px;background:#ffffff0e;border:1px solid #ffffff16;padding:11px 10px;text-align:center}
+.stat b{display:block;font-size:clamp(22px,2.5vw,32px);color:#fff;line-height:1.1}
+.stat span{display:block;margin-top:5px;color:var(--muted);font-size:12px;font-weight:850}
+.message{
+  position:relative;z-index:1;text-align:center;border-radius:18px;padding:11px 14px;font-size:16px;font-weight:900;min-height:48px;margin:0 0 14px;
+}
+.message.neutral{background:#6fe7ff14;border:1px solid #6fe7ff2c;color:#e3f8ff}
+.message.good{background:#4df0a01f;border:1px solid #4df0a04a;color:#dcffec}
+.message.bad{background:#ff4d6d1f;border:1px solid #ff4d6d4a;color:#ffdbe4}
+.board{
+  position:relative;z-index:1;
+  height:390px;
+  border-radius:26px;
+  background:#081027bb;
+  border:1px solid #ffffff12;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:16px;
+  padding:22px 18px 26px;
+}
+.rod{
+  position:relative;
+  border-radius:22px;
+  border:1px solid #ffffff12;
+  background:linear-gradient(180deg,#ffffff07,#ffffff03);
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  flex-direction:column;
+  padding-bottom:24px;
+  overflow:hidden;
+}
+.rod:hover{background:#ffffff0c}
+.rod.selected{outline:3px solid #ffd45e99;box-shadow:0 0 28px #ffd45e33}
+.rod.hint{outline:3px solid #6fe7ffaa;box-shadow:0 0 28px #6fe7ff55}
+.rod:before{
+  content:"";
+  position:absolute;
+  bottom:42px;
+  width:9px;
+  height:255px;
+  border-radius:999px;
+  background:linear-gradient(#ffffff45,#ffffff20);
+  box-shadow:0 0 18px #6fe7ff44;
+}
+.rod:after{
+  content:"";
+  position:absolute;
+  bottom:34px;
+  width:82%;
+  height:14px;
+  border-radius:999px;
+  background:#ffffff2b;
+}
+.rod-label{
+  position:absolute;
+  top:12px;
+  left:50%;
+  transform:translateX(-50%);
+  color:#dff8ff;
+  font-size:14px;
+  font-weight:950;
+  background:#6fe7ff14;
+  border:1px solid #6fe7ff28;
+  border-radius:999px;
+  padding:5px 11px;
+}
+.stack{
+  position:relative;
+  z-index:2;
+  width:100%;
+  min-height:270px;
+  display:flex;
+  flex-direction:column-reverse;
+  align-items:center;
+  justify-content:flex-start;
+}
+.disk{
+  height:28px;
+  border-radius:999px;
+  margin:3px 0;
+  border:1px solid #ffffff75;
+  box-shadow:0 0 18px currentColor,inset 0 0 18px #ffffff55;
+  display:grid;
+  place-items:center;
+  font-weight:1000;
+  color:#06111c;
+  text-shadow:0 1px #ffffff80;
+  user-select:none;
+  cursor:pointer;
+}
+.disk.top{filter:brightness(1.1)}
+.disk.dragging{opacity:.55}
+.disk.size-1{width:34%}.disk.size-2{width:46%}.disk.size-3{width:58%}.disk.size-4{width:70%}.disk.size-5{width:82%}
+.disk.size-1{background:#ffd45e;color:#3b2400}
+.disk.size-2{background:#6fe7ff}
+.disk.size-3{background:#4df0a0}
+.disk.size-4{background:#ff7eb6}
+.disk.size-5{background:#a78bfa}
+.action-row{position:relative;z-index:1;display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}
+.action-row button{font-size:15px;padding:12px 10px}
+.result-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin:26px 0}
+.result-card{border-radius:22px;padding:20px;text-align:center;background:#ffffff10;border:1px solid #ffffff18}
+.result-card .num{font-size:42px;font-weight:1000;color:#fff;margin:6px 0}
+.result-card .label{color:var(--muted);font-weight:900;font-size:14px;line-height:1.45}
+.big-score{
+  font-size:clamp(60px,9vw,96px);line-height:1;font-weight:1000;margin:14px 0 10px;
+  background:linear-gradient(135deg,var(--yellow),var(--cyan),var(--pink));-webkit-background-clip:text;color:transparent;
+}
+.teacher-list{max-width:850px;margin:18px auto 0;text-align:left}
+.teacher-list li{color:var(--muted);font-size:18px;line-height:1.8;margin:8px 0}
+@media(max-width:900px){
+  .app{width:100%;min-height:100vh;margin:0;border-radius:0}.screen{min-height:100vh;padding:20px}
+  .hero,.game-layout{grid-template-columns:1fr}.rule-grid,.result-grid{grid-template-columns:1fr}.dashboard{grid-template-columns:repeat(2,1fr)}
+  .board{height:360px;gap:8px;padding:18px 8px 22px}.action-row{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+<main class="app">
+  <section id="home" class="screen active">
+    <div class="topbar">
+      <div class="brand"><div class="logo">🗼</div><span>汉诺塔计划大师</span></div>
+      <div class="pill">计划能力 · 问题解决 · 步骤控制</div>
+    </div>
+    <div class="hero">
+      <div>
+        <h1>想好再动<br><span class="cyan">一步也不能乱</span></h1>
+        <p>把所有圆盘从左边搬到右边。每次只能移动最上面的一个圆盘，而且<span class="yellow">大圆盘不能压在小圆盘上</span>。这是经典的计划能力小游戏。</p>
+        <div class="rule-grid">
+          <div class="rule-card"><strong>怎么玩？</strong><span>点击一个柱子的最上方圆盘，再点击目标柱子。</span></div>
+          <div class="rule-card"><strong>规则限制</strong><span>一次移动一个圆盘，大圆盘不能放到小圆盘上。</span></div>
+          <div class="rule-card"><strong>适合现场</strong><span>3盘入门、4盘挑战，5盘适合高手。</span></div>
+          <div class="rule-card"><strong>最后报告</strong><span>显示步数、最少步数、用时、错误和计划等级。</span></div>
+        </div>
+        <div class="btn-row">
+          <button onclick="showRules()">开始任务</button>
+          <button class="secondary" onclick="showTeacher()">教师说明</button>
+        </div>
+      </div>
+      <div class="glass preview">
+        <div class="preview-tower">
+          <div class="preview-rod">
+            <div class="preview-disk" style="width:88%;background:#a78bfa;color:#a78bfa"></div>
+            <div class="preview-disk" style="width:72%;background:#ff7eb6;color:#ff7eb6"></div>
+            <div class="preview-disk" style="width:56%;background:#4df0a0;color:#4df0a0"></div>
+            <div class="preview-disk" style="width:40%;background:#6fe7ff;color:#6fe7ff"></div>
+          </div>
+          <div class="preview-rod"></div>
+          <div class="preview-rod"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="teacher" class="screen">
+    <div class="topbar">
+      <div class="brand"><div class="logo">🧠</div><span>教师说明</span></div>
+      <div class="pill">适合桌面互动 / 投屏演示</div>
+    </div>
+    <div class="glass" style="max-width:920px;margin:22px auto 0">
+      <h2>汉诺塔在体验什么？</h2>
+      <p>汉诺塔不是比手快，而是比计划能力。孩子需要提前想步骤、记住中间状态、抑制冲动操作，并在错误后调整策略。</p>
+      <ul class="teacher-list">
+        <li><b>心理学概念：</b>计划能力、问题解决、工作记忆、抑制控制、递归思维。</li>
+        <li><b>儿童话术：</b>你像太空工程师，要把飞船零件按规则搬到目标基地。</li>
+        <li><b>现场玩法：</b>小朋友先做 3 盘，再挑战 4 盘；旁边同学可以一起帮他想“下一步”。</li>
+        <li><b>解释重点：</b>走错不丢脸，重要的是能发现规则、调整计划。</li>
+      </ul>
+      <div class="btn-row">
+        <button onclick="showRules()">开始任务</button>
+        <button class="secondary" onclick="show('home')">返回首页</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="rules" class="screen">
+    <div class="topbar">
+      <div class="brand"><div class="logo">🚦</div><span>任务规则</span></div>
+      <div class="pill">请牢记两个规则</div>
+    </div>
+    <div class="glass" style="max-width:930px;margin:34px auto 0;text-align:center">
+      <h2>把所有圆盘从左边搬到右边</h2>
+      <p>目标柱是最右边。你可以借助中间柱，但必须遵守规则。</p>
+      <div class="rule-grid">
+        <div class="rule-card"><strong>规则 1</strong><span>每次只能移动一个圆盘，而且只能移动最上面的圆盘。</span></div>
+        <div class="rule-card"><strong>规则 2</strong><span>大圆盘不能放在小圆盘上面。</span></div>
+        <div class="rule-card"><strong>操作方式</strong><span>点击来源柱，再点击目标柱；也可以拖动最上方圆盘。</span></div>
+        <div class="rule-card"><strong>最少步数</strong><span>3盘 7步，4盘 15步，5盘 31步。</span></div>
+      </div>
+      <div class="note">小提示：先想“怎么把最下面的大圆盘移到目标柱”，再倒推需要先挪走哪些小圆盘。</div>
+      <div class="btn-row" style="justify-content:center">
+        <button onclick="show('game')">进入任务区</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="game" class="screen">
+    <div class="topbar">
+      <div class="brand"><div class="logo">🗼</div><span>汉诺塔计划大师</span></div>
+      <div class="pill">点击柱子移动圆盘</div>
+    </div>
+
+    <div class="game-layout">
+      <aside class="side">
+        <h2>任务设置</h2>
+        <div class="help-box">
+          <b>给小朋友的说明：</b><br>
+          先点有圆盘的柱子，再点要放过去的柱子。记住：大圆盘不能压小圆盘。
+        </div>
+        <h3>选择难度</h3>
+        <div class="difficulty-grid">
+          <button class="diff-btn active" data-n="3" onclick="selectDifficulty(3)"><b>3盘</b><span>入门 7步</span></button>
+          <button class="diff-btn" data-n="4" onclick="selectDifficulty(4)"><b>4盘</b><span>挑战 15步</span></button>
+          <button class="diff-btn" data-n="5" onclick="selectDifficulty(5)"><b>5盘</b><span>高手 31步</span></button>
+          <button class="diff-btn" data-n="4" onclick="selectDifficulty(4); startGame();"><b>推荐</b><span>4盘开始</span></button>
+        </div>
+        <button class="btn" onclick="startGame()">开始 / 重开</button>
+        <button class="btn secondary" onclick="giveHint()">提示一步</button>
+        <button class="btn secondary" onclick="undoMove()">撤回一步</button>
+        <button class="btn danger" onclick="resetOnly()">清空选择</button>
+        <div class="help-box">
+          <b>操作提示：</b><br>
+          被选中的柱子会出现黄色边框。提示功能会用蓝色边框标出“从哪里到哪里”。
+        </div>
+      </aside>
+
+      <section class="main-game">
+        <div class="dashboard">
+          <div class="stat"><b id="moveStat">0</b><span>当前步数</span></div>
+          <div class="stat"><b id="minStat">7</b><span>最少步数</span></div>
+          <div class="stat"><b id="timeStat">0.0s</b><span>用时</span></div>
+          <div class="stat"><b id="errorStat">0</b><span>违规尝试</span></div>
+          <div class="stat"><b id="hintStat">0</b><span>提示次数</span></div>
+        </div>
+
+        <div id="message" class="message neutral">选择难度后点击“开始 / 重开”。</div>
+
+        <div class="board" id="board">
+          <div class="rod" data-rod="0" onclick="clickRod(0)" ondragover="allowDrop(event)" ondrop="dropOnRod(event,0)">
+            <div class="rod-label">起点柱</div><div class="stack" id="stack-0"></div>
+          </div>
+          <div class="rod" data-rod="1" onclick="clickRod(1)" ondragover="allowDrop(event)" ondrop="dropOnRod(event,1)">
+            <div class="rod-label">中转柱</div><div class="stack" id="stack-1"></div>
+          </div>
+          <div class="rod" data-rod="2" onclick="clickRod(2)" ondragover="allowDrop(event)" ondrop="dropOnRod(event,2)">
+            <div class="rod-label">目标柱</div><div class="stack" id="stack-2"></div>
+          </div>
+        </div>
+
+        <div class="action-row">
+          <button onclick="startGame()">重开</button>
+          <button class="secondary" onclick="giveHint()">提示一步</button>
+          <button class="secondary" onclick="undoMove()">撤回</button>
+          <button class="secondary" onclick="show('home')">返回首页</button>
+        </div>
+      </section>
+    </div>
+  </section>
+
+  <section id="result" class="screen">
+    <div class="topbar">
+      <div class="brand"><div class="logo">🏆</div><span>任务完成</span></div>
+      <div class="pill">计划大师报告</div>
+    </div>
+    <div class="glass" style="max-width:1000px;margin:16px auto 0;text-align:center">
+      <h2>汉诺塔任务完成！</h2>
+      <div class="big-score" id="gradeText">A级</div>
+      <p id="resultSentence">你的计划大师报告已生成。</p>
+
+      <div class="result-grid">
+        <div class="result-card"><div class="label">你的步数</div><div class="num" id="finalMoves">0</div></div>
+        <div class="result-card"><div class="label">最少步数</div><div class="num" id="finalMin">0</div></div>
+        <div class="result-card"><div class="label">用时</div><div class="num" id="finalTime">0s</div></div>
+        <div class="result-card"><div class="label">违规尝试</div><div class="num" id="finalErrors">0</div></div>
+      </div>
+
+      <div class="note">
+        心理学小发现：汉诺塔考验的是“先计划，再行动”。如果只看眼前一步，很容易卡住；如果能先想清楚大圆盘怎么到目标柱，就更容易找到正确路线。
+      </div>
+
+      <div class="btn-row" style="justify-content:center">
+        <button onclick="show('game'); startGame()">再挑战一次</button>
+        <button class="secondary" onclick="show('home')">返回首页</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+let n = 3;
+let rods = [[],[],[]];       // 每个数组从底到顶排列，最后一个是顶层圆盘；数字越小圆盘越小
+let selected = null;
+let moves = 0;
+let errors = 0;
+let hints = 0;
+let history = [];
+let started = false;
+let startTime = 0;
+let timer = null;
+let dragSource = null;
+
+function $(id){return document.getElementById(id)}
+function show(id){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  $(id).classList.add("active");
+}
+
+function minMoves(){ return Math.pow(2,n)-1; }
+
+function selectDifficulty(num){
+  n = num;
+  document.querySelectorAll(".diff-btn").forEach(btn=>{
+    const isActive = Number(btn.dataset.n) === num && btn.textContent.includes(num+"盘");
+    btn.classList.toggle("active", isActive);
+  });
+  initState(false);
+}
+
+function initState(keepMessage=false){
+  rods = [Array.from({length:n}, (_,i)=>n-i), [], []];
+  selected = null;
+  moves = 0; errors = 0; hints = 0; history = [];
+  started = false;
+  clearInterval(timer);
+  $("moveStat").textContent = 0;
+  $("minStat").textContent = minMoves();
+  $("timeStat").textContent = "0.0s";
+  $("errorStat").textContent = 0;
+  $("hintStat").textContent = 0;
+  if(!keepMessage) setMessage(`已选择 ${n} 盘任务。点击“开始 / 重开”即可开始。`, "neutral");
+  render();
+}
+
+function startGame(){
+  initState(true);
+  started = true;
+  startTime = performance.now();
+  clearInterval(timer);
+  timer = setInterval(updateTime, 100);
+  setMessage(`${n} 盘任务开始！目标：把所有圆盘移动到右边目标柱。`, "neutral");
+  render();
+}
+
+function updateTime(){
+  if(!started) return;
+  const t = (performance.now() - startTime)/1000;
+  $("timeStat").textContent = t.toFixed(1) + "s";
+}
+
+function setMessage(text, type="neutral"){
+  const m = $("message");
+  m.className = "message " + type;
+  m.textContent = text;
+}
+
+function render(){
+  document.querySelectorAll(".rod").forEach((r,i)=>{
+    r.classList.toggle("selected", selected === i);
+    r.classList.remove("hint");
+  });
+
+  for(let i=0;i<3;i++){
+    const stack = $("stack-"+i);
+    stack.innerHTML = "";
+    rods[i].forEach((disk, idx)=>{
+      const isTop = idx === rods[i].length-1;
+      const div = document.createElement("div");
+      div.className = `disk size-${disk}` + (isTop ? " top" : "");
+      div.textContent = disk;
+      div.draggable = isTop;
+      div.dataset.rod = i;
+      div.dataset.disk = disk;
+      div.addEventListener("click", (e)=>{
+        e.stopPropagation();
+        clickRod(i);
+      });
+      if(isTop){
+        div.addEventListener("dragstart", (e)=>dragStart(e,i));
+        div.addEventListener("dragend", ()=>document.querySelectorAll(".disk").forEach(d=>d.classList.remove("dragging")));
+      }
+      stack.appendChild(div);
+    });
+  }
+}
+
+function clickRod(i){
+  if(!started){
+    setMessage("请先点击“开始 / 重开”。", "bad");
+    return;
+  }
+  if(selected === null){
+    if(rods[i].length === 0){
+      setMessage("这个柱子没有圆盘，不能从这里移动。", "bad");
+      return;
+    }
+    selected = i;
+    setMessage(`已选择${rodName(i)}，请选择要移动到哪根柱子。`, "neutral");
+    render();
+    return;
+  }
+  if(selected === i){
+    selected = null;
+    setMessage("已取消选择。", "neutral");
+    render();
+    return;
+  }
+  attemptMove(selected, i);
+}
+
+function rodName(i){
+  return ["起点柱","中转柱","目标柱"][i];
+}
+
+function attemptMove(from, to){
+  if(rods[from].length === 0){
+    selected = null;
+    setMessage("来源柱没有圆盘。", "bad");
+    render();
+    return false;
+  }
+  const disk = rods[from][rods[from].length-1];
+  const topTo = rods[to][rods[to].length-1];
+
+  if(topTo !== undefined && topTo < disk){
+    errors++;
+    $("errorStat").textContent = errors;
+    selected = null;
+    setMessage("违规啦：大圆盘不能放在小圆盘上面。", "bad");
+    render();
+    return false;
+  }
+
+  history.push({from,to,disk});
+  rods[from].pop();
+  rods[to].push(disk);
+  moves++;
+  $("moveStat").textContent = moves;
+  selected = null;
+  setMessage(`成功移动：圆盘 ${disk} 从${rodName(from)}到${rodName(to)}。`, "good");
+  render();
+
+  if(checkWin()){
+    finishGame();
+  }
+  return true;
+}
+
+function checkWin(){
+  return rods[2].length === n && rods[2].every((d,i)=>d===n-i);
+}
+
+function finishGame(){
+  started = false;
+  clearInterval(timer);
+  const t = $("timeStat").textContent;
+  const min = minMoves();
+  const extra = moves - min;
+
+  let grade = "C级";
+  if(moves === min && errors === 0 && hints === 0) grade = "S级";
+  else if(extra <= 2 && errors <= 1) grade = "A级";
+  else if(extra <= 6 && errors <= 3) grade = "B级";
+
+  $("gradeText").textContent = grade;
+  $("finalMoves").textContent = moves;
+  $("finalMin").textContent = min;
+  $("finalTime").textContent = t;
+  $("finalErrors").textContent = errors;
+
+  let sentence = "你完成了汉诺塔计划任务。";
+  if(grade === "S级") sentence = "太厉害了！你用最少步数完成，是真正的计划大师。";
+  else if(grade === "A级") sentence = "很棒！你的路线很接近最优解，计划能力不错。";
+  else if(grade === "B级") sentence = "不错！你已经理解了规则，再试一次会更接近最少步数。";
+  else sentence = "完成就是胜利！下次可以先想好大圆盘如何到目标柱，再开始移动。";
+  $("resultSentence").textContent = sentence;
+
+  setTimeout(()=>show("result"), 550);
+}
+
+function resetOnly(){
+  selected = null;
+  document.querySelectorAll(".rod").forEach(r=>r.classList.remove("hint"));
+  setMessage("已清空选择。", "neutral");
+  render();
+}
+
+function undoMove(){
+  if(!history.length){
+    setMessage("还没有可以撤回的步骤。", "bad");
+    return;
+  }
+  const last = history.pop();
+  const disk = rods[last.to].pop();
+  rods[last.from].push(disk);
+  moves = Math.max(0, moves-1);
+  $("moveStat").textContent = moves;
+  selected = null;
+  setMessage(`已撤回：圆盘 ${disk} 回到${rodName(last.from)}。`, "neutral");
+  render();
+}
+
+function dragStart(e, from){
+  if(!started){
+    e.preventDefault();
+    setMessage("请先点击“开始 / 重开”。", "bad");
+    return;
+  }
+  dragSource = from;
+  e.currentTarget.classList.add("dragging");
+  e.dataTransfer.setData("text/plain", String(from));
+}
+function allowDrop(e){ e.preventDefault(); }
+function dropOnRod(e, to){
+  e.preventDefault();
+  const from = dragSource ?? Number(e.dataTransfer.getData("text/plain"));
+  if(Number.isInteger(from)) attemptMove(from, to);
+  dragSource = null;
+}
+
+/* 根据当前局面 BFS 找到到达目标的最短下一步，n<=5 状态最多243个，足够快 */
+function encodeFromRods(currentRods){
+  const pos = Array(n+1).fill(0);
+  currentRods.forEach((rod, r)=>rod.forEach(d=>pos[d]=r));
+  return pos.slice(1).join("");
+}
+function rodsFromCode(code){
+  const temp = [[],[],[]];
+  for(let d=n; d>=1; d--){
+    const r = Number(code[d-1]);
+    temp[r].push(d);
+  }
+  return temp;
+}
+function possibleMoves(code){
+  const rs = rodsFromCode(code);
+  const arr = [];
+  for(let from=0; from<3; from++){
+    if(!rs[from].length) continue;
+    const disk = rs[from][rs[from].length-1];
+    for(let to=0; to<3; to++){
+      if(from===to) continue;
+      const top = rs[to][rs[to].length-1];
+      if(top === undefined || top > disk){
+        const copy = rs.map(r=>[...r]);
+        copy[from].pop();
+        copy[to].push(disk);
+        arr.push({from,to,code:encodeFromRods(copy)});
+      }
+    }
+  }
+  return arr;
+}
+function findHintMove(){
+  const start = encodeFromRods(rods);
+  const goal = "2".repeat(n);
+  if(start === goal) return null;
+
+  const q = [{code:start, first:null}];
+  const seen = new Set([start]);
+
+  while(q.length){
+    const cur = q.shift();
+    for(const mv of possibleMoves(cur.code)){
+      if(seen.has(mv.code)) continue;
+      const first = cur.first || {from:mv.from, to:mv.to};
+      if(mv.code === goal) return first;
+      seen.add(mv.code);
+      q.push({code:mv.code, first});
+    }
+  }
+  return null;
+}
+
+function giveHint(){
+  if(!started){
+    setMessage("请先开始任务，再使用提示。", "bad");
+    return;
+  }
+  const hint = findHintMove();
+  if(!hint){
+    setMessage("已经完成或没有可提示的步骤。", "neutral");
+    return;
+  }
+  hints++;
+  $("hintStat").textContent = hints;
+  render();
+  document.querySelector(`.rod[data-rod="${hint.from}"]`).classList.add("hint");
+  document.querySelector(`.rod[data-rod="${hint.to}"]`).classList.add("hint");
+  setMessage(`提示：试试从${rodName(hint.from)}移动到${rodName(hint.to)}。`, "neutral");
+}
+
+initState(true);
+setMessage("欢迎来到汉诺塔计划大师。建议先从 3 盘开始。", "neutral");
+</script>
+</body>
+</html>
