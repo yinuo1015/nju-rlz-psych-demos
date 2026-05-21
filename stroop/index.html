@@ -1,0 +1,770 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>字色大挑战｜Stroop 颜色陷阱</title>
+<style>
+:root{
+  --bg:#050816;
+  --panel:#0b1026dd;
+  --card:#ffffff12;
+  --line:#7ee7ff33;
+  --text:#f4f8ff;
+  --muted:#aebbd3;
+  --cyan:#6fe7ff;
+  --green:#4df0a0;
+  --yellow:#ffd45e;
+  --pink:#ff7eb6;
+  --red:#ff4d6d;
+  --blue:#4f8cff;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  min-height:100vh;
+  font-family:"Microsoft YaHei",Arial,sans-serif;
+  color:var(--text);
+  background:
+    radial-gradient(circle at 18% 18%,#6fe7ff2b,transparent 25%),
+    radial-gradient(circle at 86% 20%,#ff7eb62b,transparent 24%),
+    radial-gradient(circle at 50% 105%,#4df0a022,transparent 30%),
+    linear-gradient(145deg,#050816,#0b1026 55%,#170821);
+  overflow-x:hidden;
+}
+body:before{
+  content:"";
+  position:fixed;
+  inset:0;
+  background:
+    linear-gradient(90deg,transparent 49px,#6fe7ff12 50px),
+    linear-gradient(transparent 49px,#6fe7ff0f 50px),
+    radial-gradient(circle,#ffffff99 1px,transparent 1.5px);
+  background-size:50px 50px,50px 50px,96px 96px;
+  mask-image:linear-gradient(to bottom,#000,transparent 80%);
+  pointer-events:none;
+}
+.app{
+  position:relative;
+  z-index:1;
+  width:min(1080px,95vw);
+  min-height:720px;
+  margin:24px auto;
+  border-radius:34px;
+  border:1px solid var(--line);
+  background:linear-gradient(180deg,#0c122ade,#060a1bc7);
+  box-shadow:0 28px 90px #0008,inset 0 0 0 1px #ffffff08;
+  overflow:hidden;
+}
+.app:before{
+  content:"";
+  position:absolute;
+  left:0;right:0;top:0;height:4px;
+  background:linear-gradient(90deg,var(--cyan),var(--green),var(--yellow),var(--pink),var(--red));
+  box-shadow:0 0 26px #6fe7ff99;
+}
+.screen{display:none;min-height:720px;padding:30px;position:relative}
+.screen.active{display:block;animation:enter .25s ease}
+@keyframes enter{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:16px;
+  margin-bottom:18px;
+}
+.brand{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  font-weight:950;
+  font-size:23px;
+}
+.logo{
+  width:48px;height:48px;
+  border-radius:18px;
+  display:grid;place-items:center;
+  background:linear-gradient(135deg,var(--cyan),var(--green),var(--yellow));
+  color:#06111c;
+  font-size:24px;
+  box-shadow:0 0 28px #6fe7ff55;
+}
+.pill{
+  border-radius:999px;
+  padding:9px 14px;
+  background:#6fe7ff14;
+  border:1px solid #6fe7ff33;
+  color:#dff8ff;
+  font-weight:900;
+  font-size:14px;
+  white-space:nowrap;
+}
+.hero{
+  display:grid;
+  grid-template-columns:1.05fr .95fr;
+  gap:28px;
+  align-items:center;
+  padding:18px 8px 0;
+}
+h1{
+  font-size:clamp(42px,6vw,74px);
+  line-height:1.04;
+  margin:0 0 18px;
+  letter-spacing:-1.5px;
+}
+h2{font-size:clamp(30px,4vw,48px);line-height:1.15;margin:0 0 14px}
+h3{font-size:24px;margin:0 0 10px}
+p{font-size:19px;line-height:1.75;color:var(--muted);margin:10px 0}
+.hl{color:#fff;text-shadow:0 0 20px #6fe7ff99}
+.yellow{color:var(--yellow);font-weight:950}
+.pink{color:var(--pink);font-weight:950}
+.glass{
+  border-radius:28px;
+  border:1px solid #ffffff18;
+  background:linear-gradient(180deg,#142044bb,#071027aa);
+  padding:24px;
+  box-shadow:0 18px 50px #0005,inset 0 0 28px #6fe7ff0a;
+}
+.rule-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:14px;
+  margin:22px 0;
+}
+.rule-card{
+  border-radius:22px;
+  padding:18px;
+  background:#ffffff10;
+  border:1px solid #ffffff18;
+}
+.rule-card strong{display:block;color:#fff;font-size:20px;margin-bottom:8px}
+.rule-card span{color:var(--muted);line-height:1.6}
+.btn-row{display:flex;gap:14px;flex-wrap:wrap;margin-top:26px}
+button,.btn{
+  appearance:none;
+  border:0;
+  cursor:pointer;
+  border-radius:18px;
+  padding:15px 22px;
+  font-size:18px;
+  font-weight:950;
+  color:#07111c;
+  background:linear-gradient(135deg,var(--cyan),var(--green));
+  box-shadow:0 14px 30px #6fe7ff2a,inset 0 0 0 1px #ffffff26;
+  transition:transform .1s ease,filter .1s ease,opacity .1s ease;
+}
+button:hover,.btn:hover{transform:translateY(-1px);filter:brightness(1.04)}
+button:active,.btn:active{transform:translateY(1px) scale(.99)}
+.secondary{
+  background:#ffffff12;
+  color:var(--text);
+  border:1px solid #ffffff20;
+  box-shadow:none;
+}
+.preview{
+  min-height:430px;
+  display:grid;
+  place-items:center;
+  position:relative;
+}
+.preview:before{
+  content:"";
+  position:absolute;
+  width:390px;height:390px;
+  border-radius:50%;
+  background:conic-gradient(from 0deg,#6fe7ff00,#6fe7ff40,#4df0a000,#ff7eb640,#6fe7ff00);
+  animation:spin 10s linear infinite;
+  opacity:.7;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.preview-word{
+  position:relative;
+  z-index:1;
+  font-size:132px;
+  font-weight:1000;
+  color:var(--blue);
+  letter-spacing:8px;
+  text-shadow:0 0 38px currentColor;
+  animation:float 2.4s ease-in-out infinite;
+}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.note{
+  border-radius:20px;
+  padding:16px 18px;
+  background:#ffd45e18;
+  border:1px solid #ffd45e40;
+  color:#ffeab0;
+  font-size:17px;
+  font-weight:850;
+  line-height:1.7;
+  margin-top:18px;
+}
+
+.game{
+  display:grid;
+  grid-template-rows:auto auto 1fr auto;
+  gap:15px;
+  min-height:650px;
+}
+.hud{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:16px;
+  align-items:center;
+}
+.hud-title{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:9px;
+  font-weight:900;
+  color:#e5f8ff;
+}
+.progress{
+  height:13px;
+  border-radius:999px;
+  background:#ffffff12;
+  border:1px solid #ffffff12;
+  overflow:hidden;
+}
+.progress div{
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg,var(--cyan),var(--green),var(--yellow),var(--pink));
+  box-shadow:0 0 18px #6fe7ffaa;
+  transition:width .18s ease;
+}
+.chips{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
+.chip{
+  min-width:108px;
+  border-radius:16px;
+  padding:10px 12px;
+  text-align:center;
+  background:#ffffff10;
+  border:1px solid #ffffff18;
+}
+.chip b{display:block;font-size:18px;color:#fff}
+.chip span{display:block;font-size:12px;color:var(--muted);font-weight:850;margin-top:2px}
+.question{
+  text-align:center;
+}
+.question h2{margin-bottom:8px}
+.question p{margin:0;font-size:17px}
+.arena{
+  min-height:345px;
+  display:grid;
+  place-items:center;
+  position:relative;
+  border-radius:30px;
+  background:
+    radial-gradient(circle at center,#6fe7ff12,transparent 55%),
+    linear-gradient(180deg,#ffffff08,#ffffff03);
+  border:1px solid #6fe7ff24;
+  overflow:hidden;
+}
+.arena:before{
+  content:"";
+  position:absolute;
+  width:520px;height:520px;
+  border-radius:50%;
+  border:1px dashed #6fe7ff2e;
+  animation:spin 16s linear infinite;
+}
+.arena:after{
+  content:"";
+  position:absolute;
+  width:380px;height:380px;
+  border-radius:50%;
+  border:1px solid #ff7eb61f;
+}
+.stimulus{
+  position:relative;
+  z-index:1;
+  font-size:clamp(110px,16vw,178px);
+  font-weight:1000;
+  letter-spacing:12px;
+  text-shadow:0 0 32px currentColor;
+  user-select:none;
+  animation:pop .16s cubic-bezier(.2,1.35,.3,1);
+}
+@keyframes pop{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:scale(1)}}
+.cross{
+  position:relative;
+  z-index:1;
+  font-size:84px;
+  color:var(--cyan);
+  font-weight:1000;
+  text-shadow:0 0 20px #6fe7ffcc;
+}
+.feedback{
+  position:absolute;
+  bottom:18px;
+  left:50%;
+  transform:translateX(-50%);
+  width:min(720px,90%);
+  text-align:center;
+  border-radius:20px;
+  padding:12px 16px;
+  font-size:24px;
+  font-weight:950;
+  backdrop-filter:blur(8px);
+}
+.feedback.neutral{background:#6fe7ff14;border:1px solid #6fe7ff2c;color:#e3f8ff}
+.feedback.good{background:#4df0a01f;border:1px solid #4df0a04a;color:#dcffec}
+.feedback.bad{background:#ff4d6d1f;border:1px solid #ff4d6d4a;color:#ffdbe4}
+.options{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:12px;
+}
+.color-btn{
+  min-height:76px;
+  color:#fff;
+  border:1px solid #ffffff22;
+  box-shadow:0 12px 28px #0004;
+}
+.color-btn small{
+  display:block;
+  margin-top:4px;
+  color:#ffffffcc;
+  font-weight:800;
+}
+.redBtn{background:linear-gradient(135deg,#ff4d6d,#b91c1c)}
+.blueBtn{background:linear-gradient(135deg,#4f8cff,#1d4ed8)}
+.greenBtn{background:linear-gradient(135deg,#4df0a0,#16a34a)}
+.yellowBtn{background:linear-gradient(135deg,#ffd45e,#d97706);color:#211400}
+.yellowBtn small{color:#211400cc}
+.result-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:16px;
+  margin:26px 0;
+}
+.result-card{
+  border-radius:22px;
+  padding:20px;
+  text-align:center;
+  background:#ffffff10;
+  border:1px solid #ffffff18;
+}
+.result-card .num{
+  font-size:42px;
+  font-weight:1000;
+  color:#fff;
+  margin:6px 0;
+}
+.result-card .label{
+  color:var(--muted);
+  font-weight:900;
+  font-size:14px;
+  line-height:1.45;
+}
+.big-score{
+  font-size:clamp(64px,10vw,108px);
+  line-height:1;
+  font-weight:1000;
+  margin:14px 0 10px;
+  background:linear-gradient(135deg,var(--yellow),var(--cyan),var(--pink));
+  -webkit-background-clip:text;
+  color:transparent;
+}
+.teacher-list{
+  max-width:850px;
+  margin:18px auto 0;
+  text-align:left;
+}
+.teacher-list li{
+  color:var(--muted);
+  font-size:18px;
+  line-height:1.8;
+  margin:8px 0;
+}
+.hidden{visibility:hidden}
+@media(max-width:820px){
+  .app{width:100%;min-height:100vh;margin:0;border-radius:0}
+  .screen{min-height:100vh;padding:20px}
+  .hero{grid-template-columns:1fr}
+  .rule-grid,.result-grid,.options{grid-template-columns:1fr}
+  .hud{grid-template-columns:1fr}
+  .chips{justify-content:flex-start}
+  h1{font-size:40px}
+  .preview{min-height:260px}
+  .preview-word{font-size:94px}
+}
+</style>
+</head>
+<body>
+<main class="app">
+  <section id="home" class="screen active">
+    <div class="topbar">
+      <div class="brand"><div class="logo">🌈</div><span>字色大挑战</span></div>
+      <div class="pill">Stroop · 颜色陷阱</div>
+    </div>
+    <div class="hero">
+      <div>
+        <h1>别被<span class="pink">文字</span>骗了<br>只看<span class="hl">颜色</span>！</h1>
+        <p>屏幕上会出现一个彩色汉字。你的任务不是读这个字，而是判断它的<span class="yellow">字体颜色</span>。比如蓝色的“红”，正确答案是“蓝”。</p>
+        <div class="rule-grid">
+          <div class="rule-card"><strong>你会看到什么？</strong><span>红、蓝、绿、黄四个汉字，用不同颜色显示。</span></div>
+          <div class="rule-card"><strong>你要做什么？</strong><span>点击颜色按钮，或按键盘 1、2、3、4 回答。</span></div>
+          <div class="rule-card"><strong>为什么有趣？</strong><span>大脑会自动读字，所以它会干扰你说颜色。</span></div>
+          <div class="rule-card"><strong>最后会显示</strong><span>正确率、平均反应时间和抗干扰指数。</span></div>
+        </div>
+        <div class="btn-row">
+          <button onclick="showRules()">开始挑战</button>
+          <button class="secondary" onclick="showTeacher()">教师说明</button>
+        </div>
+      </div>
+      <div class="glass preview">
+        <div class="preview-word" style="color:#4f8cff">红</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="teacher" class="screen">
+    <div class="topbar">
+      <div class="brand"><div class="logo">🧠</div><span>教师说明</span></div>
+      <div class="pill">适合投屏破冰 / 小桌体验</div>
+    </div>
+    <div class="glass" style="max-width:920px;margin:22px auto 0">
+      <h2>Stroop 字色任务在体验什么？</h2>
+      <p>这个任务让孩子体验“自动化阅读”和“颜色判断”之间的冲突。孩子明明知道要看颜色，但大脑会不自觉地先读字，所以在冲突题中更容易变慢或出错。</p>
+      <ul class="teacher-list">
+        <li><b>心理学概念：</b>注意控制、抑制控制、干扰效应。</li>
+        <li><b>儿童话术：</b>大脑有时候会自动做一件事，比如读字；当我们要控制自己不读字、只看颜色时，就需要注意力。</li>
+        <li><b>现场玩法：</b>可以让一名同学操作，其他同学一起喊颜色；也可以每个孩子独立体验 1–2 分钟。</li>
+        <li><b>解释重点：</b>答错不代表不聪明，而是说明文字太“会抢注意力”了。</li>
+      </ul>
+      <div class="btn-row">
+        <button onclick="showRules()">开始挑战</button>
+        <button class="secondary" onclick="show('home')">返回首页</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="rules" class="screen">
+    <div class="topbar">
+      <div class="brand"><div class="logo">🚦</div><span>挑战规则</span></div>
+      <div class="pill">先练习，再正式挑战</div>
+    </div>
+    <div class="glass" style="max-width:900px;margin:34px auto 0;text-align:center">
+      <h2>请记住：只看颜色，不读文字</h2>
+      <p>如果屏幕上出现蓝色的“红”，你应该选择<span class="yellow">蓝色</span>，因为我们要看的是字的颜色。</p>
+      <div class="rule-grid">
+        <div class="rule-card"><strong style="color:#ff4d6d">红色</strong><span>按 1 或点击红色按钮</span></div>
+        <div class="rule-card"><strong style="color:#4f8cff">蓝色</strong><span>按 2 或点击蓝色按钮</span></div>
+        <div class="rule-card"><strong style="color:#4df0a0">绿色</strong><span>按 3 或点击绿色按钮</span></div>
+        <div class="rule-card"><strong style="color:#ffd45e">黄色</strong><span>按 4 或点击黄色按钮</span></div>
+      </div>
+      <div class="note">小提示：看到字以后，先忍住别读出来，直接看它是什么颜色。</div>
+      <div class="btn-row" style="justify-content:center">
+        <button onclick="startGame()">我准备好了</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="game" class="screen">
+    <div class="game">
+      <div class="topbar" style="margin-bottom:0">
+        <div class="brand"><div class="logo">🎮</div><span>颜色陷阱挑战中</span></div>
+        <div class="pill" id="timerPill">准备中</div>
+      </div>
+
+      <div class="hud">
+        <div>
+          <div class="hud-title">
+            <span id="phaseText">练习阶段</span>
+            <span id="trialText">1 / 8</span>
+          </div>
+          <div class="progress"><div id="progressBar"></div></div>
+        </div>
+        <div class="chips">
+          <div class="chip"><b id="scoreChip">0</b><span>积分</span></div>
+          <div class="chip"><b id="rightChip">0</b><span>答对</span></div>
+          <div class="chip"><b id="comboChip">0</b><span>连击</span></div>
+        </div>
+      </div>
+
+      <div class="question">
+        <h2>请选择“字体颜色”</h2>
+        <p>不要读字，只看颜色。键盘也可作答：1红、2蓝、3绿、4黄。</p>
+      </div>
+
+      <div class="arena">
+        <div id="stimulusArea" class="cross">+</div>
+        <div id="feedback" class="feedback neutral">等待下一题……</div>
+      </div>
+
+      <div class="options">
+        <button class="color-btn redBtn" onclick="answer('red')">红色<small>按 1</small></button>
+        <button class="color-btn blueBtn" onclick="answer('blue')">蓝色<small>按 2</small></button>
+        <button class="color-btn greenBtn" onclick="answer('green')">绿色<small>按 3</small></button>
+        <button class="color-btn yellowBtn" onclick="answer('yellow')">黄色<small>按 4</small></button>
+      </div>
+    </div>
+  </section>
+
+  <section id="result" class="screen">
+    <div class="topbar">
+      <div class="brand"><div class="logo">🏆</div><span>挑战完成</span></div>
+      <div class="pill">Stroop 报告</div>
+    </div>
+
+    <div class="glass" style="max-width:980px;margin:16px auto 0;text-align:center">
+      <h2>颜色陷阱挑战完成！</h2>
+      <div class="big-score" id="gradeText">A级</div>
+      <p id="resultSentence">你的大脑抗干扰报告已生成。</p>
+
+      <div class="result-grid">
+        <div class="result-card">
+          <div class="label">总正确率</div>
+          <div class="num" id="accText">0%</div>
+        </div>
+        <div class="result-card">
+          <div class="label">平均反应时间</div>
+          <div class="num" id="rtText">0ms</div>
+        </div>
+        <div class="result-card">
+          <div class="label">抗干扰指数<br>冲突题正确率</div>
+          <div class="num" id="interferenceText">0%</div>
+        </div>
+        <div class="result-card">
+          <div class="label">文字干扰时间<br>冲突-一致</div>
+          <div class="num" id="costText">0ms</div>
+        </div>
+      </div>
+
+      <div class="note">
+        心理学小发现：文字会自动“抢走”注意力。当字义和颜色不一致时，我们要控制自己不去读字，只看颜色，这就是注意控制和抗干扰能力的一种表现。
+      </div>
+
+      <div class="btn-row" style="justify-content:center">
+        <button onclick="startGame()">再挑战一次</button>
+        <button class="secondary" onclick="show('home')">返回首页</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+const COLORS = {
+  red: {name:"红", css:"#ff4d6d", key:"1"},
+  blue: {name:"蓝", css:"#4f8cff", key:"2"},
+  green: {name:"绿", css:"#4df0a0", key:"3"},
+  yellow: {name:"黄", css:"#ffd45e", key:"4"}
+};
+const keys = { "1":"red", "2":"blue", "3":"green", "4":"yellow" };
+
+let phase = "practice";
+let trials = [];
+let idx = 0;
+let accepting = false;
+let current = null;
+let stimStart = 0;
+let timeout = null;
+let stats = {};
+
+function $(id){ return document.getElementById(id); }
+function show(id){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  $(id).classList.add("active");
+}
+function showRules(){ show("rules"); }
+function showTeacher(){ show("teacher"); }
+function shuffle(arr){ return [...arr].sort(()=>Math.random()-0.5); }
+function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
+function makeTrials(n, conflictRate, practice=false){
+  const colorKeys = Object.keys(COLORS);
+  const arr = [];
+  for(let i=0;i<n;i++){
+    const ink = pick(colorKeys);
+    let word;
+    const conflict = Math.random() < conflictRate;
+    if(conflict){
+      word = pick(colorKeys.filter(c => c !== ink));
+    }else{
+      word = ink;
+    }
+    arr.push({word, ink, conflict, practice});
+  }
+  return shuffle(arr);
+}
+
+function startGame(){
+  stats = {
+    score:0, correct:0, total:0, combo:0,
+    rts:[],
+    congruentTotal:0, congruentCorrect:0, congruentRts:[],
+    conflictTotal:0, conflictCorrect:0, conflictRts:[]
+  };
+  phase = "practice";
+  trials = makeTrials(8, .55, true);
+  idx = 0;
+  show("game");
+  nextTrial();
+}
+
+function startFormal(){
+  phase = "formal";
+  trials = makeTrials(24, .70, false);
+  idx = 0;
+  nextTrial();
+}
+
+function nextTrial(){
+  clearTimeout(timeout);
+  accepting = false;
+  current = null;
+  $("stimulusArea").className = "cross";
+  $("stimulusArea").style.color = "";
+  $("stimulusArea").textContent = "+";
+  $("feedback").className = "feedback neutral";
+  $("feedback").textContent = phase === "practice" ? "练习：准备下一题……" : "正式挑战：准备下一题……";
+  updateHud();
+
+  timeout = setTimeout(showStimulus, 420);
+}
+
+function showStimulus(){
+  current = trials[idx];
+  accepting = true;
+  stimStart = performance.now();
+
+  $("stimulusArea").className = "stimulus";
+  $("stimulusArea").style.color = COLORS[current.ink].css;
+  $("stimulusArea").textContent = COLORS[current.word].name;
+  $("feedback").className = "feedback neutral";
+  $("feedback").textContent = "请选择字体颜色！";
+
+  timeout = setTimeout(() => {
+    if(!accepting) return;
+    accepting = false;
+    recordAnswer(null, false, 1500);
+    showFeedback(false, "时间到！正确答案是：" + COLORS[current.ink].name + "色");
+  }, 1500);
+}
+
+function answer(color){
+  if(!accepting) return;
+  accepting = false;
+  clearTimeout(timeout);
+  const rt = Math.round(performance.now() - stimStart);
+  const correct = color === current.ink;
+  recordAnswer(color, correct, rt);
+  if(correct){
+    showFeedback(true, "答对啦！" + rt + " ms");
+  }else{
+    showFeedback(false, "被文字骗到啦！正确答案是：" + COLORS[current.ink].name + "色");
+  }
+}
+
+function recordAnswer(color, correct, rt){
+  if(phase === "practice") return;
+  stats.total++;
+  if(correct) stats.correct++;
+  if(correct){
+    stats.rts.push(rt);
+    stats.combo++;
+    stats.score += 100 + Math.max(0, 15 - Math.floor(rt/100))*5 + stats.combo*10;
+  }else{
+    stats.combo = 0;
+  }
+
+  if(current.conflict){
+    stats.conflictTotal++;
+    if(correct) stats.conflictCorrect++;
+    if(correct) stats.conflictRts.push(rt);
+  }else{
+    stats.congruentTotal++;
+    if(correct) stats.congruentCorrect++;
+    if(correct) stats.congruentRts.push(rt);
+  }
+}
+
+function showFeedback(good, msg){
+  $("feedback").className = good ? "feedback good" : "feedback bad";
+  $("feedback").textContent = msg;
+  updateHud();
+  timeout = setTimeout(() => {
+    idx++;
+    if(idx >= trials.length){
+      if(phase === "practice"){
+        $("feedback").className = "feedback good";
+        $("feedback").textContent = "练习完成，正式挑战开始！";
+        setTimeout(startFormal, 780);
+      }else{
+        showResult();
+      }
+    }else{
+      nextTrial();
+    }
+  }, 650);
+}
+
+function updateHud(){
+  const total = trials.length || 1;
+  $("phaseText").textContent = phase === "practice" ? "练习阶段" : "正式挑战";
+  $("trialText").textContent = (idx + 1) + " / " + total;
+  $("progressBar").style.width = (idx / total * 100) + "%";
+  $("scoreChip").textContent = stats.score || 0;
+  $("rightChip").textContent = stats.correct || 0;
+  $("comboChip").textContent = stats.combo || 0;
+  $("timerPill").textContent = phase === "practice" ? "练习题不计分" : "正式题计分";
+}
+
+function avg(arr){
+  if(!arr.length) return 0;
+  return Math.round(arr.reduce((a,b)=>a+b,0)/arr.length);
+}
+function pct(a,b){ return b ? Math.round(a/b*100) : 0; }
+
+function showResult(){
+  const acc = pct(stats.correct, stats.total);
+  const meanRt = avg(stats.rts);
+  const conflictAcc = pct(stats.conflictCorrect, stats.conflictTotal);
+  const conflictRt = avg(stats.conflictRts);
+  const congruentRt = avg(stats.congruentRts);
+  const cost = Math.max(0, conflictRt - congruentRt);
+
+  let grade = "C级";
+  if(acc >= 90 && conflictAcc >= 85) grade = "S级";
+  else if(acc >= 80 && conflictAcc >= 75) grade = "A级";
+  else if(acc >= 65) grade = "B级";
+
+  $("gradeText").textContent = grade;
+  $("accText").textContent = acc + "%";
+  $("rtText").textContent = meanRt + "ms";
+  $("interferenceText").textContent = conflictAcc + "%";
+  $("costText").textContent = cost + "ms";
+
+  let sentence = "你完成了颜色陷阱挑战。";
+  if(grade === "S级") sentence = "太强了！你几乎没有被文字骗到，是超级抗干扰侦探。";
+  else if(grade === "A级") sentence = "很棒！你的大脑能比较好地控制自己不被文字干扰。";
+  else if(grade === "B级") sentence = "不错！有些冲突题会让大脑变慢，这是很正常的。";
+  else sentence = "没关系，Stroop 本来就会骗过大脑。再玩一次，你会更会“只看颜色”。";
+  $("resultSentence").textContent = sentence;
+
+  show("result");
+}
+
+document.addEventListener("keydown", e => {
+  const color = keys[e.key];
+  if(color && $("game").classList.contains("active")){
+    answer(color);
+  }
+  if(e.code === "Space" && $("rules").classList.contains("active")){
+    e.preventDefault();
+    startGame();
+  }
+});
+</script>
+</body>
+</html>
