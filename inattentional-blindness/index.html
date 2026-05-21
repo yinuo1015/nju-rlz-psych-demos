@@ -1,0 +1,640 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>注意力隐身术｜非注意盲视小游戏</title>
+<style>
+:root{
+  --text:#f4f8ff; --muted:#aebbd3; --line:#7ee7ff33;
+  --cyan:#6fe7ff; --green:#4df0a0; --yellow:#ffd45e; --pink:#ff7eb6;
+  --red:#ff4d6d; --blue:#4f8cff; --purple:#a78bfa;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  min-height:100vh;
+  font-family:"Microsoft YaHei",Arial,sans-serif;
+  color:var(--text);
+  background:
+    radial-gradient(circle at 15% 16%,#6fe7ff2b,transparent 25%),
+    radial-gradient(circle at 88% 18%,#ff7eb62b,transparent 24%),
+    radial-gradient(circle at 50% 105%,#4df0a022,transparent 30%),
+    linear-gradient(145deg,#050816,#0b1026 55%,#160820);
+  overflow-x:hidden;
+}
+body:before{
+  content:"";
+  position:fixed; inset:0;
+  background:
+    radial-gradient(circle,#ffffffcc 1px,transparent 1.6px),
+    radial-gradient(circle,#6fe7ff99 1px,transparent 1.8px),
+    linear-gradient(90deg,transparent 49px,#6fe7ff0d 50px),
+    linear-gradient(transparent 49px,#6fe7ff0b 50px);
+  background-size:92px 92px,137px 137px,50px 50px,50px 50px;
+  background-position:0 0,21px 34px,0 0,0 0;
+  mask-image:linear-gradient(to bottom,#000,transparent 82%);
+  pointer-events:none;
+  animation:starDrift 34s linear infinite;
+}
+@keyframes starDrift{to{background-position:180px 240px,-120px 180px,0 0,0 0}}
+.app{
+  position:relative;
+  z-index:1;
+  width:min(1180px,96vw);
+  min-height:720px;
+  margin:18px auto;
+  border-radius:34px;
+  border:1px solid var(--line);
+  background:linear-gradient(180deg,#0c122ade,#060a1bc7);
+  box-shadow:0 28px 90px #0008,inset 0 0 0 1px #ffffff08;
+  overflow:hidden;
+}
+.app:before{
+  content:"";
+  position:absolute;left:0;right:0;top:0;height:4px;
+  background:linear-gradient(90deg,var(--cyan),var(--green),var(--yellow),var(--pink),var(--purple));
+  box-shadow:0 0 26px #6fe7ff99;
+}
+.screen{display:none;min-height:720px;padding:28px;position:relative}
+.screen.active{display:block;animation:enter .25s ease}
+@keyframes enter{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:16px}
+.brand{display:flex;align-items:center;gap:12px;font-weight:950;font-size:23px}
+.logo{
+  width:48px;height:48px;border-radius:18px;display:grid;place-items:center;
+  background:linear-gradient(135deg,var(--cyan),var(--green),var(--yellow));
+  color:#06111c;font-size:24px;box-shadow:0 0 28px #6fe7ff55;
+}
+.pill{
+  border-radius:999px;padding:9px 14px;background:#6fe7ff14;border:1px solid #6fe7ff33;
+  color:#dff8ff;font-weight:900;font-size:14px;white-space:nowrap;
+}
+.hero{display:grid;grid-template-columns:1.04fr .96fr;gap:28px;align-items:center;padding:14px 6px 0}
+h1{font-size:clamp(42px,6vw,74px);line-height:1.04;margin:0 0 18px;letter-spacing:-1.5px}
+h2{font-size:clamp(30px,4vw,48px);line-height:1.15;margin:0 0 12px}
+h3{font-size:24px;margin:0 0 10px}
+p{font-size:19px;line-height:1.75;color:var(--muted);margin:10px 0}
+.cyan{color:var(--cyan);font-weight:950}.yellow{color:var(--yellow);font-weight:950}.pink{color:var(--pink);font-weight:950}
+.glass{
+  border-radius:28px;border:1px solid #ffffff18;background:linear-gradient(180deg,#142044bb,#071027aa);
+  padding:24px;box-shadow:0 18px 50px #0005,inset 0 0 28px #6fe7ff0a;
+}
+.rule-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin:22px 0}
+.rule-card{border-radius:22px;padding:18px;background:#ffffff10;border:1px solid #ffffff18}
+.rule-card strong{display:block;color:#fff;font-size:20px;margin-bottom:8px}
+.rule-card span{color:var(--muted);line-height:1.6}
+.btn-row{display:flex;gap:14px;flex-wrap:wrap;margin-top:24px}
+button,.btn{
+  appearance:none;border:0;cursor:pointer;border-radius:18px;padding:15px 22px;font-size:18px;font-weight:950;
+  color:#07111c;background:linear-gradient(135deg,var(--cyan),var(--green));
+  box-shadow:0 14px 30px #6fe7ff2a,inset 0 0 0 1px #ffffff26;
+  transition:transform .1s ease,filter .1s ease,opacity .1s ease;text-decoration:none;
+}
+button:hover,.btn:hover{transform:translateY(-1px);filter:brightness(1.04)}
+button:active,.btn:active{transform:translateY(1px) scale(.99)}
+.secondary{background:#ffffff12;color:var(--text);border:1px solid #ffffff20;box-shadow:none}
+.preview{min-height:420px;display:grid;place-items:center;position:relative;overflow:hidden}
+.preview:before{
+  content:"";position:absolute;width:430px;height:430px;border-radius:50%;
+  background:conic-gradient(from 0deg,#6fe7ff00,#6fe7ff40,#4df0a000,#ff7eb640,#6fe7ff00);
+  animation:spin 10s linear infinite;opacity:.7;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.preview-box{
+  position:relative;
+  z-index:1;
+  width:min(440px,100%);
+  height:320px;
+  border-radius:28px;
+  border:1px solid #6fe7ff33;
+  background:radial-gradient(circle at center,#6fe7ff17,transparent 58%),#ffffff09;
+  overflow:hidden;
+}
+.preview-gate{
+  position:absolute;left:50%;top:28px;bottom:28px;width:8px;
+  transform:translateX(-50%);
+  border-radius:999px;
+  background:linear-gradient(var(--cyan),var(--green));
+  box-shadow:0 0 24px #6fe7ffaa;
+}
+.orbit{
+  position:absolute;width:58px;height:58px;border-radius:50%;
+  display:grid;place-items:center;font-size:28px;
+  background:#ffffff12;border:1px solid #ffffff20;
+  animation:fly 4s ease-in-out infinite;
+}
+.o1{left:70px;top:70px;color:var(--cyan)}
+.o2{right:70px;top:170px;color:var(--pink);animation-delay:-1.2s}
+.o3{left:160px;bottom:54px;color:var(--green);animation-delay:-2.1s}
+@keyframes fly{0%,100%{transform:translate(0,0)}50%{transform:translate(34px,-22px)}}
+.monster-preview{
+  position:absolute;
+  left:-90px;
+  top:125px;
+  font-size:58px;
+  animation:sneak 5.2s linear infinite;
+  filter:drop-shadow(0 0 16px #ffd45e);
+}
+@keyframes sneak{0%{left:-90px}55%{left:460px}100%{left:460px}}
+.note{
+  border-radius:20px;padding:16px 18px;background:#ffd45e18;border:1px solid #ffd45e40;
+  color:#ffeab0;font-size:17px;font-weight:850;line-height:1.7;margin-top:18px;
+}
+.game{
+  display:grid;
+  grid-template-rows:auto auto 1fr auto;
+  gap:14px;
+  min-height:650px;
+}
+.hud{display:grid;grid-template-columns:1fr auto;gap:16px;align-items:center}
+.hud-title{display:flex;justify-content:space-between;gap:12px;margin-bottom:9px;font-weight:900;color:#e5f8ff}
+.progress{height:13px;border-radius:999px;background:#ffffff12;border:1px solid #ffffff12;overflow:hidden}
+.progress div{height:100%;width:0%;background:linear-gradient(90deg,var(--cyan),var(--green),var(--yellow),var(--pink));box-shadow:0 0 18px #6fe7ffaa;transition:width .12s linear}
+.chips{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+.chip{min-width:108px;border-radius:16px;padding:10px 12px;text-align:center;background:#ffffff10;border:1px solid #ffffff18}
+.chip b{display:block;font-size:18px;color:#fff}.chip span{display:block;font-size:12px;color:var(--muted);font-weight:850;margin-top:2px}
+.question{text-align:center}.question h2{margin-bottom:8px}.question p{margin:0;font-size:17px}
+.arena{
+  min-height:420px;position:relative;border-radius:30px;
+  background:radial-gradient(circle at center,#6fe7ff12,transparent 55%),linear-gradient(180deg,#ffffff08,#ffffff03);
+  border:1px solid #6fe7ff24;overflow:hidden;padding:18px;
+}
+.arena:before{content:"";position:absolute;width:650px;height:650px;border-radius:50%;border:1px dashed #6fe7ff2e;left:50%;top:50%;transform:translate(-50%,-50%);animation:spin 18s linear infinite}
+.canvas-wrap{
+  position:absolute;inset:18px;border-radius:24px;overflow:hidden;background:#081027bb;border:1px solid #ffffff12;
+}
+canvas{width:100%;height:100%;display:block}
+.overlay-countdown{
+  position:absolute;inset:0;display:none;place-items:center;
+  background:#020617bf;z-index:5;
+  font-size:96px;font-weight:1000;color:#fff;text-shadow:0 0 30px #6fe7ff;
+}
+.overlay-countdown.active{display:grid}
+.answer-card{
+  max-width:880px;margin:24px auto 0;text-align:center;
+}
+.answer-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:16px;
+  margin:22px 0;
+}
+.input-box{
+  border-radius:24px;background:#ffffff10;border:1px solid #ffffff18;padding:20px;
+}
+.input-box label{display:block;color:#fff;font-size:20px;font-weight:950;margin-bottom:12px}
+.number-row{display:flex;justify-content:center;align-items:center;gap:12px}
+.number-row button{width:54px;height:54px;border-radius:18px;padding:0;font-size:28px}
+.number-row span{
+  min-width:88px;height:58px;display:grid;place-items:center;border-radius:18px;
+  background:#ffffff12;border:1px solid #ffffff18;font-size:34px;font-weight:1000;
+}
+.choice-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.choice-btn{background:#ffffff12;color:#fff;border:1px solid #ffffff20;box-shadow:none}
+.choice-btn.active{background:linear-gradient(135deg,var(--cyan),var(--green));color:#07111c}
+.result-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin:26px 0}
+.result-card{border-radius:22px;padding:20px;text-align:center;background:#ffffff10;border:1px solid #ffffff18}
+.result-card .num{font-size:42px;font-weight:1000;color:#fff;margin:6px 0}
+.result-card .label{color:var(--muted);font-weight:900;font-size:14px;line-height:1.45}
+.big-score{
+  font-size:clamp(60px,9vw,96px);line-height:1;font-weight:1000;margin:14px 0 10px;
+  background:linear-gradient(135deg,var(--yellow),var(--cyan),var(--pink));-webkit-background-clip:text;color:transparent;
+}
+.teacher-list{max-width:850px;margin:18px auto 0;text-align:left}
+.teacher-list li{color:var(--muted);font-size:18px;line-height:1.8;margin:8px 0}
+.reveal-box{
+  border-radius:24px;background:#ffffff10;border:1px solid #ffffff18;padding:18px;text-align:left;margin-top:18px;
+}
+.reveal-box b{color:#fff}
+.reveal-box p{font-size:17px;margin:6px 0}
+@media(max-width:850px){
+  .app{width:100%;min-height:100vh;margin:0;border-radius:0}.screen{min-height:100vh;padding:20px}
+  .hero{grid-template-columns:1fr}.rule-grid,.result-grid,.answer-grid{grid-template-columns:1fr}.hud{grid-template-columns:1fr}.chips{justify-content:flex-start}
+  h1{font-size:40px}.preview{min-height:280px}.arena{min-height:360px}.choice-row{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<main class="app">
+  <section id="home" class="screen active">
+    <div class="topbar">
+      <div class="brand"><div class="logo">🦍</div><span>注意力隐身术</span></div>
+      <div class="pill">非注意盲视 · 星空观察任务</div>
+    </div>
+    <div class="hero">
+      <div>
+        <h1>你真的<br><span class="cyan">看见了吗？</span></h1>
+        <p>这是一个关于“专注”的小游戏。你需要认真数<span class="yellow">蓝色能量球穿过中央扫描门</span>的次数。过程中可能会发生一点奇怪的事情。</p>
+        <div class="rule-grid">
+          <div class="rule-card"><strong>核心任务</strong><span>只数蓝色能量球穿过中间发光门的次数。</span></div>
+          <div class="rule-card"><strong>不要分心</strong><span>粉色球不用数，其他干扰也不用管。</span></div>
+          <div class="rule-card"><strong>时间很短</strong><span>正式观察约 22 秒，适合排队和小桌体验。</span></div>
+          <div class="rule-card"><strong>最后揭秘</strong><span>看你有没有注意到“不该错过”的东西。</span></div>
+        </div>
+        <div class="btn-row">
+          <button onclick="showRules()">开始任务</button>
+          <button class="secondary" onclick="showTeacher()">教师说明</button>
+        </div>
+      </div>
+      <div class="glass preview">
+        <div class="preview-box">
+          <div class="preview-gate"></div>
+          <div class="orbit o1">🔵</div>
+          <div class="orbit o2">🟣</div>
+          <div class="orbit o3">🔵</div>
+          <div class="monster-preview">👾</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="teacher" class="screen">
+    <div class="topbar">
+      <div class="brand"><div class="logo">🧠</div><span>教师说明</span></div>
+      <div class="pill">现场效果强 · 小朋友会惊讶</div>
+    </div>
+    <div class="glass" style="max-width:920px;margin:22px auto 0">
+      <h2>非注意盲视在体验什么？</h2>
+      <p>当人非常专注于一个任务时，即使明显的东西出现在眼前，也可能没有被意识到。这不是眼睛没看到，而是注意力没有分配过去。</p>
+      <ul class="teacher-list">
+        <li><b>心理学概念：</b>非注意盲视、选择性注意、注意资源有限。</li>
+        <li><b>儿童话术：</b>大脑像一个手电筒，照到哪里，哪里就清楚；没照到的地方，就可能被忽略。</li>
+        <li><b>现场玩法：</b>先让孩子认真数蓝球穿门次数，结束后再问有没有看到“太空小怪兽”。</li>
+        <li><b>解释重点：</b>没看到不代表粗心，而是说明专注会让大脑自动过滤无关信息。</li>
+      </ul>
+      <div class="btn-row">
+        <button onclick="showRules()">开始任务</button>
+        <button class="secondary" onclick="show('home')">返回首页</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="rules" class="screen">
+    <div class="topbar">
+      <div class="brand"><div class="logo">🚦</div><span>任务规则</span></div>
+      <div class="pill">请认真数次数</div>
+    </div>
+    <div class="glass" style="max-width:900px;margin:34px auto 0;text-align:center">
+      <h2>请数蓝色能量球穿过中间扫描门的次数</h2>
+      <p>中间有一条发光的竖线。只要<span class="yellow">蓝色球</span>穿过这条线，就记 1 次。粉色球不要数。</p>
+      <div class="rule-grid">
+        <div class="rule-card"><strong>要数什么？</strong><span>蓝色球穿过中央发光门的次数。</span></div>
+        <div class="rule-card"><strong>不要数什么？</strong><span>粉色球、碰撞、反弹、其他奇怪东西都不要数。</span></div>
+        <div class="rule-card"><strong>时间多长？</strong><span>正式观察约 22 秒。</span></div>
+        <div class="rule-card"><strong>结束后</strong><span>输入你数到的次数，并回答有没有看到特别东西。</span></div>
+      </div>
+      <div class="note">小提示：把注意力放在中央发光门上，蓝球穿过就默默加 1。</div>
+      <div class="btn-row" style="justify-content:center">
+        <button onclick="startTask()">我准备好了</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="game" class="screen">
+    <div class="game">
+      <div class="topbar" style="margin-bottom:0">
+        <div class="brand"><div class="logo">🎮</div><span>星空观察任务中</span></div>
+        <div class="pill" id="timePill">准备中</div>
+      </div>
+
+      <div class="hud">
+        <div>
+          <div class="hud-title">
+            <span>请数蓝色球穿过中央扫描门的次数</span>
+            <span id="remainText">剩余 22s</span>
+          </div>
+          <div class="progress"><div id="progressBar"></div></div>
+        </div>
+        <div class="chips">
+          <div class="chip"><b>蓝球</b><span>要数</span></div>
+          <div class="chip"><b>粉球</b><span>不数</span></div>
+          <div class="chip"><b>?</b><span>保持专注</span></div>
+        </div>
+      </div>
+
+      <div class="question">
+        <h2>盯住中央扫描门</h2>
+        <p>只数蓝色能量球穿过发光门的次数。</p>
+      </div>
+
+      <div class="arena">
+        <div class="canvas-wrap">
+          <canvas id="stage"></canvas>
+          <div id="countdown" class="overlay-countdown">3</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="answer" class="screen">
+    <div class="topbar">
+      <div class="brand"><div class="logo">📝</div><span>观察结束</span></div>
+      <div class="pill">请先回答，再揭秘</div>
+    </div>
+    <div class="glass answer-card">
+      <h2>你数到了多少次？</h2>
+      <p>请填写：蓝色能量球穿过中央扫描门的次数。</p>
+      <div class="answer-grid">
+        <div class="input-box">
+          <label>蓝色球穿过次数</label>
+          <div class="number-row">
+            <button onclick="changeGuess(-1)">−</button>
+            <span id="guessText">0</span>
+            <button onclick="changeGuess(1)">＋</button>
+          </div>
+        </div>
+        <div class="input-box">
+          <label>你有没有看到一个太空小怪兽穿过画面？</label>
+          <div class="choice-row">
+            <button id="seenYes" class="choice-btn" onclick="setSeen(true)">看到了</button>
+            <button id="seenNo" class="choice-btn" onclick="setSeen(false)">没看到</button>
+          </div>
+        </div>
+      </div>
+      <div class="note">请凭第一印象回答，不要回想太久。这样最接近真实体验。</div>
+      <div class="btn-row" style="justify-content:center">
+        <button onclick="showResult()">查看揭秘</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="result" class="screen">
+    <div class="topbar">
+      <div class="brand"><div class="logo">🔍</div><span>任务揭秘</span></div>
+      <div class="pill">非注意盲视</div>
+    </div>
+    <div class="glass" style="max-width:980px;margin:16px auto 0;text-align:center">
+      <h2>你刚刚可能错过了什么？</h2>
+      <div class="big-score" id="resultTitle">注意力隐身术</div>
+      <p id="resultSentence">揭秘结果生成中。</p>
+
+      <div class="result-grid">
+        <div class="result-card"><div class="label">真实穿过次数</div><div class="num" id="realCount">0</div></div>
+        <div class="result-card"><div class="label">你的答案</div><div class="num" id="yourCount">0</div></div>
+        <div class="result-card"><div class="label">是否看到怪兽</div><div class="num" id="seenText">--</div></div>
+        <div class="result-card"><div class="label">专注误差</div><div class="num" id="diffText">0</div></div>
+      </div>
+
+      <div class="reveal-box">
+        <p><b>刚刚发生了什么：</b>在任务进行到中间时，有一个太空小怪兽从画面中穿过。</p>
+        <p><b>心理学解释：</b>当你非常专心数蓝色球时，大脑会优先处理“和任务有关”的信息，把其他信息过滤掉。即使怪兽很明显，也可能没有进入你的意识。</p>
+        <p><b>这就叫：</b>非注意盲视。没看到不是粗心，而是注意力太专注了。</p>
+      </div>
+
+      <div class="btn-row" style="justify-content:center">
+        <button onclick="startTask()">再体验一次</button>
+        <button class="secondary" onclick="show('home')">返回首页</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+const TASK_DURATION = 22000;
+let canvas, ctx, w, h, raf;
+let running = false;
+let taskStart = 0;
+let balls = [];
+let realCount = 0;
+let guess = 0;
+let sawMonster = null;
+let monsterShown = false;
+
+function $(id){ return document.getElementById(id); }
+function show(id){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  $(id).classList.add("active");
+}
+function showRules(){ show("rules"); }
+function showTeacher(){ show("teacher"); }
+
+function resizeCanvas(){
+  canvas = $("stage");
+  const rect = canvas.parentElement.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = Math.max(600, rect.width) * dpr;
+  canvas.height = Math.max(360, rect.height) * dpr;
+  canvas.style.width = rect.width + "px";
+  canvas.style.height = rect.height + "px";
+  ctx = canvas.getContext("2d");
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  w = rect.width;
+  h = rect.height;
+}
+
+function makeBalls(){
+  const blue = "#6fe7ff";
+  const pink = "#ff7eb6";
+  const green = "#4df0a0";
+  return [
+    {x:90,y:88,vx:145,vy:70,r:18,c:blue,type:"blue",lastSide:-1},
+    {x:620,y:115,vx:-122,vy:92,r:18,c:blue,type:"blue",lastSide:1},
+    {x:210,y:292,vx:138,vy:-78,r:18,c:blue,type:"blue",lastSide:-1},
+    {x:520,y:270,vx:-154,vy:-64,r:18,c:blue,type:"blue",lastSide:1},
+    {x:145,y:210,vx:118,vy:-96,r:18,c:pink,type:"pink",lastSide:-1},
+    {x:650,y:235,vx:-132,vy:-60,r:18,c:pink,type:"pink",lastSide:1},
+    {x:355,y:75,vx:94,vy:118,r:17,c:pink,type:"pink",lastSide:-1},
+    {x:410,y:320,vx:-102,vy:-112,r:17,c:green,type:"pink",lastSide:1}
+  ];
+}
+
+async function startTask(){
+  show("game");
+  await new Promise(r=>setTimeout(r,80));
+  resizeCanvas();
+  window.addEventListener("resize", resizeCanvas);
+  balls = makeBalls();
+  realCount = 0;
+  guess = 0;
+  sawMonster = null;
+  monsterShown = false;
+  $("guessText").textContent = "0";
+  $("seenYes").classList.remove("active");
+  $("seenNo").classList.remove("active");
+  await countdown();
+  running = true;
+  taskStart = performance.now();
+  lastTime = taskStart;
+  cancelAnimationFrame(raf);
+  raf = requestAnimationFrame(loop);
+}
+
+function countdown(){
+  return new Promise(resolve=>{
+    const el = $("countdown");
+    const nums = ["3","2","1","开始"];
+    let i = 0;
+    el.classList.add("active");
+    el.textContent = nums[i];
+    const timer = setInterval(()=>{
+      i++;
+      if(i >= nums.length){
+        clearInterval(timer);
+        el.classList.remove("active");
+        resolve();
+      }else{
+        el.textContent = nums[i];
+      }
+    }, 650);
+  });
+}
+
+let lastTime = 0;
+function loop(now){
+  if(!running) return;
+  const dt = Math.min(0.035, (now-lastTime)/1000);
+  lastTime = now;
+  const elapsed = now - taskStart;
+  update(elapsed, dt);
+  draw(elapsed);
+  const remain = Math.max(0, TASK_DURATION - elapsed);
+  $("remainText").textContent = "剩余 " + Math.ceil(remain/1000) + "s";
+  $("timePill").textContent = "观察中";
+  $("progressBar").style.width = (elapsed / TASK_DURATION * 100) + "%";
+  if(elapsed >= TASK_DURATION){
+    finishTask();
+    return;
+  }
+  raf = requestAnimationFrame(loop);
+}
+
+function update(elapsed, dt){
+  const gateX = w/2;
+  for(const b of balls){
+    b.x += b.vx * dt;
+    b.y += b.vy * dt;
+    if(b.x < b.r+8){ b.x=b.r+8; b.vx=Math.abs(b.vx); }
+    if(b.x > w-b.r-8){ b.x=w-b.r-8; b.vx=-Math.abs(b.vx); }
+    if(b.y < b.r+8){ b.y=b.r+8; b.vy=Math.abs(b.vy); }
+    if(b.y > h-b.r-8){ b.y=h-b.r-8; b.vy=-Math.abs(b.vy); }
+
+    const side = b.x < gateX ? -1 : 1;
+    if(b.type === "blue" && side !== b.lastSide && Math.abs(b.x - gateX) < Math.abs(b.vx*dt)+b.r+2){
+      realCount++;
+    }
+    b.lastSide = side;
+  }
+}
+
+function draw(elapsed){
+  ctx.clearRect(0,0,w,h);
+
+  // space background
+  ctx.save();
+  ctx.globalAlpha = .24;
+  for(let i=0;i<45;i++){
+    const x = (i*97 + 31) % w;
+    const y = (i*53 + 19) % h;
+    ctx.fillStyle = i%3===0 ? "#6fe7ff" : "#ffffff";
+    ctx.beginPath(); ctx.arc(x,y,1.2,0,Math.PI*2); ctx.fill();
+  }
+  ctx.restore();
+
+  // gate
+  const gateX = w/2;
+  const grd = ctx.createLinearGradient(gateX, 20, gateX, h-20);
+  grd.addColorStop(0, "#6fe7ff");
+  grd.addColorStop(.5, "#4df0a0");
+  grd.addColorStop(1, "#ffd45e");
+  ctx.save();
+  ctx.shadowColor = "#6fe7ff";
+  ctx.shadowBlur = 22;
+  ctx.strokeStyle = grd;
+  ctx.lineWidth = 8;
+  ctx.lineCap = "round";
+  ctx.beginPath();
+  ctx.moveTo(gateX, 34);
+  ctx.lineTo(gateX, h-34);
+  ctx.stroke();
+  ctx.restore();
+
+  // gate label
+  ctx.fillStyle = "rgba(255,255,255,.72)";
+  ctx.font = "bold 16px Microsoft YaHei";
+  ctx.textAlign = "center";
+  ctx.fillText("中央扫描门", gateX, 26);
+
+  // monster from 10.2s to 15.3s
+  if(elapsed > 10200 && elapsed < 15300){
+    monsterShown = true;
+    const t = (elapsed - 10200) / 5100;
+    const x = -70 + t * (w + 140);
+    const y = h * .50 + Math.sin(t*Math.PI*3)*20;
+    drawMonster(x,y);
+  }
+
+  // balls
+  for(const b of balls){
+    ctx.save();
+    ctx.shadowColor = b.c;
+    ctx.shadowBlur = 18;
+    ctx.fillStyle = b.c;
+    ctx.beginPath(); ctx.arc(b.x,b.y,b.r,0,Math.PI*2); ctx.fill();
+    ctx.globalAlpha = .95;
+    ctx.fillStyle = "#05101d";
+    ctx.font = "bold 16px Microsoft YaHei";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(b.type==="blue" ? "蓝" : "粉", b.x, b.y+1);
+    ctx.restore();
+  }
+}
+
+function drawMonster(x,y){
+  ctx.save();
+  ctx.translate(x,y);
+  ctx.shadowColor = "#ffd45e";
+  ctx.shadowBlur = 18;
+  ctx.font = "56px serif";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText("👾",0,0);
+  ctx.restore();
+}
+
+function finishTask(){
+  running = false;
+  cancelAnimationFrame(raf);
+  $("progressBar").style.width = "100%";
+  show("answer");
+}
+
+function changeGuess(delta){
+  guess = Math.max(0, Math.min(99, guess + delta));
+  $("guessText").textContent = guess;
+}
+function setSeen(v){
+  sawMonster = v;
+  $("seenYes").classList.toggle("active", v === true);
+  $("seenNo").classList.toggle("active", v === false);
+}
+
+function showResult(){
+  if(sawMonster === null){
+    sawMonster = false;
+    $("seenNo").classList.add("active");
+  }
+  const diff = Math.abs(guess - realCount);
+  $("realCount").textContent = realCount;
+  $("yourCount").textContent = guess;
+  $("seenText").textContent = sawMonster ? "看到了" : "没看到";
+  $("diffText").textContent = diff;
+
+  let title = "注意力隐身术";
+  let sentence = "";
+  if(!sawMonster){
+    title = "你可能体验到了非注意盲视";
+    sentence = "你很专心数蓝色球，所以大脑可能把太空小怪兽过滤掉了。";
+  }else{
+    title = "你发现了隐藏事件";
+    sentence = "你不仅在完成计数任务，还注意到了额外事件，观察范围很广。";
+  }
+  $("resultTitle").textContent = title;
+  $("resultSentence").textContent = sentence;
+  show("result");
+}
+</script>
+</body>
+</html>
