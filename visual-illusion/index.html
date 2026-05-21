@@ -3,302 +3,224 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>眼睛会骗人？视觉错觉挑战</title>
+<title>视觉错觉挑战｜眼睛会骗人？</title>
 <style>
-  :root{
-    --bg1:#060816;
-    --bg2:#0f1633;
-    --panel:rgba(13,19,41,.82);
-    --panel2:rgba(19,29,58,.88);
-    --line:rgba(143,223,255,.18);
-    --text:#eff7ff;
-    --muted:#9db0cb;
-    --cyan:#6fe7ff;
-    --blue:#6ea8ff;
-    --green:#47f3a3;
-    --pink:#ff7eb6;
-    --red:#ff587d;
-    --yellow:#ffd35a;
-    --shadow:0 20px 70px rgba(0,0,0,.35);
-  }
-  *{box-sizing:border-box}
-  html,body{height:100%}
-  body{
-    margin:0;
-    color:var(--text);
-    font-family:"Microsoft YaHei",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-    background:
-      radial-gradient(circle at 15% 18%, rgba(111,231,255,.15), transparent 20%),
-      radial-gradient(circle at 87% 22%, rgba(255,126,182,.16), transparent 22%),
-      radial-gradient(circle at 50% 100%, rgba(71,243,163,.14), transparent 28%),
-      linear-gradient(145deg,var(--bg1),var(--bg2) 52%,#160a23);
-    overflow-x:hidden;
-  }
-  body:before{
-    content:"";
-    position:fixed; inset:0;
-    background:
-      linear-gradient(90deg, transparent 49px, rgba(111,231,255,.06) 50px),
-      linear-gradient(transparent 49px, rgba(111,231,255,.05) 50px);
-    background-size:50px 50px;
-    mask-image:linear-gradient(to bottom, rgba(0,0,0,.6), transparent 78%);
-    pointer-events:none;
-  }
-  .app{
-    width:min(1120px,95vw);
-    min-height:720px;
-    margin:24px auto;
-    position:relative;
-    border-radius:34px;
-    overflow:hidden;
-    background:linear-gradient(180deg,rgba(7,11,27,.9),rgba(6,8,24,.78));
-    border:1px solid rgba(111,231,255,.16);
-    box-shadow:var(--shadow), inset 0 0 0 1px rgba(255,255,255,.03);
-  }
-  .app:before{
-    content:"";
-    position:absolute; left:0; right:0; top:0; height:4px;
-    background:linear-gradient(90deg,var(--cyan),var(--green),var(--yellow),var(--pink),var(--red));
-    box-shadow:0 0 18px rgba(111,231,255,.6);
-  }
-  .screen{display:none; min-height:720px; padding:30px; position:relative;}
-  .screen.active{display:block; animation:fadeIn .25s ease;}
-  @keyframes fadeIn{from{opacity:0; transform:translateY(8px)}to{opacity:1; transform:none}}
-  .topbar{display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom:16px;}
-  .brand{display:flex; align-items:center; gap:12px; font-size:24px; font-weight:950; letter-spacing:.3px;}
-  .logo{
-    width:48px; height:48px; border-radius:18px; display:grid; place-items:center;
-    background:linear-gradient(135deg,var(--cyan),var(--pink)); color:#09111b;
-    box-shadow:0 0 28px rgba(111,231,255,.35);
-    font-size:24px; font-weight:900;
-  }
-  .pill{
-    border-radius:999px; padding:9px 14px;
-    border:1px solid rgba(111,231,255,.18);
-    background:rgba(111,231,255,.08);
-    color:#dff8ff;
-    font-size:14px; font-weight:800;
-  }
-  .hero{
-    display:grid;
-    grid-template-columns:1.02fr .98fr;
-    gap:28px;
-    align-items:center;
-    padding:10px 6px 0;
-  }
-  h1{font-size:clamp(42px,6vw,70px); line-height:1.04; margin:0 0 18px; letter-spacing:-1px;}
-  h2{font-size:clamp(32px,4vw,48px); line-height:1.15; margin:0 0 14px;}
-  h3{font-size:24px; margin:0 0 12px;}
-  p{font-size:19px; line-height:1.75; margin:10px 0; color:var(--muted);}
-  .highlight{color:#fff}
-  .accent{color:var(--yellow); font-weight:950}
-  .danger{color:var(--pink); font-weight:950}
-  .glass{
-    background:linear-gradient(180deg,rgba(15,23,48,.84),rgba(9,14,33,.82));
-    border:1px solid rgba(111,231,255,.16);
-    border-radius:28px;
-    padding:24px;
-    box-shadow:0 12px 42px rgba(0,0,0,.24), inset 0 0 24px rgba(111,231,255,.05);
-  }
-  .feature-grid{
-    display:grid; grid-template-columns:repeat(2,1fr); gap:14px; margin:22px 0;
-  }
-  .feature{
-    border-radius:22px; padding:18px;
-    background:rgba(255,255,255,.05);
-    border:1px solid rgba(255,255,255,.1);
-  }
-  .feature strong{display:block; font-size:20px; color:#fff; margin-bottom:6px}
-  .feature span{font-size:15px; line-height:1.6; color:var(--muted);}
-  .preview-stack{
-    min-height:440px;
-    display:grid; place-items:center;
-    position:relative;
-  }
-  .preview-stack:before{
-    content:"";
-    position:absolute; width:420px; height:420px; border-radius:50%;
-    background:
-      radial-gradient(circle, rgba(111,231,255,.10), transparent 62%),
-      conic-gradient(from 0deg, transparent 0 20%, rgba(111,231,255,.2) 28%, transparent 38%, transparent 60%, rgba(255,126,182,.18) 70%, transparent 80%);
-    animation:spin 10s linear infinite;
-  }
-  @keyframes spin{to{transform:rotate(360deg)}}
-  .preview-card{
-    width:min(460px,100%);
-    z-index:1;
-  }
-  .preview-illusion{height:320px; display:grid; place-items:center;}
+:root{
+  --bg:#050816;
+  --panel:#0b1026dd;
+  --card:#ffffff12;
+  --line:#7ee7ff33;
+  --text:#f4f8ff;
+  --muted:#aebbd3;
+  --cyan:#6fe7ff;
+  --green:#4df0a0;
+  --yellow:#ffd45e;
+  --pink:#ff7eb6;
+  --red:#ff4d6d;
+  --blue:#4f8cff;
+  --purple:#a78bfa;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  min-height:100vh;
+  font-family:"Microsoft YaHei",Arial,sans-serif;
+  color:var(--text);
+  background:
+    radial-gradient(circle at 15% 16%,#6fe7ff2b,transparent 25%),
+    radial-gradient(circle at 88% 18%,#ff7eb62b,transparent 24%),
+    radial-gradient(circle at 50% 105%,#4df0a022,transparent 30%),
+    linear-gradient(145deg,#050816,#0b1026 55%,#160820);
+  overflow-x:hidden;
+}
+body:before{
+  content:"";
+  position:fixed;
+  inset:0;
+  background:
+    radial-gradient(circle,#ffffffcc 1px,transparent 1.6px),
+    radial-gradient(circle,#6fe7ff99 1px,transparent 1.8px),
+    linear-gradient(90deg,transparent 49px,#6fe7ff0d 50px),
+    linear-gradient(transparent 49px,#6fe7ff0b 50px);
+  background-size:92px 92px,137px 137px,50px 50px,50px 50px;
+  background-position:0 0,21px 34px,0 0,0 0;
+  mask-image:linear-gradient(to bottom,#000,transparent 82%);
+  pointer-events:none;
+  animation:starDrift 34s linear infinite;
+}
+@keyframes starDrift{to{background-position:180px 240px,-120px 180px,0 0,0 0}}
+.app{
+  position:relative;
+  z-index:1;
+  width:min(1160px,96vw);
+  min-height:720px;
+  margin:20px auto;
+  border-radius:34px;
+  border:1px solid var(--line);
+  background:linear-gradient(180deg,#0c122ade,#060a1bc7);
+  box-shadow:0 28px 90px #0008,inset 0 0 0 1px #ffffff08;
+  overflow:hidden;
+}
+.app:before{
+  content:"";
+  position:absolute;
+  left:0;right:0;top:0;height:4px;
+  background:linear-gradient(90deg,var(--cyan),var(--green),var(--yellow),var(--pink),var(--purple));
+  box-shadow:0 0 26px #6fe7ff99;
+}
+.screen{display:none;min-height:720px;padding:28px;position:relative}
+.screen.active{display:block;animation:enter .25s ease}
+@keyframes enter{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 
-  .btn-row{display:flex; gap:14px; flex-wrap:wrap; margin-top:24px}
-  button, .btn{
-    appearance:none; border:0; cursor:pointer;
-    border-radius:18px; padding:15px 22px; font-size:18px; font-weight:950;
-    color:#081118; background:linear-gradient(135deg,var(--cyan),var(--green));
-    box-shadow:0 12px 28px rgba(111,231,255,.18), inset 0 0 0 1px rgba(255,255,255,.1);
-    transition:transform .1s ease, filter .1s ease;
-  }
-  button:hover,.btn:hover{transform:translateY(-1px); filter:brightness(1.04)}
-  button:active,.btn:active{transform:translateY(1px)}
-  .secondary{
-    background:rgba(255,255,255,.08); color:var(--text);
-    border:1px solid rgba(255,255,255,.12); box-shadow:none;
-  }
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:16px}
+.brand{display:flex;align-items:center;gap:12px;font-weight:950;font-size:23px}
+.logo{
+  width:48px;height:48px;border-radius:18px;display:grid;place-items:center;
+  background:linear-gradient(135deg,var(--cyan),var(--green),var(--yellow));
+  color:#06111c;font-size:24px;box-shadow:0 0 28px #6fe7ff55;
+}
+.pill{
+  border-radius:999px;padding:9px 14px;background:#6fe7ff14;border:1px solid #6fe7ff33;
+  color:#dff8ff;font-weight:900;font-size:14px;white-space:nowrap;
+}
+.hero{display:grid;grid-template-columns:1.04fr .96fr;gap:28px;align-items:center;padding:14px 6px 0}
+h1{font-size:clamp(42px,6vw,74px);line-height:1.04;margin:0 0 18px;letter-spacing:-1.5px}
+h2{font-size:clamp(30px,4vw,48px);line-height:1.15;margin:0 0 12px}
+h3{font-size:24px;margin:0 0 10px}
+p{font-size:19px;line-height:1.75;color:var(--muted);margin:10px 0}
+.hl{color:#fff;text-shadow:0 0 20px #6fe7ff99}
+.yellow{color:var(--yellow);font-weight:950}
+.cyan{color:var(--cyan);font-weight:950}
+.pink{color:var(--pink);font-weight:950}
+.glass{
+  border-radius:28px;border:1px solid #ffffff18;background:linear-gradient(180deg,#142044bb,#071027aa);
+  padding:24px;box-shadow:0 18px 50px #0005,inset 0 0 28px #6fe7ff0a;
+}
+.rule-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin:22px 0}
+.rule-card{border-radius:22px;padding:18px;background:#ffffff10;border:1px solid #ffffff18}
+.rule-card strong{display:block;color:#fff;font-size:20px;margin-bottom:8px}
+.rule-card span{color:var(--muted);line-height:1.6}
+.btn-row{display:flex;gap:14px;flex-wrap:wrap;margin-top:24px}
+button,.btn{
+  appearance:none;border:0;cursor:pointer;border-radius:18px;padding:15px 22px;font-size:18px;font-weight:950;
+  color:#07111c;background:linear-gradient(135deg,var(--cyan),var(--green));
+  box-shadow:0 14px 30px #6fe7ff2a,inset 0 0 0 1px #ffffff26;
+  transition:transform .1s ease,filter .1s ease,opacity .1s ease;text-decoration:none;
+}
+button:hover,.btn:hover{transform:translateY(-1px);filter:brightness(1.04)}
+button:active,.btn:active{transform:translateY(1px) scale(.99)}
+.secondary{background:#ffffff12;color:var(--text);border:1px solid #ffffff20;box-shadow:none}
+.preview{min-height:420px;display:grid;place-items:center;position:relative;overflow:hidden}
+.preview:before{
+  content:"";position:absolute;width:430px;height:430px;border-radius:50%;
+  background:conic-gradient(from 0deg,#6fe7ff00,#6fe7ff40,#4df0a000,#ff7eb640,#6fe7ff00);
+  animation:spin 10s linear infinite;opacity:.7;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.preview svg{position:relative;z-index:1;width:100%;max-width:460px}
+.note{
+  border-radius:20px;padding:16px 18px;background:#ffd45e18;border:1px solid #ffd45e40;
+  color:#ffeab0;font-size:17px;font-weight:850;line-height:1.7;margin-top:18px;
+}
 
-  .game-wrap{
-    display:grid;
-    grid-template-rows:auto auto 1fr auto;
-    min-height:650px;
-    gap:16px;
-  }
-  .hud{
-    display:grid; grid-template-columns:1fr auto; gap:16px; align-items:center;
-  }
-  .hud-title{display:flex; justify-content:space-between; gap:16px; align-items:center; margin-bottom:10px; font-weight:900;}
-  .progress{height:13px; border-radius:999px; overflow:hidden; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.08);}
-  .progress div{
-    height:100%; width:0;
-    background:linear-gradient(90deg,var(--cyan),var(--green),var(--yellow));
-    box-shadow:0 0 24px rgba(111,231,255,.5);
-    transition:width .18s ease;
-  }
-  .stats{display:flex; gap:12px; flex-wrap:wrap;}
-  .stat{
-    min-width:112px; border-radius:16px;
-    background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1);
-    padding:10px 12px; text-align:center;
-  }
-  .stat b{display:block; font-size:18px; color:#fff;}
-  .stat span{display:block; font-size:12px; color:var(--muted); font-weight:800; margin-top:2px;}
-  .question{
-    text-align:center; padding:14px 0 4px;
-  }
-  .question h2{margin-bottom:10px}
-  .question p{margin:0; font-size:18px}
-  .arena{
-    min-height:380px;
-    display:grid; place-items:center;
-    border-radius:30px;
-    background:
-      radial-gradient(circle at center, rgba(111,231,255,.08), transparent 55%),
-      linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.02));
-    border:1px solid rgba(111,231,255,.12);
-    position:relative;
-    overflow:hidden;
-  }
-  .arena:before,.arena:after{
-    content:""; position:absolute; border-radius:50%; opacity:.4; pointer-events:none;
-  }
-  .arena:before{
-    width:580px; height:580px; border:1px dashed rgba(111,231,255,.16);
-  }
-  .arena:after{
-    width:420px; height:420px; border:1px solid rgba(255,126,182,.10);
-  }
-  #illusionStage{position:relative; z-index:1; width:100%; height:100%; display:grid; place-items:center; padding:20px;}
-  .choices{
-    display:grid; grid-template-columns:repeat(3,1fr); gap:14px;
-  }
-  .choice{
-    min-height:84px;
-    background:rgba(255,255,255,.06); color:var(--text);
-    border:1px solid rgba(255,255,255,.12);
-    box-shadow:none;
-    font-size:19px;
-  }
-  .choice strong{display:block; font-size:20px}
-  .choice small{display:block; color:var(--muted); font-weight:700; margin-top:5px}
-  .choice.correct{
-    background:rgba(71,243,163,.16); border-color:rgba(71,243,163,.35); color:#dfffea;
-  }
-  .choice.wrong{
-    background:rgba(255,88,125,.14); border-color:rgba(255,88,125,.35); color:#ffdbe5;
-  }
-  .feedback{
-    margin-top:10px;
-    border-radius:20px;
-    padding:16px 18px;
-    line-height:1.75;
-    font-size:17px;
-    font-weight:800;
-    text-align:center;
-    background:rgba(255,255,255,.06);
-    border:1px solid rgba(255,255,255,.08);
-    color:#e7f5ff;
-    min-height:86px;
-  }
-  .feedback.good{background:rgba(71,243,163,.12); border-color:rgba(71,243,163,.28); color:#d8ffea}
-  .feedback.bad{background:rgba(255,88,125,.12); border-color:rgba(255,88,125,.28); color:#ffe0e9}
-  .feedback.neutral{color:#dff5ff}
-  .result-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin:24px 0;}
-  .result-card{
-    border-radius:22px; padding:20px; text-align:center;
-    background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.11);
-  }
-  .result-card .num{
-    font-size:44px; font-weight:1000; color:#fff; margin:6px 0;
-  }
-  .result-card .label{
-    font-size:14px; color:var(--muted); font-weight:900; line-height:1.5;
-  }
-  .big-score{
-    font-size:clamp(64px,10vw,108px); line-height:1;
-    font-weight:1000; margin:14px 0 10px;
-    background:linear-gradient(135deg,var(--yellow),var(--cyan),var(--pink));
-    -webkit-background-clip:text; color:transparent;
-  }
-  .teacher-list{
-    max-width:860px; margin:0 auto; text-align:left;
-  }
-  .teacher-list li{font-size:18px; color:var(--muted); line-height:1.8; margin:8px 0}
-  svg{max-width:100%; height:auto}
-  .blink{animation:blink 3.5s ease-in-out infinite}
-  @keyframes blink{0%,92%,100%{opacity:1}95%{opacity:.2}}
-  .pulse{animation:pulse 1.6s ease-in-out infinite}
-  @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
-  @media (max-width:860px){
-    .app{width:100%; min-height:100vh; margin:0; border-radius:0;}
-    .screen{min-height:100vh; padding:20px;}
-    .hero{grid-template-columns:1fr}
-    .feature-grid,.choices,.result-grid{grid-template-columns:1fr}
-    .hud{grid-template-columns:1fr}
-    .topbar{flex-direction:column; align-items:flex-start}
-    h1{font-size:40px}
-    p{font-size:17px}
-  }
+.game{
+  display:grid;
+  grid-template-rows:auto auto 1fr auto;
+  gap:14px;
+  min-height:650px;
+}
+.hud{display:grid;grid-template-columns:1fr auto;gap:16px;align-items:center}
+.hud-title{display:flex;justify-content:space-between;gap:12px;margin-bottom:9px;font-weight:900;color:#e5f8ff}
+.progress{height:13px;border-radius:999px;background:#ffffff12;border:1px solid #ffffff12;overflow:hidden}
+.progress div{height:100%;width:0%;background:linear-gradient(90deg,var(--cyan),var(--green),var(--yellow),var(--pink));box-shadow:0 0 18px #6fe7ffaa;transition:width .18s ease}
+.chips{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+.chip{min-width:108px;border-radius:16px;padding:10px 12px;text-align:center;background:#ffffff10;border:1px solid #ffffff18}
+.chip b{display:block;font-size:18px;color:#fff}.chip span{display:block;font-size:12px;color:var(--muted);font-weight:850;margin-top:2px}
+.question{text-align:center}.question h2{margin-bottom:8px}.question p{margin:0;font-size:17px}
+.arena{
+  min-height:395px;display:grid;place-items:center;position:relative;border-radius:30px;
+  background:radial-gradient(circle at center,#6fe7ff12,transparent 55%),linear-gradient(180deg,#ffffff08,#ffffff03);
+  border:1px solid #6fe7ff24;overflow:hidden;padding:18px;
+}
+.arena:before{content:"";position:absolute;width:650px;height:650px;border-radius:50%;border:1px dashed #6fe7ff2e;animation:spin 18s linear infinite}
+.arena:after{content:"";position:absolute;width:450px;height:450px;border-radius:50%;border:1px solid #ff7eb625}
+.figure{
+  position:relative;z-index:1;
+  width:min(860px,96%);
+  height:340px;
+  display:grid;
+  place-items:center;
+}
+.figure svg{width:100%;height:100%;display:block}
+.options{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+}
+.choice{
+  min-height:78px;
+  background:#ffffff12;
+  color:#f4f8ff;
+  border:1px solid #ffffff20;
+  box-shadow:none;
+}
+.choice b{display:block;font-size:21px}
+.choice small{display:block;color:#aebbd3;font-weight:800;margin-top:4px}
+.choice.correct{background:#4df0a020;border-color:#4df0a066;color:#dfffe9}
+.choice.wrong{background:#ff4d6d20;border-color:#ff4d6d66;color:#ffdce5}
+.feedback{
+  text-align:center;
+  border-radius:20px;
+  padding:13px 16px;
+  font-size:17px;
+  font-weight:900;
+  min-height:58px;
+  margin-top:12px;
+}
+.feedback.neutral{background:#6fe7ff14;border:1px solid #6fe7ff2c;color:#e3f8ff}
+.feedback.good{background:#4df0a01f;border:1px solid #4df0a04a;color:#dcffec}
+.feedback.bad{background:#ff4d6d1f;border:1px solid #ff4d6d4a;color:#ffdbe4}
+.result-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin:26px 0}
+.result-card{border-radius:22px;padding:20px;text-align:center;background:#ffffff10;border:1px solid #ffffff18}
+.result-card .num{font-size:42px;font-weight:1000;color:#fff;margin:6px 0}
+.result-card .label{color:var(--muted);font-weight:900;font-size:14px;line-height:1.45}
+.big-score{
+  font-size:clamp(64px,10vw,108px);line-height:1;font-weight:1000;margin:14px 0 10px;
+  background:linear-gradient(135deg,var(--yellow),var(--cyan),var(--pink));-webkit-background-clip:text;color:transparent;
+}
+.teacher-list{max-width:850px;margin:18px auto 0;text-align:left}
+.teacher-list li{color:var(--muted);font-size:18px;line-height:1.8;margin:8px 0}
+@media(max-width:850px){
+  .app{width:100%;min-height:100vh;margin:0;border-radius:0}.screen{min-height:100vh;padding:20px}
+  .hero{grid-template-columns:1fr}.rule-grid,.result-grid,.options{grid-template-columns:1fr}.hud{grid-template-columns:1fr}.chips{justify-content:flex-start}
+  h1{font-size:40px}.preview{min-height:280px}.arena{min-height:330px}.figure{height:280px}
+}
 </style>
 </head>
 <body>
 <main class="app">
   <section id="home" class="screen active">
     <div class="topbar">
-      <div class="brand"><div class="logo">👁️</div><span>眼睛会骗人？视觉错觉挑战</span></div>
-      <div class="pill">科幻闯关版 · 难度升级</div>
+      <div class="brand"><div class="logo">👁️</div><span>视觉错觉挑战</span></div>
+      <div class="pill">眼睛会骗人？科幻闯关版</div>
     </div>
-
     <div class="hero">
       <div>
-        <h1>进入<span class="accent">感知迷宫</span><br>挑战你的眼睛</h1>
-        <p>你将依次闯过多道视觉错觉关卡。每一关都要快速做出判断：看起来更长？更大？还是一样？可别太相信第一眼，因为<span class="highlight">大脑会被背景和线索“骗到”</span>。</p>
-        <div class="feature-grid">
-          <div class="feature"><strong>6 道高难关卡</strong><span>长度、大小、透视、弯曲、平行与亮度错觉，一关比一关难。</span></div>
-          <div class="feature"><strong>计时 + 评分</strong><span>答得越快、连击越高，最后的“感知侦探等级”就越高。</span></div>
-          <div class="feature"><strong>夸张图片</strong><span>画面做得更戏剧化，孩子更容易产生“哇，居然被骗了”的感受。</span></div>
-          <div class="feature"><strong>即时讲解</strong><span>答完每一题会立刻揭晓答案，顺带解释为什么眼睛会被迷惑。</span></div>
+        <h1>进入<span class="cyan">视觉迷宫</span><br>看看大脑怎么猜</h1>
+        <p>这不是普通找不同，而是心理学里的视觉错觉体验。每一关都要判断：<span class="yellow">一样还是不一样？谁更长？谁更大？</span> 有些题真的一样，有些题真的不同。</p>
+        <div class="rule-grid">
+          <div class="rule-card"><strong>更合理的题目</strong><span>不会每题都“一样长”，里面混合了相等题和不相等题。</span></div>
+          <div class="rule-card"><strong>没有图中提示字</strong><span>图片区域不再写答案提示，只显示图形。</span></div>
+          <div class="rule-card"><strong>适合小学生</strong><span>题目有趣、直观，五六年级可以独立体验。</span></div>
+          <div class="rule-card"><strong>最后有报告</strong><span>显示正确率、用时、错觉识破等级和儿童版解释。</span></div>
         </div>
         <div class="btn-row">
-          <button onclick="startGame()">开始闯关</button>
-          <button class="secondary" onclick="show('teacher')">教师说明</button>
+          <button onclick="showRules()">开始挑战</button>
+          <button class="secondary" onclick="showTeacher()">教师说明</button>
         </div>
       </div>
-
-      <div class="preview-stack glass">
-        <div class="preview-card glass">
-          <h3>预览：你会不会被第一眼骗到？</h3>
-          <div class="preview-illusion" id="previewIllusion"></div>
-          <p style="font-size:16px;margin-top:0">示例：两个中间圆其实一样大，但周围环境会让它们看起来不同。</p>
-        </div>
-      </div>
+      <div class="glass preview" id="previewBox"></div>
     </div>
   </section>
 
@@ -307,41 +229,62 @@
       <div class="brand"><div class="logo">🧠</div><span>教师说明</span></div>
       <div class="pill">排队时也能玩</div>
     </div>
-    <div class="glass" style="max-width:920px; margin:16px auto 0">
-      <h2>这个网页版适合怎么用？</h2>
+    <div class="glass" style="max-width:920px;margin:22px auto 0">
+      <h2>视觉错觉任务在体验什么？</h2>
+      <p>孩子会发现：看到的不一定等于真实。大脑会根据背景、箭头、透视、周围大小和明暗对图形进行“猜测”。</p>
       <ul class="teacher-list">
-        <li><b>推荐形式：</b>一台电脑或平板给一组孩子玩，也可以投屏让全班先猜，再点答案。</li>
-        <li><b>游戏目标：</b>不是比“谁更聪明”，而是让孩子体验：为什么明明看起来不同，量出来却一样？</li>
-        <li><b>心理学发现：</b>看到的不一定等于真实。大脑会利用背景、透视、大小对比和经验，自动解释眼前的画面。</li>
-        <li><b>活动建议：</b>每关先让孩子讨论 10 秒，再提交答案；做完以后追问一句：“到底是眼睛错了，还是大脑在猜？”</li>
-        <li><b>延伸玩法：</b>做完网页闯关后，可以拿出尺子、透明片或打印卡片，让孩子再进行线下验证。</li>
+        <li><b>心理学概念：</b>视觉知觉、背景线索、大小恒常性、对比效应、透视线索。</li>
+        <li><b>儿童话术：</b>眼睛像摄像头，但大脑像小侦探，它会根据背景猜答案，有时猜对，有时猜错。</li>
+        <li><b>现场玩法：</b>让孩子先投票，再点答案；答错也不用评价“笨”，而是问“是什么线索骗了你？”</li>
+        <li><b>科普重点：</b>错觉不是眼睛坏了，而是大脑在努力解释世界。</li>
       </ul>
       <div class="btn-row">
-        <button onclick="startGame()">开始闯关</button>
+        <button onclick="showRules()">开始挑战</button>
         <button class="secondary" onclick="show('home')">返回首页</button>
       </div>
     </div>
   </section>
 
+  <section id="rules" class="screen">
+    <div class="topbar">
+      <div class="brand"><div class="logo">🚦</div><span>挑战规则</span></div>
+      <div class="pill">8 关 · 约 2 分钟</div>
+    </div>
+    <div class="glass" style="max-width:900px;margin:34px auto 0;text-align:center">
+      <h2>仔细看图，选择你认为最合理的答案</h2>
+      <p>注意：这次题目里既有“真的一样”，也有“真的不一样”。不要默认全部一样。</p>
+      <div class="rule-grid">
+        <div class="rule-card"><strong>先观察</strong><span>先看整体，再看局部，不要只凭第一眼。</span></div>
+        <div class="rule-card"><strong>再判断</strong><span>选择上面/下面/左边/右边/一样等答案。</span></div>
+        <div class="rule-card"><strong>答完揭秘</strong><span>每题会告诉你真实答案和为什么容易看错。</span></div>
+        <div class="rule-card"><strong>最后总结</strong><span>看看你是不是“视觉侦探”。</span></div>
+      </div>
+      <div class="note">小提示：很多错觉利用的是背景线索，所以“看起来”不一定等于“量出来”。</div>
+      <div class="btn-row" style="justify-content:center">
+        <button onclick="startGame()">我准备好了</button>
+      </div>
+    </div>
+  </section>
+
   <section id="game" class="screen">
-    <div class="game-wrap">
+    <div class="game">
       <div class="topbar" style="margin-bottom:0">
-        <div class="brand"><div class="logo">🎮</div><span>视觉错觉闯关中</span></div>
-        <div class="pill" id="timerPill">剩余时间：20s</div>
+        <div class="brand"><div class="logo">🎮</div><span>视觉迷宫闯关中</span></div>
+        <div class="pill" id="timerPill">观察中</div>
       </div>
 
       <div class="hud">
         <div>
           <div class="hud-title">
-            <span id="levelTitle">第 1 关 / 6</span>
+            <span id="levelText">第 1 关 / 8</span>
             <span id="comboText">连击：0</span>
           </div>
           <div class="progress"><div id="progressBar"></div></div>
         </div>
-        <div class="stats">
-          <div class="stat"><b id="scoreStat">0</b><span>当前积分</span></div>
-          <div class="stat"><b id="rightStat">0</b><span>答对题数</span></div>
-          <div class="stat"><b id="accStat">0%</b><span>正确率</span></div>
+        <div class="chips">
+          <div class="chip"><b id="scoreChip">0</b><span>当前积分</span></div>
+          <div class="chip"><b id="rightChip">0</b><span>答对题数</span></div>
+          <div class="chip"><b id="accChip">0%</b><span>正确率</span></div>
         </div>
       </div>
 
@@ -351,14 +294,14 @@
       </div>
 
       <div class="arena">
-        <div id="illusionStage"></div>
+        <div class="figure" id="figure"></div>
       </div>
 
       <div>
-        <div class="choices" id="choiceArea"></div>
-        <div class="feedback neutral" id="feedback">准备好了吗？观察图形，选出你觉得最合理的答案。</div>
-        <div class="btn-row" id="nextArea" style="justify-content:center; display:none;">
-          <button onclick="nextRound()">下一关</button>
+        <div class="options" id="options"></div>
+        <div class="feedback neutral" id="feedback">仔细观察，选择你觉得最合理的答案。</div>
+        <div class="btn-row" id="nextArea" style="justify-content:center;display:none">
+          <button onclick="nextQuestion()">下一关</button>
         </div>
       </div>
     </div>
@@ -366,25 +309,22 @@
 
   <section id="result" class="screen">
     <div class="topbar">
-      <div class="brand"><div class="logo">🏆</div><span>感知迷宫通关</span></div>
-      <div class="pill">结果报告</div>
+      <div class="brand"><div class="logo">🏆</div><span>挑战完成</span></div>
+      <div class="pill">视觉侦探报告</div>
     </div>
-
-    <div class="glass" style="max-width:960px; margin:10px auto 0; text-align:center">
-      <h2>挑战完成！</h2>
-      <div class="big-score" id="finalGrade">A级</div>
+    <div class="glass" style="max-width:980px;margin:16px auto 0;text-align:center">
+      <h2>视觉错觉挑战完成！</h2>
+      <div class="big-score" id="gradeText">A级</div>
       <p id="resultSentence">你的视觉侦探报告已生成。</p>
 
       <div class="result-grid">
-        <div class="result-card"><div class="num" id="finalScore">0</div><div class="label">总积分</div></div>
-        <div class="result-card"><div class="num" id="finalRight">0</div><div class="label">答对题数</div></div>
-        <div class="result-card"><div class="num" id="finalAcc">0%</div><div class="label">正确率</div></div>
-        <div class="result-card"><div class="num" id="finalTime">0s</div><div class="label">总用时</div></div>
+        <div class="result-card"><div class="label">总积分</div><div class="num" id="finalScore">0</div></div>
+        <div class="result-card"><div class="label">答对题数</div><div class="num" id="finalRight">0/8</div></div>
+        <div class="result-card"><div class="label">正确率</div><div class="num" id="finalAcc">0%</div></div>
+        <div class="result-card"><div class="label">总用时</div><div class="num" id="finalTime">0s</div></div>
       </div>
 
-      <div class="feedback neutral" style="min-height:auto">
-        心理学小发现：<b>视觉不是照相机。</b> 我们的大脑会根据背景、透视、环境大小和明暗线索自动做判断，所以“看起来”并不总等于“真实”。
-      </div>
+      <div class="note">心理学小发现：视觉错觉说明大脑不是简单“拍照”，而是在根据背景和经验解释图像。有时候这种解释很聪明，有时候也会被线索骗到。</div>
 
       <div class="btn-row" style="justify-content:center">
         <button onclick="startGame()">再挑战一次</button>
@@ -395,340 +335,314 @@
 </main>
 
 <script>
-const CHALLENGES = [
-  {
-    id:'muller',
-    title:'第 1 关：箭头长度陷阱',
-    subtitle:'上面的线更长、下面的线更长，还是其实一样长？',
-    time:20,
-    options:[
-      {label:'上面更长', key:'top', hint:'感觉上面的更长'},
-      {label:'下面更长', key:'bottom', hint:'感觉下面的更长'},
-      {label:'一样长', key:'same', hint:'我觉得其实一样'}
-    ],
-    answer:'same',
-    explain:'两条主线其实一样长。箭头朝外和朝内，会让大脑误判线段长度。',
-    render:() => `
-      <svg viewBox="0 0 760 320" width="100%" height="100%">
-        <defs>
-          <filter id="glow1"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-        </defs>
-        <rect x="0" y="0" width="760" height="320" rx="26" fill="rgba(255,255,255,.02)"/>
-        <g filter="url(#glow1)" stroke-linecap="round" stroke-width="10">
-          <line x1="170" y1="110" x2="590" y2="110" stroke="#76f1ff"/>
-          <line x1="170" y1="110" x2="120" y2="72" stroke="#76f1ff"/>
-          <line x1="170" y1="110" x2="120" y2="148" stroke="#76f1ff"/>
-          <line x1="590" y1="110" x2="640" y2="72" stroke="#76f1ff"/>
-          <line x1="590" y1="110" x2="640" y2="148" stroke="#76f1ff"/>
-
-          <line x1="170" y1="220" x2="590" y2="220" stroke="#ff89bc"/>
-          <line x1="170" y1="220" x2="214" y2="184" stroke="#ff89bc"/>
-          <line x1="170" y1="220" x2="214" y2="256" stroke="#ff89bc"/>
-          <line x1="590" y1="220" x2="546" y2="184" stroke="#ff89bc"/>
-          <line x1="590" y1="220" x2="546" y2="256" stroke="#ff89bc"/>
-        </g>
-        <text x="170" y="55" fill="#d8fbff" font-size="28" font-weight="800">第一眼常常会看错</text>
-      </svg>`
-  },
-  {
-    id:'ebbinghaus',
-    title:'第 2 关：中心圆大小陷阱',
-    subtitle:'左边和右边中间的黄色圆，哪个更大？',
-    time:18,
-    options:[
-      {label:'左边更大', key:'left', hint:'左边中间圆更大'},
-      {label:'右边更大', key:'right', hint:'右边中间圆更大'},
-      {label:'一样大', key:'same', hint:'两个其实一样'}
-    ],
-    answer:'same',
-    explain:'两个中间圆一样大。周围的大圆和小圆，改变了你对中心圆大小的感觉。',
-    render:() => {
-      const big = Array.from({length:8}, (_,k)=>{
-        const a=Math.PI*2*k/8, r=96, x=190+r*Math.cos(a), y=180+r*Math.sin(a);
-        return `<circle cx="${x}" cy="${y}" r="46" fill="#75c7ff" opacity=".82"/>`;
-      }).join('');
-      const small = Array.from({length:11}, (_,k)=>{
-        const a=Math.PI*2*k/11, r=94, x=560+r*Math.cos(a), y=180+r*Math.sin(a);
-        return `<circle cx="${x}" cy="${y}" r="18" fill="#75c7ff" opacity=".86"/>`;
-      }).join('');
-      return `
-      <svg viewBox="0 0 760 340" width="100%" height="100%">
-        <rect x="0" y="0" width="760" height="340" rx="26" fill="rgba(255,255,255,.02)"/>
-        ${big}${small}
-        <circle cx="190" cy="180" r="44" fill="#ffd45e" stroke="#ffefb8" stroke-width="4"/>
-        <circle cx="560" cy="180" r="44" fill="#ffd45e" stroke="#ffefb8" stroke-width="4"/>
-      </svg>`;
-    }
-  },
-  {
-    id:'ponzo',
-    title:'第 3 关：透视铁轨陷阱',
-    subtitle:'上面的红线更长、下面的红线更长，还是一样长？',
-    time:18,
-    options:[
-      {label:'上面更长', key:'top', hint:'透视里上面更长'},
-      {label:'下面更长', key:'bottom', hint:'下面看起来更长'},
-      {label:'一样长', key:'same', hint:'其实一样'}
-    ],
-    answer:'same',
-    explain:'两条红线一样长。透视背景让上面的线看起来更远，也更长。',
-    render:() => {
-      let tracks = '';
-      for(let i=0;i<10;i++){
-        const y=86+i*25;
-        const t=(y-68)/(300-68);
-        const lx=360-(52+(260*t));
-        const rx=400+(52+(260*t));
-        tracks += `<line x1="${lx}" y1="${y}" x2="${rx}" y2="${y}" stroke="rgba(220,230,255,.4)" stroke-width="3"/>`;
-      }
-      return `
-      <svg viewBox="0 0 760 340" width="100%" height="100%">
-        <rect x="0" y="0" width="760" height="340" rx="26" fill="rgba(255,255,255,.02)"/>
-        <line x1="160" y1="304" x2="344" y2="54" stroke="#89a8ff" stroke-width="7"/>
-        <line x1="600" y1="304" x2="416" y2="54" stroke="#89a8ff" stroke-width="7"/>
-        ${tracks}
-        <line x1="286" y1="130" x2="474" y2="130" stroke="#ff5f8f" stroke-width="15" stroke-linecap="round"/>
-        <line x1="286" y1="248" x2="474" y2="248" stroke="#ff5f8f" stroke-width="15" stroke-linecap="round"/>
-      </svg>`;
-    }
-  },
-  {
-    id:'hering',
-    title:'第 4 关：直线弯曲陷阱',
-    subtitle:'两条蓝色竖线看起来是弯的，还是其实是直的？',
-    time:16,
-    options:[
-      {label:'向外弯', key:'out', hint:'看起来往外鼓'},
-      {label:'向内弯', key:'in', hint:'看起来往里缩'},
-      {label:'其实是直的', key:'straight', hint:'我觉得其实直'}
-    ],
-    answer:'straight',
-    explain:'两条蓝线其实又直又平行。放射状背景会让大脑误以为直线在弯曲。',
-    render:() => {
-      let rays='';
-      for(let a=0;a<360;a+=8){
-        const rad=a*Math.PI/180, x=380+330*Math.cos(rad), y=170+330*Math.sin(rad);
-        rays += `<line x1="380" y1="170" x2="${x}" y2="${y}" stroke="rgba(255,255,255,.22)" stroke-width="2"/>`;
-      }
-      return `
-      <svg viewBox="0 0 760 340" width="100%" height="100%">
-        <rect x="0" y="0" width="760" height="340" rx="26" fill="rgba(255,255,255,.02)"/>
-        ${rays}
-        <line x1="282" y1="52" x2="282" y2="290" stroke="#6fe7ff" stroke-width="12" stroke-linecap="round"/>
-        <line x1="478" y1="52" x2="478" y2="290" stroke="#6fe7ff" stroke-width="12" stroke-linecap="round"/>
-      </svg>`;
-    }
-  },
-  {
-    id:'cafewall',
-    title:'第 5 关：平行线倾斜陷阱',
-    subtitle:'灰色横线看起来是斜的，还是其实平行？',
-    time:16,
-    options:[
-      {label:'向左斜', key:'leftTilt', hint:'整体像向左斜'},
-      {label:'向右斜', key:'rightTilt', hint:'整体像向右斜'},
-      {label:'其实平行', key:'parallel', hint:'我觉得其实平行'}
-    ],
-    answer:'parallel',
-    explain:'灰色横线其实彼此平行。黑白方块的错位会让平行线看起来倾斜。',
-    render:() => {
-      let rows='';
-      const tileW=76, tileH=42, startX=120, startY=58;
-      for(let r=0;r<6;r++){
-        const offset=(r%2)*38;
-        const y=startY+r*52;
-        rows += `<rect x="${startX-12}" y="${y-8}" width="536" height="8" fill="#a5a7b7"/>`;
-        for(let c=0;c<6;c++){
-          const x=startX+offset+c*tileW;
-          const fill=((c+r)%2===0)?'#111421':'#f2f5ff';
-          rows += `<rect x="${x}" y="${y}" width="${tileW}" height="${tileH}" fill="${fill}" stroke="rgba(255,255,255,.25)" stroke-width="1"/>`;
-        }
-      }
-      rows += `<rect x="${startX-12}" y="${startY+6*52-8}" width="536" height="8" fill="#a5a7b7"/>`;
-      return `<svg viewBox="0 0 760 340" width="100%" height="100%">
-        <rect x="0" y="0" width="760" height="340" rx="26" fill="rgba(255,255,255,.02)"/>
-        ${rows}
-      </svg>`;
-    }
-  },
-  {
-    id:'contrast',
-    title:'第 6 关：明暗亮度陷阱',
-    subtitle:'左右两个中心灰块，哪个更深？',
-    time:16,
-    options:[
-      {label:'左边更深', key:'left', hint:'左边看起来更深'},
-      {label:'右边更深', key:'right', hint:'右边看起来更深'},
-      {label:'一样深', key:'same', hint:'我觉得其实一样'}
-    ],
-    answer:'same',
-    explain:'两个中心灰块是同一种颜色。背景一明一暗，会让同样的灰看起来深浅不同。',
-    render:() => `
-      <svg viewBox="0 0 760 340" width="100%" height="100%">
-        <rect x="0" y="0" width="760" height="340" rx="26" fill="rgba(255,255,255,.02)"/>
-        <rect x="110" y="80" width="220" height="180" rx="22" fill="#202531"/>
-        <rect x="430" y="80" width="220" height="180" rx="22" fill="#eef2fb"/>
-        <rect x="180" y="135" width="80" height="70" rx="10" fill="#8b8f98" stroke="rgba(255,255,255,.38)" stroke-width="3"/>
-        <rect x="500" y="135" width="80" height="70" rx="10" fill="#8b8f98" stroke="rgba(0,0,0,.15)" stroke-width="3"/>
-      </svg>`
-  }
-];
-
 let current = 0;
 let score = 0;
 let right = 0;
 let combo = 0;
-let totalTimeSpent = 0;
-let timeLeft = 0;
-let timer = null;
+let startTime = 0;
 let answered = false;
-let answerStart = 0;
 
 function $(id){ return document.getElementById(id); }
 function show(id){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  $(id).classList.add('active');
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  $(id).classList.add("active");
 }
+
+function glowDefs(){
+  return `<defs>
+    <filter id="glow"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="soft"><feGaussianBlur stdDeviation="2"/></filter>
+  </defs>`;
+}
+
+function mullerSvg(equal=true){
+  const topLen = equal ? [170,590] : [130,630];
+  const botLen = equal ? [170,590] : [230,530];
+  return `<svg viewBox="0 0 760 320">${glowDefs()}
+    <rect width="760" height="320" rx="26" fill="rgba(255,255,255,.02)"/>
+    <g filter="url(#glow)" stroke-linecap="round" stroke-width="10">
+      <line x1="${topLen[0]}" y1="105" x2="${topLen[1]}" y2="105" stroke="#6fe7ff"/>
+      <line x1="${topLen[0]}" y1="105" x2="${topLen[0]-52}" y2="66" stroke="#6fe7ff"/>
+      <line x1="${topLen[0]}" y1="105" x2="${topLen[0]-52}" y2="144" stroke="#6fe7ff"/>
+      <line x1="${topLen[1]}" y1="105" x2="${topLen[1]+52}" y2="66" stroke="#6fe7ff"/>
+      <line x1="${topLen[1]}" y1="105" x2="${topLen[1]+52}" y2="144" stroke="#6fe7ff"/>
+
+      <line x1="${botLen[0]}" y1="225" x2="${botLen[1]}" y2="225" stroke="#ff7eb6"/>
+      <line x1="${botLen[0]}" y1="225" x2="${botLen[0]+48}" y2="187" stroke="#ff7eb6"/>
+      <line x1="${botLen[0]}" y1="225" x2="${botLen[0]+48}" y2="263" stroke="#ff7eb6"/>
+      <line x1="${botLen[1]}" y1="225" x2="${botLen[1]-48}" y2="187" stroke="#ff7eb6"/>
+      <line x1="${botLen[1]}" y1="225" x2="${botLen[1]-48}" y2="263" stroke="#ff7eb6"/>
+    </g>
+  </svg>`;
+}
+
+function circleSvg(equal=true){
+  const leftR= equal ? 45 : 38;
+  const rightR= equal ? 45 : 55;
+  let big = "", small = "";
+  for(let k=0;k<8;k++){
+    const a=Math.PI*2*k/8, r=98, x=200+r*Math.cos(a), y=170+r*Math.sin(a);
+    big += `<circle cx="${x}" cy="${y}" r="44" fill="#6fe7ff" opacity=".78"/>`;
+  }
+  for(let k=0;k<11;k++){
+    const a=Math.PI*2*k/11, r=96, x=560+r*Math.cos(a), y=170+r*Math.sin(a);
+    small += `<circle cx="${x}" cy="${y}" r="17" fill="#6fe7ff" opacity=".86"/>`;
+  }
+  return `<svg viewBox="0 0 760 340">${glowDefs()}
+    <rect width="760" height="340" rx="26" fill="rgba(255,255,255,.02)"/>
+    ${big}${small}
+    <circle cx="200" cy="170" r="${leftR}" fill="#ffd45e" stroke="#fff4bd" stroke-width="5" filter="url(#glow)"/>
+    <circle cx="560" cy="170" r="${rightR}" fill="#ffd45e" stroke="#fff4bd" stroke-width="5" filter="url(#glow)"/>
+  </svg>`;
+}
+
+function ponzoSvg(equal=true){
+  let tracks = "";
+  for(let i=0;i<10;i++){
+    const y=74+i*26;
+    const t=(y-56)/(308-56);
+    const lx=360-(50+(265*t));
+    const rx=400+(50+(265*t));
+    tracks += `<line x1="${lx}" y1="${y}" x2="${rx}" y2="${y}" stroke="rgba(220,230,255,.38)" stroke-width="3"/>`;
+  }
+  const top = equal ? [286,474] : [308,452];
+  const bot = equal ? [286,474] : [270,490];
+  return `<svg viewBox="0 0 760 340">${glowDefs()}
+    <rect width="760" height="340" rx="26" fill="rgba(255,255,255,.02)"/>
+    <line x1="150" y1="310" x2="344" y2="54" stroke="#89a8ff" stroke-width="7"/>
+    <line x1="610" y1="310" x2="416" y2="54" stroke="#89a8ff" stroke-width="7"/>
+    ${tracks}
+    <line x1="${top[0]}" y1="132" x2="${top[1]}" y2="132" stroke="#ff4d6d" stroke-width="15" stroke-linecap="round" filter="url(#glow)"/>
+    <line x1="${bot[0]}" y1="252" x2="${bot[1]}" y2="252" stroke="#ff4d6d" stroke-width="15" stroke-linecap="round" filter="url(#glow)"/>
+  </svg>`;
+}
+
+function heringSvg(){
+  let rays = "";
+  for(let a=0;a<360;a+=8){
+    const rad=a*Math.PI/180, x=380+340*Math.cos(rad), y=170+340*Math.sin(rad);
+    rays += `<line x1="380" y1="170" x2="${x}" y2="${y}" stroke="rgba(255,255,255,.21)" stroke-width="2"/>`;
+  }
+  return `<svg viewBox="0 0 760 340">${glowDefs()}
+    <rect width="760" height="340" rx="26" fill="rgba(255,255,255,.02)"/>
+    ${rays}
+    <line x1="285" y1="52" x2="285" y2="292" stroke="#6fe7ff" stroke-width="13" stroke-linecap="round" filter="url(#glow)"/>
+    <line x1="475" y1="52" x2="475" y2="292" stroke="#6fe7ff" stroke-width="13" stroke-linecap="round" filter="url(#glow)"/>
+  </svg>`;
+}
+
+function brightnessSvg(){
+  return `<svg viewBox="0 0 760 340">${glowDefs()}
+    <rect width="760" height="340" rx="26" fill="rgba(255,255,255,.02)"/>
+    <rect x="105" y="80" width="235" height="180" rx="24" fill="#121827"/>
+    <rect x="420" y="80" width="235" height="180" rx="24" fill="#eef4ff"/>
+    <rect x="183" y="135" width="82" height="70" rx="12" fill="#8b8f98" stroke="rgba(255,255,255,.4)" stroke-width="3"/>
+    <rect x="498" y="135" width="82" height="70" rx="12" fill="#8b8f98" stroke="rgba(0,0,0,.18)" stroke-width="3"/>
+  </svg>`;
+}
+
+function cafeSvg(){
+  let rows="";
+  const tileW=76, tileH=38, startX=120, startY=60;
+  for(let r=0;r<7;r++){
+    const offset=(r%2)*38;
+    const y=startY+r*46;
+    rows += `<rect x="${startX-18}" y="${y-7}" width="560" height="7" fill="#a9adbd"/>`;
+    for(let c=0;c<7;c++){
+      const x=startX+offset+c*tileW;
+      const fill=((c+r)%2===0)?"#111421":"#f2f5ff";
+      rows += `<rect x="${x}" y="${y}" width="${tileW}" height="${tileH}" fill="${fill}" stroke="rgba(255,255,255,.22)" stroke-width="1"/>`;
+    }
+  }
+  rows += `<rect x="${startX-18}" y="${startY+7*46-7}" width="560" height="7" fill="#a9adbd"/>`;
+  return `<svg viewBox="0 0 760 340">${glowDefs()}
+    <rect width="760" height="340" rx="26" fill="rgba(255,255,255,.02)"/>
+    ${rows}
+  </svg>`;
+}
+
+const QUESTIONS = [
+  {
+    title:"第 1 关：箭头长度陷阱",
+    text:"上面的线更长、下面的线更长，还是其实一样长？",
+    svg:()=>mullerSvg(true),
+    options:[["top","上面更长","感觉蓝色更长"],["bottom","下面更长","感觉粉色更长"],["same","一样长","我觉得一样"]],
+    answer:"same",
+    explain:"两条主线其实一样长。箭头方向会影响大脑对长度的判断。"
+  },
+  {
+    title:"第 2 关：真的有长有短",
+    text:"这次不要默认一样长，哪条主线更长？",
+    svg:()=>mullerSvg(false),
+    options:[["top","上面更长","蓝色主线更长"],["bottom","下面更长","粉色主线更长"],["same","一样长","两条一样"]],
+    answer:"top",
+    explain:"这次上面的蓝色主线真的更长。错觉题里也可能出现真实差异，所以要仔细看。"
+  },
+  {
+    title:"第 3 关：中心圆大小陷阱",
+    text:"左边和右边的黄色中心圆，哪个更大？",
+    svg:()=>circleSvg(true),
+    options:[["left","左边更大","左边中心圆更大"],["right","右边更大","右边中心圆更大"],["same","一样大","两个一样"]],
+    answer:"same",
+    explain:"两个中心圆一样大。周围圆的大小会改变我们对中心圆的感觉。"
+  },
+  {
+    title:"第 4 关：大小真的不同",
+    text:"这一次两个中心圆真的一样大吗？",
+    svg:()=>circleSvg(false),
+    options:[["left","左边更大","左边中心圆更大"],["right","右边更大","右边中心圆更大"],["same","一样大","两个一样"]],
+    answer:"right",
+    explain:"这次右边的黄色中心圆真的更大。不要只靠错觉经验，要观察真实大小。"
+  },
+  {
+    title:"第 5 关：透视铁轨陷阱",
+    text:"上面的红线更长、下面的红线更长，还是一样长？",
+    svg:()=>ponzoSvg(true),
+    options:[["top","上面更长","上面红线更长"],["bottom","下面更长","下面红线更长"],["same","一样长","两条一样"]],
+    answer:"same",
+    explain:"两条红线其实一样长。透视背景让上方线条看起来更远，也更容易被判断为更长。"
+  },
+  {
+    title:"第 6 关：透视里的真实差异",
+    text:"这次两条红线哪一条更长？",
+    svg:()=>ponzoSvg(false),
+    options:[["top","上面更长","上面红线更长"],["bottom","下面更长","下面红线更长"],["same","一样长","两条一样"]],
+    answer:"bottom",
+    explain:"这次下面的红线真的更长。透视背景会干扰判断，但真实长度也可能不同。"
+  },
+  {
+    title:"第 7 关：直线弯曲陷阱",
+    text:"两条蓝色竖线是弯的，还是其实是直的？",
+    svg:()=>heringSvg(),
+    options:[["out","向外弯","看起来往外鼓"],["in","向内弯","看起来往里缩"],["straight","其实是直的","直线没有弯"]],
+    answer:"straight",
+    explain:"两条蓝线其实是直的。放射状背景会让大脑误以为直线发生了弯曲。"
+  },
+  {
+    title:"第 8 关：明暗背景陷阱",
+    text:"左右两个中间灰块，哪个更深？",
+    svg:()=>brightnessSvg(),
+    options:[["left","左边更深","左边灰块更深"],["right","右边更深","右边灰块更深"],["same","一样深","颜色一样"]],
+    answer:"same",
+    explain:"两个灰块是同一种颜色。背景一明一暗，会让同样的灰色看起来不同。"
+  },
+  {
+    title:"加分关：平行线倾斜陷阱",
+    text:"这些灰色横线是斜的，还是其实平行？",
+    svg:()=>cafeSvg(),
+    options:[["left","向左斜","整体向左歪"],["right","向右斜","整体向右歪"],["parallel","其实平行","横线是平行的"]],
+    answer:"parallel",
+    explain:"灰色横线其实是平行的。黑白方块错位会让平行线看起来像倾斜了。"
+  }
+];
+
+function showRules(){ show("rules"); }
+function showTeacher(){ show("teacher"); }
+
 function preview(){
-  // use challenge 2 preview
-  $('previewIllusion').innerHTML = CHALLENGES[1].render();
+  $("previewBox").innerHTML = `<svg viewBox="0 0 760 340" style="width:100%;max-width:480px;position:relative;z-index:1">${glowDefs()}
+    <rect width="760" height="340" rx="28" fill="rgba(255,255,255,.03)"/>
+    <line x1="165" y1="125" x2="595" y2="125" stroke="#6fe7ff" stroke-width="12" stroke-linecap="round" filter="url(#glow)"/>
+    <line x1="220" y1="220" x2="540" y2="220" stroke="#ff7eb6" stroke-width="12" stroke-linecap="round" filter="url(#glow)"/>
+    <circle cx="160" cy="125" r="16" fill="#6fe7ff"/>
+    <circle cx="600" cy="125" r="16" fill="#6fe7ff"/>
+    <circle cx="215" cy="220" r="16" fill="#ff7eb6"/>
+    <circle cx="545" cy="220" r="16" fill="#ff7eb6"/>
+  </svg>`;
 }
 preview();
 
 function startGame(){
-  current = 0; score = 0; right = 0; combo = 0; totalTimeSpent = 0;
-  show('game');
-  renderRound();
+  current = 0; score = 0; right = 0; combo = 0; answered = false; startTime = Date.now();
+  show("game");
+  renderQuestion();
 }
-function renderRound(){
-  clearInterval(timer);
+
+function renderQuestion(){
+  const q = QUESTIONS[current];
   answered = false;
-  const c = CHALLENGES[current];
-  timeLeft = c.time;
-  answerStart = Date.now();
+  $("levelText").textContent = `第 ${current+1} 关 / ${QUESTIONS.length}`;
+  $("comboText").textContent = `连击：${combo}`;
+  $("progressBar").style.width = `${current / QUESTIONS.length * 100}%`;
+  $("scoreChip").textContent = score;
+  $("rightChip").textContent = right;
+  $("accChip").textContent = `${current ? Math.round(right/current*100) : 0}%`;
+  $("questionTitle").textContent = q.title;
+  $("questionText").textContent = q.text;
+  $("figure").innerHTML = q.svg();
+  $("feedback").className = "feedback neutral";
+  $("feedback").textContent = "仔细观察，选择你觉得最合理的答案。";
+  $("nextArea").style.display = "none";
+  $("timerPill").textContent = "观察中";
 
-  $('levelTitle').textContent = `第 ${current+1} 关 / ${CHALLENGES.length}`;
-  $('questionTitle').textContent = c.title;
-  $('questionText').textContent = c.subtitle;
-  $('illusionStage').innerHTML = c.render();
-  $('feedback').className = 'feedback neutral';
-  $('feedback').textContent = '仔细观察，选出你觉得最合理的答案。';
-  $('nextArea').style.display = 'none';
-  $('comboText').textContent = `连击：${combo}`;
-  $('scoreStat').textContent = score;
-  $('rightStat').textContent = right;
-  $('accStat').textContent = `${current===0?0:Math.round(right/current*100)}%`;
-  $('progressBar').style.width = `${(current/CHALLENGES.length)*100}%`;
-  $('timerPill').textContent = `剩余时间：${timeLeft}s`;
-
-  $('choiceArea').innerHTML = c.options.map((op, idx)=>`
-    <button class="choice" id="choice-${idx}" onclick="choose('${op.key}', ${idx})">
-      <strong>${op.label}</strong>
-      <small>${op.hint}</small>
+  $("options").innerHTML = q.options.map((op,i)=>`
+    <button class="choice" id="choice-${i}" onclick="choose('${op[0]}', ${i})">
+      <b>${op[1]}</b><small>${op[2]}</small>
     </button>
-  `).join('');
-
-  timer = setInterval(() => {
-    timeLeft--;
-    $('timerPill').textContent = `剩余时间：${timeLeft}s`;
-    if(timeLeft <= 0){
-      clearInterval(timer);
-      timeoutRound();
-    }
-  }, 1000);
+  `).join("");
 }
-function timeoutRound(){
+
+function choose(key, index){
   if(answered) return;
   answered = true;
-  combo = 0;
-  totalTimeSpent += CHALLENGES[current].time;
-  showAnswerState(null, false, true);
-}
-function choose(key, idx){
-  if(answered) return;
-  answered = true;
-  clearInterval(timer);
+  const q = QUESTIONS[current];
+  const ok = key === q.answer;
 
-  const c = CHALLENGES[current];
-  const spent = c.time - timeLeft;
-  totalTimeSpent += spent;
-  const isRight = key === c.answer;
-  if(isRight){
-    right++;
-    combo++;
-    score += 100 + Math.max(0, timeLeft*8) + combo*18;
-  }else{
-    combo = 0;
-  }
-  showAnswerState(idx, isRight, false);
-}
-function showAnswerState(selectedIdx, isRight, timeouted){
-  const c = CHALLENGES[current];
-
-  c.options.forEach((op, i) => {
-    const btn = $(`choice-${i}`);
+  q.options.forEach((op,i)=>{
+    const btn = $("choice-"+i);
     btn.disabled = true;
-    if(op.key === c.answer) btn.classList.add('correct');
-    if(selectedIdx === i && op.key !== c.answer) btn.classList.add('wrong');
+    if(op[0] === q.answer) btn.classList.add("correct");
+    if(i === index && !ok) btn.classList.add("wrong");
   });
 
-  $('scoreStat').textContent = score;
-  $('rightStat').textContent = right;
-  $('accStat').textContent = `${Math.round(right/(current+1)*100)}%`;
-  $('comboText').textContent = `连击：${combo}`;
-
-  if(timeouted){
-    $('feedback').className = 'feedback bad';
-    $('feedback').innerHTML = `时间到！<br>正确答案是：<b>${labelByKey(c, c.answer)}</b>。<br>${c.explain}`;
-  }else if(isRight){
-    $('feedback').className = 'feedback good';
-    $('feedback').innerHTML = `答对啦！<br>${c.explain}`;
+  if(ok){
+    right++; combo++; score += 100 + combo*15;
+    $("feedback").className = "feedback good";
+    $("feedback").innerHTML = `答对啦！<br>${q.explain}`;
   }else{
-    $('feedback').className = 'feedback bad';
-    $('feedback').innerHTML = `这次被“骗到”了。<br>正确答案是：<b>${labelByKey(c, c.answer)}</b>。<br>${c.explain}`;
+    combo = 0;
+    $("feedback").className = "feedback bad";
+    $("feedback").innerHTML = `这次被“骗到”了。<br>正确答案：${q.options.find(x=>x[0]===q.answer)[1]}。<br>${q.explain}`;
   }
 
-  $('progressBar').style.width = `${((current+1)/CHALLENGES.length)*100}%`;
+  $("scoreChip").textContent = score;
+  $("rightChip").textContent = right;
+  $("accChip").textContent = `${Math.round(right/(current+1)*100)}%`;
+  $("comboText").textContent = `连击：${combo}`;
+  $("progressBar").style.width = `${(current+1) / QUESTIONS.length * 100}%`;
 
-  if(current < CHALLENGES.length - 1){
-    $('nextArea').style.display = 'flex';
-  }else{
-    $('nextArea').style.display = 'flex';
-    $('nextArea').innerHTML = '<button onclick="finishGame()">查看总结果</button>';
-  }
+  $("nextArea").style.display = "flex";
+  $("nextArea").innerHTML = current === QUESTIONS.length - 1
+    ? `<button onclick="showResult()">查看总结果</button>`
+    : `<button onclick="nextQuestion()">下一关</button>`;
 }
-function labelByKey(ch, key){
-  const found = ch.options.find(o => o.key === key);
-  return found ? found.label : key;
-}
-function nextRound(){
+
+function nextQuestion(){
   current++;
-  renderRound();
+  renderQuestion();
 }
-function finishGame(){
-  clearInterval(timer);
-  const acc = Math.round(right/CHALLENGES.length*100);
-  let grade = 'C级';
-  if(acc >= 90) grade = 'S级';
-  else if(acc >= 75) grade = 'A级';
-  else if(acc >= 60) grade = 'B级';
 
-  $('finalGrade').textContent = grade;
-  $('finalScore').textContent = score;
-  $('finalRight').textContent = `${right}/${CHALLENGES.length}`;
-  $('finalAcc').textContent = `${acc}%`;
-  $('finalTime').textContent = `${totalTimeSpent}s`;
+function showResult(){
+  const acc = Math.round(right / QUESTIONS.length * 100);
+  const totalSec = Math.round((Date.now() - startTime) / 1000);
+  let grade = "C级";
+  if(acc >= 90) grade = "S级";
+  else if(acc >= 75) grade = "A级";
+  else if(acc >= 60) grade = "B级";
 
-  let sentence = '你已经成功走出感知迷宫。';
-  if(acc >= 90) sentence = '太厉害了！你是“超级视觉侦探”。';
-  else if(acc >= 75) sentence = '很棒！你的观察很敏锐，但有些图还是会骗过大脑。';
-  else if(acc >= 60) sentence = '不错！你已经开始发现：第一眼并不总可靠。';
-  else sentence = '没关系，视觉错觉本来就会“骗”大脑，重玩一次会更有感觉。';
-  $('resultSentence').textContent = sentence;
+  $("gradeText").textContent = grade;
+  $("finalScore").textContent = score;
+  $("finalRight").textContent = `${right}/${QUESTIONS.length}`;
+  $("finalAcc").textContent = `${acc}%`;
+  $("finalTime").textContent = `${totalSec}s`;
 
-  // restore nextArea default
-  $('nextArea').innerHTML = '<button onclick="nextRound()">下一关</button>';
-  show('result');
+  let sentence = "你的视觉侦探报告已生成。";
+  if(grade === "S级") sentence = "太厉害了！你很会识破视觉陷阱。";
+  else if(grade === "A级") sentence = "很棒！你能在大多数错觉里保持冷静观察。";
+  else if(grade === "B级") sentence = "不错！有些题本来就容易骗过大脑。";
+  else sentence = "没关系，视觉错觉就是专门用来骗大脑的。再玩一次会更有感觉。";
+  $("resultSentence").textContent = sentence;
+  show("result");
 }
 </script>
 </body>
