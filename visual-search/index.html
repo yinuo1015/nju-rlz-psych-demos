@@ -1,0 +1,620 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>哪里不一样｜视觉搜索挑战</title>
+<style>
+:root{
+  --bg:#050816;
+  --panel:#0b1026dd;
+  --card:#ffffff12;
+  --line:#7ee7ff33;
+  --text:#f4f8ff;
+  --muted:#aebbd3;
+  --cyan:#6fe7ff;
+  --green:#4df0a0;
+  --yellow:#ffd45e;
+  --pink:#ff7eb6;
+  --red:#ff4d6d;
+  --blue:#4f8cff;
+  --purple:#a78bfa;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  min-height:100vh;
+  font-family:"Microsoft YaHei",Arial,sans-serif;
+  color:var(--text);
+  background:
+    radial-gradient(circle at 16% 16%,#6fe7ff2b,transparent 25%),
+    radial-gradient(circle at 86% 18%,#ff7eb62b,transparent 25%),
+    radial-gradient(circle at 50% 105%,#4df0a022,transparent 30%),
+    linear-gradient(145deg,#050816,#0b1026 55%,#160820);
+  overflow-x:hidden;
+}
+body:before{
+  content:"";
+  position:fixed;
+  inset:0;
+  background:
+    radial-gradient(circle,#ffffffcc 1px,transparent 1.6px),
+    radial-gradient(circle,#6fe7ff99 1px,transparent 1.8px),
+    linear-gradient(90deg,transparent 49px,#6fe7ff0d 50px),
+    linear-gradient(transparent 49px,#6fe7ff0b 50px);
+  background-size:92px 92px,137px 137px,50px 50px,50px 50px;
+  background-position:0 0,21px 34px,0 0,0 0;
+  mask-image:linear-gradient(to bottom,#000,transparent 82%);
+  pointer-events:none;
+  animation:starDrift 32s linear infinite;
+}
+@keyframes starDrift{to{background-position:180px 240px,-120px 180px,0 0,0 0}}
+.app{
+  position:relative;
+  z-index:1;
+  width:min(1120px,95vw);
+  min-height:720px;
+  margin:24px auto;
+  border-radius:34px;
+  border:1px solid var(--line);
+  background:linear-gradient(180deg,#0c122ade,#060a1bc7);
+  box-shadow:0 28px 90px #0008,inset 0 0 0 1px #ffffff08;
+  overflow:hidden;
+}
+.app:before{
+  content:"";
+  position:absolute;left:0;right:0;top:0;height:4px;
+  background:linear-gradient(90deg,var(--cyan),var(--green),var(--yellow),var(--pink),var(--purple));
+  box-shadow:0 0 26px #6fe7ff99;
+}
+.screen{display:none;min-height:720px;padding:30px;position:relative}
+.screen.active{display:block;animation:enter .25s ease}
+@keyframes enter{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:18px}
+.brand{display:flex;align-items:center;gap:12px;font-weight:950;font-size:23px}
+.logo{
+  width:48px;height:48px;border-radius:18px;display:grid;place-items:center;
+  background:linear-gradient(135deg,var(--cyan),var(--green),var(--yellow));
+  color:#06111c;font-size:24px;box-shadow:0 0 28px #6fe7ff55;
+}
+.pill{
+  border-radius:999px;padding:9px 14px;background:#6fe7ff14;border:1px solid #6fe7ff33;
+  color:#dff8ff;font-weight:900;font-size:14px;white-space:nowrap;
+}
+.hero{display:grid;grid-template-columns:1.04fr .96fr;gap:28px;align-items:center;padding:18px 8px 0}
+h1{font-size:clamp(42px,6vw,74px);line-height:1.04;margin:0 0 18px;letter-spacing:-1.5px}
+h2{font-size:clamp(30px,4vw,48px);line-height:1.15;margin:0 0 14px}
+h3{font-size:24px;margin:0 0 10px}
+p{font-size:19px;line-height:1.75;color:var(--muted);margin:10px 0}
+.hl{color:#fff;text-shadow:0 0 20px #6fe7ff99}
+.yellow{color:var(--yellow);font-weight:950}
+.cyan{color:var(--cyan);font-weight:950}
+.pink{color:var(--pink);font-weight:950}
+.glass{
+  border-radius:28px;border:1px solid #ffffff18;background:linear-gradient(180deg,#142044bb,#071027aa);
+  padding:24px;box-shadow:0 18px 50px #0005,inset 0 0 28px #6fe7ff0a;
+}
+.rule-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin:22px 0}
+.rule-card{border-radius:22px;padding:18px;background:#ffffff10;border:1px solid #ffffff18}
+.rule-card strong{display:block;color:#fff;font-size:20px;margin-bottom:8px}
+.rule-card span{color:var(--muted);line-height:1.6}
+.btn-row{display:flex;gap:14px;flex-wrap:wrap;margin-top:26px}
+button,.btn{
+  appearance:none;border:0;cursor:pointer;border-radius:18px;padding:15px 22px;font-size:18px;font-weight:950;
+  color:#07111c;background:linear-gradient(135deg,var(--cyan),var(--green));
+  box-shadow:0 14px 30px #6fe7ff2a,inset 0 0 0 1px #ffffff26;
+  transition:transform .1s ease,filter .1s ease,opacity .1s ease;text-decoration:none;
+}
+button:hover,.btn:hover{transform:translateY(-1px);filter:brightness(1.04)}
+button:active,.btn:active{transform:translateY(1px) scale(.99)}
+.secondary{background:#ffffff12;color:var(--text);border:1px solid #ffffff20;box-shadow:none}
+.preview{min-height:430px;display:grid;place-items:center;position:relative;overflow:hidden}
+.preview:before{
+  content:"";position:absolute;width:420px;height:420px;border-radius:50%;
+  background:conic-gradient(from 0deg,#6fe7ff00,#6fe7ff40,#4df0a000,#ff7eb640,#6fe7ff00);
+  animation:spin 10s linear infinite;opacity:.7;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.preview-board{
+  position:relative;z-index:1;
+  display:grid;grid-template-columns:repeat(5,54px);gap:12px;
+  padding:20px;border-radius:28px;background:#ffffff0d;border:1px solid #ffffff18;
+  box-shadow:0 20px 50px #0006;
+}
+.preview-item{
+  width:54px;height:54px;border-radius:18px;display:grid;place-items:center;
+  background:#13214a;border:1px solid #6fe7ff30;font-size:28px;
+  box-shadow:inset 0 0 18px #6fe7ff12;
+}
+.preview-item.target{background:#4df0a01f;border-color:#4df0a080;box-shadow:0 0 22px #4df0a066}
+.note{
+  border-radius:20px;padding:16px 18px;background:#ffd45e18;border:1px solid #ffd45e40;
+  color:#ffeab0;font-size:17px;font-weight:850;line-height:1.7;margin-top:18px;
+}
+
+.game{
+  display:grid;
+  grid-template-rows:auto auto 1fr auto;
+  gap:15px;
+  min-height:650px;
+}
+.hud{display:grid;grid-template-columns:1fr auto;gap:16px;align-items:center}
+.hud-title{display:flex;justify-content:space-between;gap:12px;margin-bottom:9px;font-weight:900;color:#e5f8ff}
+.progress{height:13px;border-radius:999px;background:#ffffff12;border:1px solid #ffffff12;overflow:hidden}
+.progress div{height:100%;width:0%;background:linear-gradient(90deg,var(--cyan),var(--green),var(--yellow),var(--pink));box-shadow:0 0 18px #6fe7ffaa;transition:width .18s ease}
+.chips{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+.chip{min-width:108px;border-radius:16px;padding:10px 12px;text-align:center;background:#ffffff10;border:1px solid #ffffff18}
+.chip b{display:block;font-size:18px;color:#fff}.chip span{display:block;font-size:12px;color:var(--muted);font-weight:850;margin-top:2px}
+.mission{text-align:center}.mission h2{margin-bottom:8px}.mission p{margin:0;font-size:17px}
+.arena{
+  min-height:430px;display:grid;place-items:center;position:relative;border-radius:30px;
+  background:radial-gradient(circle at center,#6fe7ff12,transparent 55%),linear-gradient(180deg,#ffffff08,#ffffff03);
+  border:1px solid #6fe7ff24;overflow:hidden;padding:18px;
+}
+.arena:before{content:"";position:absolute;width:620px;height:620px;border-radius:50%;border:1px dashed #6fe7ff2e;animation:spin 18s linear infinite}
+.arena:after{content:"";position:absolute;width:440px;height:440px;border-radius:50%;border:1px solid #ff7eb625}
+.search-grid{
+  position:relative;z-index:1;
+  display:grid;gap:9px;
+  width:min(640px,100%);
+  margin:auto;
+}
+.cell{
+  aspect-ratio:1/1;
+  border-radius:16px;
+  border:1px solid #ffffff24;
+  color:#fff;
+  background:linear-gradient(180deg,#18244d,#0b1432);
+  display:grid;place-items:center;
+  box-shadow:0 12px 24px #0004,inset 0 0 24px #6fe7ff10;
+  user-select:none;
+  font-size:clamp(24px,4vw,42px);
+}
+.cell:hover{filter:brightness(1.12);transform:translateY(-1px)}
+.cell.correct{
+  color:#07111c;
+  background:linear-gradient(135deg,var(--cyan),var(--green));
+  box-shadow:0 0 28px #4df0a080;
+}
+.cell.wrong{animation:shake .18s ease;background:linear-gradient(135deg,#ff4d6d,#991b1b)}
+@keyframes shake{0%,100%{transform:translateX(0)}30%{transform:translateX(-5px)}70%{transform:translateX(5px)}}
+.shape{
+  width:72%;height:72%;
+  display:block;
+  filter:drop-shadow(0 0 12px currentColor);
+}
+.shape.circle{border-radius:50%}
+.shape.square{border-radius:18%}
+.shape.diamond{transform:rotate(45deg);border-radius:18%}
+.shape.triangle{
+  width:0;height:0;border-left:20px solid transparent;border-right:20px solid transparent;border-bottom:40px solid currentColor;
+  filter:drop-shadow(0 0 12px currentColor);
+}
+.shape.line{
+  width:76%;height:12%;border-radius:999px;
+}
+.shape.line.tilt{transform:rotate(35deg)}
+.shape.line.flat{transform:rotate(0deg)}
+.item-red{color:#ff4d6d;background:#ff4d6d}
+.item-blue{color:#4f8cff;background:#4f8cff}
+.item-green{color:#4df0a0;background:#4df0a0}
+.item-yellow{color:#ffd45e;background:#ffd45e}
+.feedback{
+  position:absolute;bottom:18px;left:50%;transform:translateX(-50%);
+  width:min(760px,90%);text-align:center;border-radius:20px;padding:12px 16px;
+  font-size:23px;font-weight:950;backdrop-filter:blur(8px);
+}
+.feedback.neutral{background:#6fe7ff14;border:1px solid #6fe7ff2c;color:#e3f8ff}
+.feedback.good{background:#4df0a01f;border:1px solid #4df0a04a;color:#dcffec}
+.feedback.bad{background:#ff4d6d1f;border:1px solid #ff4d6d4a;color:#ffdbe4}
+.result-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin:26px 0}
+.result-card{border-radius:22px;padding:20px;text-align:center;background:#ffffff10;border:1px solid #ffffff18}
+.result-card .num{font-size:42px;font-weight:1000;color:#fff;margin:6px 0}
+.result-card .label{color:var(--muted);font-weight:900;font-size:14px;line-height:1.45}
+.big-score{
+  font-size:clamp(64px,10vw,108px);line-height:1;font-weight:1000;margin:14px 0 10px;
+  background:linear-gradient(135deg,var(--yellow),var(--cyan),var(--pink));-webkit-background-clip:text;color:transparent;
+}
+.teacher-list{max-width:850px;margin:18px auto 0;text-align:left}
+.teacher-list li{color:var(--muted);font-size:18px;line-height:1.8;margin:8px 0}
+@media(max-width:850px){
+  .app{width:100%;min-height:100vh;margin:0;border-radius:0}.screen{min-height:100vh;padding:20px}
+  .hero{grid-template-columns:1fr}.rule-grid,.result-grid{grid-template-columns:1fr}.hud{grid-template-columns:1fr}.chips{justify-content:flex-start}
+  h1{font-size:40px}.preview{min-height:280px}.preview-board{grid-template-columns:repeat(5,42px);gap:8px}.preview-item{width:42px;height:42px;font-size:22px}
+  .arena{min-height:370px}.search-grid{gap:7px}.cell{border-radius:12px}
+}
+</style>
+</head>
+<body>
+<main class="app">
+  <section id="home" class="screen active">
+    <div class="topbar">
+      <div class="brand"><div class="logo">🔎</div><span>哪里不一样</span></div>
+      <div class="pill">视觉搜索 · 星际侦探任务</div>
+    </div>
+    <div class="hero">
+      <div>
+        <h1>化身<span class="cyan">星际侦探</span><br>找到那个不一样</h1>
+        <p>屏幕上会出现很多相似的目标。你的任务是尽快找到唯一不同的那个。这个任务可以体验<span class="yellow">视觉搜索</span>、注意力分配和目标特征识别。</p>
+        <div class="rule-grid">
+          <div class="rule-card"><strong>怎么玩？</strong><span>看清任务提示，在方格中点击唯一符合条件的目标。</span></div>
+          <div class="rule-card"><strong>有几类任务？</strong><span>简单特征搜索、方向搜索、组合搜索，难度逐步提升。</span></div>
+          <div class="rule-card"><strong>用时多久？</strong><span>练习 2 题，正式 12 题，通常 2–3 分钟完成。</span></div>
+          <div class="rule-card"><strong>看什么结果？</strong><span>正确率、平均反应时间、困难搜索耗时和视觉侦探等级。</span></div>
+        </div>
+        <div class="btn-row">
+          <button onclick="showRules()">开始任务</button>
+          <button class="secondary" onclick="showTeacher()">教师说明</button>
+        </div>
+      </div>
+      <div class="glass preview">
+        <div class="preview-board" id="previewBoard"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="teacher" class="screen">
+    <div class="topbar">
+      <div class="brand"><div class="logo">🧠</div><span>教师说明</span></div>
+      <div class="pill">适合五六年级 · 小桌体验</div>
+    </div>
+    <div class="glass" style="max-width:920px;margin:22px auto 0">
+      <h2>视觉搜索任务在体验什么？</h2>
+      <p>视觉搜索任务让孩子在多个干扰项中寻找目标。简单特征搜索中，目标会“跳出来”；组合搜索中，孩子需要同时看颜色、形状或方向，搜索会明显变慢。</p>
+      <ul class="teacher-list">
+        <li><b>心理学概念：</b>视觉搜索、特征搜索、组合搜索、选择性注意。</li>
+        <li><b>儿童话术：</b>有些目标会一眼跳出来，有些目标需要眼睛像雷达一样一个区域一个区域扫描。</li>
+        <li><b>现场玩法：</b>每个孩子独立体验 2–3 分钟；结束后问：“哪一关最难？为什么？”</li>
+        <li><b>解释重点：</b>慢不代表笨，难题需要同时比较多个特征，大脑本来就要花更多时间。</li>
+      </ul>
+      <div class="btn-row">
+        <button onclick="showRules()">开始任务</button>
+        <button class="secondary" onclick="show('home')">返回首页</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="rules" class="screen">
+    <div class="topbar">
+      <div class="brand"><div class="logo">🛰️</div><span>任务简报</span></div>
+      <div class="pill">先练习，再正式搜索</div>
+    </div>
+    <div class="glass" style="max-width:920px;margin:34px auto 0;text-align:center">
+      <h2>请找到唯一不同的目标</h2>
+      <p>每一题都有一个目标。看清提示后，在星际雷达图中点击它。</p>
+      <div class="rule-grid">
+        <div class="rule-card"><strong>简单搜索</strong><span>只看一个特征，例如颜色不一样。</span></div>
+        <div class="rule-card"><strong>方向搜索</strong><span>只看方向，例如唯一斜着的线。</span></div>
+        <div class="rule-card"><strong>组合搜索</strong><span>同时看颜色和形状，难度更高。</span></div>
+        <div class="rule-card"><strong>注意</strong><span>点错会记录错误，但可以继续找。</span></div>
+      </div>
+      <div class="note">小提示：先看任务要求，再扫视整个区域。困难题不要乱点，可以按行或按区域寻找。</div>
+      <div class="btn-row" style="justify-content:center">
+        <button onclick="startGame()">我准备好了</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="game" class="screen">
+    <div class="game">
+      <div class="topbar" style="margin-bottom:0">
+        <div class="brand"><div class="logo">🎮</div><span>星际视觉搜索中</span></div>
+        <div class="pill" id="timerPill">计时中</div>
+      </div>
+
+      <div class="hud">
+        <div>
+          <div class="hud-title">
+            <span id="phaseText">练习阶段</span>
+            <span id="trialText">1 / 2</span>
+          </div>
+          <div class="progress"><div id="progressBar"></div></div>
+        </div>
+        <div class="chips">
+          <div class="chip"><b id="scoreChip">0</b><span>积分</span></div>
+          <div class="chip"><b id="rightChip">0</b><span>答对</span></div>
+          <div class="chip"><b id="errorChip">0</b><span>错误</span></div>
+        </div>
+      </div>
+
+      <div class="mission">
+        <h2 id="taskTitle">找到唯一不同的目标</h2>
+        <p id="taskText">看清任务提示后点击目标。</p>
+      </div>
+
+      <div class="arena">
+        <div class="search-grid" id="grid"></div>
+        <div id="feedback" class="feedback neutral">准备搜索……</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="result" class="screen">
+    <div class="topbar">
+      <div class="brand"><div class="logo">🏆</div><span>任务完成</span></div>
+      <div class="pill">视觉搜索报告</div>
+    </div>
+
+    <div class="glass" style="max-width:980px;margin:16px auto 0;text-align:center">
+      <h2>星际视觉搜索任务完成！</h2>
+      <div class="big-score" id="gradeText">A级</div>
+      <p id="resultSentence">你的视觉侦探报告已生成。</p>
+
+      <div class="result-grid">
+        <div class="result-card">
+          <div class="label">正确率</div>
+          <div class="num" id="accText">0%</div>
+        </div>
+        <div class="result-card">
+          <div class="label">平均反应时间</div>
+          <div class="num" id="rtText">0s</div>
+        </div>
+        <div class="result-card">
+          <div class="label">困难搜索耗时</div>
+          <div class="num" id="hardRtText">0s</div>
+        </div>
+        <div class="result-card">
+          <div class="label">错误次数</div>
+          <div class="num" id="errorsText">0</div>
+        </div>
+      </div>
+
+      <div class="note">
+        心理学小发现：有些目标只靠一个特征就会“跳出来”，比如颜色不同；有些目标需要同时比较颜色、形状或方向，所以搜索会更慢。这说明注意力会根据任务难度分配。
+      </div>
+
+      <div class="btn-row" style="justify-content:center">
+        <button onclick="startGame()">再挑战一次</button>
+        <button class="secondary" onclick="show('home')">返回首页</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+const TRIALS_PRACTICE = [
+  {type:"feature", size:4},
+  {type:"conjunction", size:4}
+];
+
+const TRIALS_FORMAL = [
+  {type:"feature", size:4},
+  {type:"feature", size:5},
+  {type:"orientation", size:4},
+  {type:"feature", size:5},
+  {type:"conjunction", size:5},
+  {type:"orientation", size:5},
+  {type:"feature", size:6},
+  {type:"conjunction", size:5},
+  {type:"orientation", size:6},
+  {type:"conjunction", size:6},
+  {type:"feature", size:6},
+  {type:"conjunction", size:6}
+];
+
+let phase = "practice";
+let trials = [];
+let idx = 0;
+let current = null;
+let targetIndex = 0;
+let startTime = 0;
+let accepting = false;
+let stats = {};
+
+function $(id){return document.getElementById(id)}
+function show(id){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  $(id).classList.add("active");
+}
+function showRules(){show("rules")}
+function showTeacher(){show("teacher")}
+function shuffle(arr){return [...arr].sort(()=>Math.random()-0.5)}
+function randInt(n){return Math.floor(Math.random()*n)}
+
+function drawPreview(){
+  const board = $("previewBoard");
+  const items = [];
+  for(let i=0;i<25;i++){
+    items.push(`<div class="preview-item">${i===17?"🛸":"⭐"}</div>`);
+  }
+  board.innerHTML = items.join("");
+  board.children[17].classList.add("target");
+}
+drawPreview();
+
+function startGame(){
+  stats = {score:0, correct:0, total:0, errors:0, rts:[], easyRts:[], hardRts:[]};
+  phase = "practice";
+  trials = TRIALS_PRACTICE;
+  idx = 0;
+  show("game");
+  renderTrial();
+}
+
+function startFormal(){
+  phase = "formal";
+  trials = shuffle(TRIALS_FORMAL);
+  idx = 0;
+  renderTrial();
+}
+
+function makeItem(kind, color, shape, orientation){
+  if(kind === "emoji") return `<span>${shape}</span>`;
+  if(shape === "triangle"){
+    return `<span class="shape triangle" style="color:${color}"></span>`;
+  }
+  if(shape === "line"){
+    return `<span class="shape line ${orientation}" style="background:${color}; color:${color}"></span>`;
+  }
+  return `<span class="shape ${shape}" style="background:${color}; color:${color}"></span>`;
+}
+
+function buildTrial(t){
+  const count = t.size * t.size;
+  const items = [];
+  let target = randInt(count);
+  let title = "";
+  let text = "";
+  let difficulty = "easy";
+
+  if(t.type === "feature"){
+    title = "找到唯一的绿色能量球";
+    text = "其他都是蓝色，目标是唯一绿色。";
+    difficulty = "easy";
+    for(let i=0;i<count;i++){
+      items.push({
+        html: makeItem("shape", i===target ? "#4df0a0" : "#4f8cff", "circle"),
+        target: i===target
+      });
+    }
+  }
+
+  if(t.type === "orientation"){
+    title = "找到唯一斜着的信号条";
+    text = "其他信号条都是横着的，目标是唯一斜着的。";
+    difficulty = "medium";
+    for(let i=0;i<count;i++){
+      items.push({
+        html: makeItem("shape", "#6fe7ff", "line", i===target ? "tilt" : "flat"),
+        target: i===target
+      });
+    }
+  }
+
+  if(t.type === "conjunction"){
+    title = "找到红色圆形探测器";
+    text = "注意：有红色方块，也有蓝色圆形，目标是红色圆形。";
+    difficulty = "hard";
+    for(let i=0;i<count;i++){
+      let color, shape;
+      if(i===target){
+        color = "#ff4d6d"; shape = "circle";
+      }else{
+        const distractor = Math.random() < .5;
+        color = distractor ? "#ff4d6d" : "#4f8cff";
+        shape = distractor ? "square" : "circle";
+      }
+      items.push({
+        html: makeItem("shape", color, shape),
+        target: i===target
+      });
+    }
+  }
+
+  return {items: shuffleWithTarget(items), title, text, difficulty, size:t.size};
+}
+
+function shuffleWithTarget(items){
+  const shuffled = shuffle(items);
+  targetIndex = shuffled.findIndex(x=>x.target);
+  return shuffled;
+}
+
+function renderTrial(){
+  accepting = true;
+  current = buildTrial(trials[idx]);
+  startTime = performance.now();
+
+  $("taskTitle").textContent = current.title;
+  $("taskText").textContent = current.text;
+  $("phaseText").textContent = phase === "practice" ? "练习阶段" : "正式挑战";
+  $("trialText").textContent = `${idx+1} / ${trials.length}`;
+  $("progressBar").style.width = `${idx / trials.length * 100}%`;
+  $("scoreChip").textContent = stats.score;
+  $("rightChip").textContent = stats.correct;
+  $("errorChip").textContent = stats.errors;
+  $("timerPill").textContent = phase === "practice" ? "练习不计分" : "正式题计分";
+  $("feedback").className = "feedback neutral";
+  $("feedback").textContent = "开始搜索：找到后点击它！";
+
+  const grid = $("grid");
+  grid.style.gridTemplateColumns = `repeat(${current.size}, 1fr)`;
+  grid.innerHTML = current.items.map((it,i)=>`<button class="cell" onclick="clickCell(${i})">${it.html}</button>`).join("");
+}
+
+function clickCell(i){
+  if(!accepting) return;
+  const cells = document.querySelectorAll(".cell");
+  const item = current.items[i];
+  if(item.target){
+    accepting = false;
+    const rt = Math.round((performance.now() - startTime) / 100) / 10;
+    cells[i].classList.add("correct");
+    $("feedback").className = "feedback good";
+    $("feedback").textContent = `找到了！用时 ${rt}s`;
+
+    if(phase === "formal"){
+      stats.total++;
+      stats.correct++;
+      stats.rts.push(rt);
+      if(current.difficulty === "hard") stats.hardRts.push(rt);
+      else stats.easyRts.push(rt);
+      stats.score += Math.max(50, Math.round(180 - rt*12));
+    }
+
+    updateChips();
+    setTimeout(nextTrial, 650);
+  }else{
+    cells[i].classList.add("wrong");
+    $("feedback").className = "feedback bad";
+    $("feedback").textContent = "这不是目标，再看任务提示！";
+    if(phase === "formal") stats.errors++;
+    updateChips();
+    setTimeout(()=>cells[i].classList.remove("wrong"),220);
+  }
+}
+
+function updateChips(){
+  $("scoreChip").textContent = stats.score;
+  $("rightChip").textContent = stats.correct;
+  $("errorChip").textContent = stats.errors;
+}
+
+function nextTrial(){
+  idx++;
+  if(idx >= trials.length){
+    if(phase === "practice"){
+      $("feedback").className = "feedback good";
+      $("feedback").textContent = "练习完成，正式挑战开始！";
+      setTimeout(startFormal, 700);
+    }else{
+      showResult();
+    }
+  }else{
+    renderTrial();
+  }
+}
+
+function avg(arr){
+  if(!arr.length) return 0;
+  return Math.round(arr.reduce((a,b)=>a+b,0)/arr.length * 10) / 10;
+}
+function showResult(){
+  const acc = stats.total ? Math.round(stats.correct / stats.total * 100) : 0;
+  const meanRt = avg(stats.rts);
+  const hardRt = avg(stats.hardRts);
+  let grade = "C级";
+  if(acc >= 95 && meanRt <= 4.2 && stats.errors <= 2) grade = "S级";
+  else if(acc >= 90 && meanRt <= 5.8 && stats.errors <= 5) grade = "A级";
+  else if(acc >= 75) grade = "B级";
+
+  $("gradeText").textContent = grade;
+  $("accText").textContent = acc + "%";
+  $("rtText").textContent = meanRt + "s";
+  $("hardRtText").textContent = hardRt + "s";
+  $("errorsText").textContent = stats.errors;
+
+  let sentence = "你的视觉侦探报告已生成。";
+  if(grade === "S级") sentence = "太厉害了！你像真正的星际侦探一样，能快速发现目标。";
+  else if(grade === "A级") sentence = "很棒！你的视觉搜索速度和准确率都不错。";
+  else if(grade === "B级") sentence = "不错！困难搜索题需要同时比较多个特征，变慢很正常。";
+  else sentence = "没关系，视觉搜索需要策略。下次先看任务提示，再按区域扫描。";
+  $("resultSentence").textContent = sentence;
+
+  show("result");
+}
+</script>
+</body>
+</html>
