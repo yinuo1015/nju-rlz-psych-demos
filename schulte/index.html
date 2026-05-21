@@ -1,0 +1,578 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>宇航员舒尔特｜星际数字扫描任务</title>
+<style>
+:root{
+  --bg:#050816;
+  --panel:#0b1026dd;
+  --card:#ffffff12;
+  --line:#7ee7ff33;
+  --text:#f4f8ff;
+  --muted:#aebbd3;
+  --cyan:#6fe7ff;
+  --green:#4df0a0;
+  --yellow:#ffd45e;
+  --pink:#ff7eb6;
+  --red:#ff4d6d;
+  --blue:#4f8cff;
+  --purple:#a78bfa;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  min-height:100vh;
+  font-family:"Microsoft YaHei",Arial,sans-serif;
+  color:var(--text);
+  background:
+    radial-gradient(circle at 16% 16%,#6fe7ff2b,transparent 25%),
+    radial-gradient(circle at 86% 20%,#a78bfa2b,transparent 25%),
+    radial-gradient(circle at 50% 105%,#4df0a022,transparent 30%),
+    linear-gradient(145deg,#050816,#0b1026 55%,#160820);
+  overflow-x:hidden;
+}
+body:before{
+  content:"";
+  position:fixed;
+  inset:0;
+  background:
+    radial-gradient(circle,#ffffffcc 1px,transparent 1.6px),
+    radial-gradient(circle,#6fe7ff99 1px,transparent 1.8px),
+    linear-gradient(90deg,transparent 49px,#6fe7ff0d 50px),
+    linear-gradient(transparent 49px,#6fe7ff0b 50px);
+  background-size:92px 92px,137px 137px,50px 50px,50px 50px;
+  background-position:0 0,21px 34px,0 0,0 0;
+  mask-image:linear-gradient(to bottom,#000,transparent 82%);
+  pointer-events:none;
+  animation:starDrift 32s linear infinite;
+}
+@keyframes starDrift{to{background-position:180px 240px,-120px 180px,0 0,0 0}}
+.app{
+  position:relative;
+  z-index:1;
+  width:min(1120px,95vw);
+  min-height:720px;
+  margin:24px auto;
+  border-radius:34px;
+  border:1px solid var(--line);
+  background:linear-gradient(180deg,#0c122ade,#060a1bc7);
+  box-shadow:0 28px 90px #0008,inset 0 0 0 1px #ffffff08;
+  overflow:hidden;
+}
+.app:before{
+  content:"";
+  position:absolute;
+  left:0;right:0;top:0;height:4px;
+  background:linear-gradient(90deg,var(--cyan),var(--green),var(--yellow),var(--pink),var(--purple));
+  box-shadow:0 0 26px #6fe7ff99;
+}
+.screen{display:none;min-height:720px;padding:30px;position:relative}
+.screen.active{display:block;animation:enter .25s ease}
+@keyframes enter{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:18px}
+.brand{display:flex;align-items:center;gap:12px;font-weight:950;font-size:23px}
+.logo{
+  width:48px;height:48px;border-radius:18px;display:grid;place-items:center;
+  background:linear-gradient(135deg,var(--cyan),var(--green),var(--yellow));
+  color:#06111c;font-size:24px;box-shadow:0 0 28px #6fe7ff55;
+}
+.pill{
+  border-radius:999px;padding:9px 14px;background:#6fe7ff14;border:1px solid #6fe7ff33;
+  color:#dff8ff;font-weight:900;font-size:14px;white-space:nowrap;
+}
+.hero{display:grid;grid-template-columns:1.04fr .96fr;gap:28px;align-items:center;padding:18px 8px 0}
+h1{font-size:clamp(42px,6vw,74px);line-height:1.04;margin:0 0 18px;letter-spacing:-1.5px}
+h2{font-size:clamp(30px,4vw,48px);line-height:1.15;margin:0 0 14px}
+h3{font-size:24px;margin:0 0 10px}
+p{font-size:19px;line-height:1.75;color:var(--muted);margin:10px 0}
+.hl{color:#fff;text-shadow:0 0 20px #6fe7ff99}
+.yellow{color:var(--yellow);font-weight:950}
+.cyan{color:var(--cyan);font-weight:950}
+.pink{color:var(--pink);font-weight:950}
+.glass{
+  border-radius:28px;border:1px solid #ffffff18;background:linear-gradient(180deg,#142044bb,#071027aa);
+  padding:24px;box-shadow:0 18px 50px #0005,inset 0 0 28px #6fe7ff0a;
+}
+.rule-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin:22px 0}
+.rule-card{border-radius:22px;padding:18px;background:#ffffff10;border:1px solid #ffffff18}
+.rule-card strong{display:block;color:#fff;font-size:20px;margin-bottom:8px}
+.rule-card span{color:var(--muted);line-height:1.6}
+.btn-row{display:flex;gap:14px;flex-wrap:wrap;margin-top:26px}
+button,.btn{
+  appearance:none;border:0;cursor:pointer;border-radius:18px;padding:15px 22px;font-size:18px;font-weight:950;
+  color:#07111c;background:linear-gradient(135deg,var(--cyan),var(--green));
+  box-shadow:0 14px 30px #6fe7ff2a,inset 0 0 0 1px #ffffff26;
+  transition:transform .1s ease,filter .1s ease,opacity .1s ease;text-decoration:none;
+}
+button:hover,.btn:hover{transform:translateY(-1px);filter:brightness(1.04)}
+button:active,.btn:active{transform:translateY(1px) scale(.99)}
+.secondary{background:#ffffff12;color:var(--text);border:1px solid #ffffff20;box-shadow:none}
+.preview{min-height:430px;display:grid;place-items:center;position:relative;overflow:hidden}
+.preview:before{
+  content:"";position:absolute;width:420px;height:420px;border-radius:50%;
+  background:conic-gradient(from 0deg,#6fe7ff00,#6fe7ff40,#4df0a000,#a78bfa40,#6fe7ff00);
+  animation:spin 10s linear infinite;opacity:.7;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.astronaut-wrap{position:relative;z-index:1;width:320px;height:330px;display:grid;place-items:center;animation:float 2.7s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+.astronaut{width:290px;filter:drop-shadow(0 26px 28px #0008)}
+.note{
+  border-radius:20px;padding:16px 18px;background:#ffd45e18;border:1px solid #ffd45e40;
+  color:#ffeab0;font-size:17px;font-weight:850;line-height:1.7;margin-top:18px;
+}
+
+.game{
+  display:grid;
+  grid-template-rows:auto auto 1fr auto;
+  gap:15px;
+  min-height:650px;
+}
+.hud{display:grid;grid-template-columns:1fr auto;gap:16px;align-items:center}
+.hud-title{display:flex;justify-content:space-between;gap:12px;margin-bottom:9px;font-weight:900;color:#e5f8ff}
+.progress{height:13px;border-radius:999px;background:#ffffff12;border:1px solid #ffffff12;overflow:hidden}
+.progress div{height:100%;width:0%;background:linear-gradient(90deg,var(--cyan),var(--green),var(--yellow),var(--pink));box-shadow:0 0 18px #6fe7ffaa;transition:width .18s ease}
+.chips{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+.chip{min-width:108px;border-radius:16px;padding:10px 12px;text-align:center;background:#ffffff10;border:1px solid #ffffff18}
+.chip b{display:block;font-size:18px;color:#fff}.chip span{display:block;font-size:12px;color:var(--muted);font-weight:850;margin-top:2px}
+.mission{text-align:center}.mission h2{margin-bottom:8px}.mission p{margin:0;font-size:17px}
+.arena{
+  min-height:430px;display:grid;place-items:center;position:relative;border-radius:30px;
+  background:radial-gradient(circle at center,#6fe7ff12,transparent 55%),linear-gradient(180deg,#ffffff08,#ffffff03);
+  border:1px solid #6fe7ff24;overflow:hidden;padding:18px;
+}
+.arena:before{content:"";position:absolute;width:620px;height:620px;border-radius:50%;border:1px dashed #6fe7ff2e;animation:spin 18s linear infinite}
+.arena:after{content:"";position:absolute;width:440px;height:440px;border-radius:50%;border:1px solid #a78bfa25}
+.schulte-grid{
+  position:relative;z-index:1;
+  display:grid;gap:10px;
+  width:min(620px,100%);
+  margin:auto;
+}
+.cell{
+  aspect-ratio:1/1;
+  border-radius:18px;
+  border:1px solid #ffffff24;
+  color:#fff;
+  background:linear-gradient(180deg,#18244d,#0b1432);
+  font-size:clamp(22px,4vw,38px);
+  font-weight:1000;
+  display:grid;
+  place-items:center;
+  box-shadow:0 12px 24px #0004,inset 0 0 24px #6fe7ff10;
+  user-select:none;
+}
+.cell:hover{filter:brightness(1.12);transform:translateY(-1px)}
+.cell.done{
+  color:#07111c;
+  background:linear-gradient(135deg,var(--cyan),var(--green));
+  box-shadow:0 0 26px #4df0a055;
+}
+.cell.next{
+  outline:3px solid #ffd45e99;
+  box-shadow:0 0 28px #ffd45e55,inset 0 0 24px #ffd45e22;
+}
+.cell.error{animation:shake .18s ease;background:linear-gradient(135deg,#ff4d6d,#991b1b)}
+@keyframes shake{0%,100%{transform:translateX(0)}30%{transform:translateX(-5px)}70%{transform:translateX(5px)}}
+.feedback{
+  position:absolute;bottom:18px;left:50%;transform:translateX(-50%);
+  width:min(720px,90%);text-align:center;border-radius:20px;padding:12px 16px;
+  font-size:23px;font-weight:950;backdrop-filter:blur(8px);
+}
+.feedback.neutral{background:#6fe7ff14;border:1px solid #6fe7ff2c;color:#e3f8ff}
+.feedback.good{background:#4df0a01f;border:1px solid #4df0a04a;color:#dcffec}
+.feedback.bad{background:#ff4d6d1f;border:1px solid #ff4d6d4a;color:#ffdbe4}
+.level-card{
+  max-width:900px;margin:24px auto 0;text-align:center;
+}
+.result-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin:26px 0}
+.result-card{border-radius:22px;padding:20px;text-align:center;background:#ffffff10;border:1px solid #ffffff18}
+.result-card .num{font-size:42px;font-weight:1000;color:#fff;margin:6px 0}
+.result-card .label{color:var(--muted);font-weight:900;font-size:14px;line-height:1.45}
+.big-score{
+  font-size:clamp(64px,10vw,108px);line-height:1;font-weight:1000;margin:14px 0 10px;
+  background:linear-gradient(135deg,var(--yellow),var(--cyan),var(--pink));-webkit-background-clip:text;color:transparent;
+}
+.teacher-list{max-width:850px;margin:18px auto 0;text-align:left}
+.teacher-list li{color:var(--muted);font-size:18px;line-height:1.8;margin:8px 0}
+@media(max-width:850px){
+  .app{width:100%;min-height:100vh;margin:0;border-radius:0}.screen{min-height:100vh;padding:20px}
+  .hero{grid-template-columns:1fr}.rule-grid,.result-grid{grid-template-columns:1fr}.hud{grid-template-columns:1fr}.chips{justify-content:flex-start}
+  h1{font-size:40px}.preview{min-height:280px}.astronaut{width:230px}.arena{min-height:360px}
+  .schulte-grid{gap:7px}.cell{border-radius:13px}
+}
+</style>
+</head>
+<body>
+<main class="app">
+  <section id="home" class="screen active">
+    <div class="topbar">
+      <div class="brand"><div class="logo">🚀</div><span>宇航员舒尔特</span></div>
+      <div class="pill">星际数字扫描任务 · 约 2–3 分钟</div>
+    </div>
+    <div class="hero">
+      <div>
+        <h1>化身<span class="cyan">宇航员</span><br>扫描星际数字坐标</h1>
+        <p>你将进入太空数字舱，按照 <span class="yellow">1 → 2 → 3</span> 的顺序快速找到数字。这个任务可以体验注意力扫描、视觉搜索和专注保持。</p>
+        <div class="rule-grid">
+          <div class="rule-card"><strong>怎么玩？</strong><span>从 1 开始，按顺序点击数字，直到完成整张方格。</span></div>
+          <div class="rule-card"><strong>有几关？</strong><span>练习 3×3，正式 4×4 和 5×5，总时长控制在 3 分钟内。</span></div>
+          <div class="rule-card"><strong>看什么结果？</strong><span>完成时间、错误次数、平均扫描间隔和注意力扫描等级。</span></div>
+          <div class="rule-card"><strong>小提示</strong><span>不要盯着一个格子，要像雷达一样从整体快速扫描。</span></div>
+        </div>
+        <div class="btn-row">
+          <button onclick="showRules()">开始任务</button>
+          <button class="secondary" onclick="showTeacher()">教师说明</button>
+        </div>
+      </div>
+      <div class="glass preview">
+        <div class="astronaut-wrap" id="astroPreview"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="teacher" class="screen">
+    <div class="topbar">
+      <div class="brand"><div class="logo">🧠</div><span>教师说明</span></div>
+      <div class="pill">适合五六年级 · 小桌体验</div>
+    </div>
+    <div class="glass" style="max-width:920px;margin:22px auto 0">
+      <h2>舒尔特方格在体验什么？</h2>
+      <p>舒尔特任务要求孩子在随机排列的数字中按顺序寻找目标，可以用于科普视觉搜索、注意广度、注意力稳定性和扫描策略。</p>
+      <ul class="teacher-list">
+        <li><b>心理学概念：</b>视觉搜索、注意扫描、专注保持、目标序列追踪。</li>
+        <li><b>儿童话术：</b>你的眼睛像太空雷达，要快速扫到下一个数字坐标。</li>
+        <li><b>现场玩法：</b>每个孩子独立体验 2–3 分钟；旁边同学可以观察他是“一个个找”还是“整体扫描”。</li>
+        <li><b>结果解释：</b>速度快不一定只是手快，也和搜索策略有关。错误多时可以提醒孩子先稳住，再加速。</li>
+      </ul>
+      <div class="btn-row">
+        <button onclick="showRules()">开始任务</button>
+        <button class="secondary" onclick="show('home')">返回首页</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="rules" class="screen">
+    <div class="topbar">
+      <div class="brand"><div class="logo">🛰️</div><span>任务简报</span></div>
+      <div class="pill">先练习，再正式扫描</div>
+    </div>
+    <div class="glass level-card">
+      <h2>请按顺序点击数字</h2>
+      <p>从 <span class="yellow">1</span> 开始，找到下一个数字，再找到下下一个。目标是又快又稳地完成整张星际坐标图。</p>
+      <div class="rule-grid">
+        <div class="rule-card"><strong>练习舱</strong><span>3×3，数字 1–9，用来熟悉操作。</span></div>
+        <div class="rule-card"><strong>正式舱 1</strong><span>4×4，数字 1–16，适合快速进入状态。</span></div>
+        <div class="rule-card"><strong>正式舱 2</strong><span>5×5，数字 1–25，挑战完整注意力扫描。</span></div>
+        <div class="rule-card"><strong>时间设置</strong><span>每关有倒计时，全部体验一般 2–3 分钟。</span></div>
+      </div>
+      <div class="note">小提示：用眼睛先扫一圈，找到大概位置，再点击。不要乱点，错误会计入成绩。</div>
+      <div class="btn-row" style="justify-content:center">
+        <button onclick="startGame()">我准备好了</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="levelIntro" class="screen">
+    <div class="topbar">
+      <div class="brand"><div class="logo">🌌</div><span id="introBrand">正式舱</span></div>
+      <div class="pill" id="introPill">准备扫描</div>
+    </div>
+    <div class="glass level-card">
+      <h2 id="levelIntroTitle">准备进入下一关</h2>
+      <p id="levelIntroText">请按顺序点击数字。</p>
+      <div class="note" id="levelIntroNote">准备好后点击开始。</div>
+      <div class="btn-row" style="justify-content:center">
+        <button onclick="beginLevel()">开始本关</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="game" class="screen">
+    <div class="game">
+      <div class="topbar" style="margin-bottom:0">
+        <div class="brand"><div class="logo">🎮</div><span>星际数字扫描中</span></div>
+        <div class="pill" id="timerPill">剩余时间：60s</div>
+      </div>
+
+      <div class="hud">
+        <div>
+          <div class="hud-title">
+            <span id="levelText">练习舱 3×3</span>
+            <span id="targetText">下一个目标：1</span>
+          </div>
+          <div class="progress"><div id="progressBar"></div></div>
+        </div>
+        <div class="chips">
+          <div class="chip"><b id="timeChip">0.0s</b><span>本关用时</span></div>
+          <div class="chip"><b id="errorChip">0</b><span>错误</span></div>
+          <div class="chip"><b id="doneChip">0</b><span>已找到</span></div>
+        </div>
+      </div>
+
+      <div class="mission">
+        <h2>像太空雷达一样扫描数字</h2>
+        <p>当前目标会显示在上方。请按顺序点击，不要跳号。</p>
+      </div>
+
+      <div class="arena">
+        <div class="schulte-grid" id="grid"></div>
+        <div id="feedback" class="feedback neutral">准备开始扫描……</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="result" class="screen">
+    <div class="topbar">
+      <div class="brand"><div class="logo">🏆</div><span>任务完成</span></div>
+      <div class="pill">扫描报告</div>
+    </div>
+
+    <div class="glass" style="max-width:980px;margin:16px auto 0;text-align:center">
+      <h2>星际数字扫描任务完成！</h2>
+      <div class="big-score" id="gradeText">A级</div>
+      <p id="resultSentence">你的注意力扫描报告已生成。</p>
+
+      <div class="result-grid">
+        <div class="result-card">
+          <div class="label">总完成时间</div>
+          <div class="num" id="totalTimeText">0s</div>
+        </div>
+        <div class="result-card">
+          <div class="label">错误次数</div>
+          <div class="num" id="totalErrorText">0</div>
+        </div>
+        <div class="result-card">
+          <div class="label">平均扫描间隔</div>
+          <div class="num" id="intervalText">0s</div>
+        </div>
+        <div class="result-card">
+          <div class="label">完成关卡</div>
+          <div class="num" id="levelCountText">0/3</div>
+        </div>
+      </div>
+
+      <div class="note">
+        心理学小发现：舒尔特任务不是只看手速，更考验眼睛如何搜索目标、大脑如何保持顺序和专注。找到更好的扫描策略，速度会明显变快。
+      </div>
+
+      <div class="btn-row" style="justify-content:center">
+        <button onclick="startGame()">再挑战一次</button>
+        <button class="secondary" onclick="show('home')">返回首页</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+const LEVELS = [
+  {name:"练习舱", grid:3, max:9, limit:35, practice:true, note:"数字 1–9，熟悉操作，不计入最终评价。"},
+  {name:"正式舱 1", grid:4, max:16, limit:55, practice:false, note:"数字 1–16，开始计入扫描报告。"},
+  {name:"正式舱 2", grid:5, max:25, limit:85, practice:false, note:"数字 1–25，完成最终注意力扫描挑战。"}
+];
+
+let currentLevelIndex = 0;
+let currentLevel = null;
+let numbers = [];
+let nextTarget = 1;
+let errors = 0;
+let found = 0;
+let levelStart = 0;
+let timer = null;
+let tick = null;
+let levelResults = [];
+let running = false;
+
+function $(id){return document.getElementById(id)}
+function show(id){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  $(id).classList.add("active");
+}
+function showRules(){show("rules")}
+function showTeacher(){show("teacher")}
+function shuffle(arr){return [...arr].sort(()=>Math.random()-0.5)}
+
+function astronautSvg(){
+  return `<svg class="astronaut" viewBox="0 0 360 380" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="helmet" cx="45%" cy="35%" r="70%">
+        <stop offset="0%" stop-color="#e7fbff"/>
+        <stop offset="40%" stop-color="#8feeff"/>
+        <stop offset="100%" stop-color="#12365b"/>
+      </radialGradient>
+      <filter id="glow"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    </defs>
+    <ellipse cx="180" cy="346" rx="95" ry="20" fill="#000" opacity=".28"/>
+    <path d="M108 158 C66 184 50 235 67 282" stroke="#dff8ff" stroke-width="28" fill="none" stroke-linecap="round"/>
+    <path d="M252 158 C294 184 310 235 293 282" stroke="#dff8ff" stroke-width="28" fill="none" stroke-linecap="round"/>
+    <rect x="103" y="140" width="154" height="160" rx="38" fill="#f4fbff" stroke="#9bb5d4" stroke-width="6"/>
+    <rect x="133" y="204" width="94" height="56" rx="16" fill="#0b1026" stroke="#6fe7ff" stroke-width="4"/>
+    <circle cx="156" cy="232" r="8" fill="#4df0a0"/><circle cx="183" cy="232" r="8" fill="#ffd45e"/><circle cx="210" cy="232" r="8" fill="#ff7eb6"/>
+    <circle cx="180" cy="94" r="76" fill="#f4fbff" stroke="#9bb5d4" stroke-width="7"/>
+    <path d="M112 91 C124 42 166 26 205 39 C245 52 267 92 250 133 C225 146 161 151 116 131 C109 118 107 105 112 91Z" fill="url(#helmet)" filter="url(#glow)"/>
+    <circle cx="130" cy="78" r="8" fill="#fff" opacity=".9"/>
+    <rect x="92" y="294" width="48" height="58" rx="18" fill="#dff8ff" stroke="#9bb5d4" stroke-width="5"/>
+    <rect x="220" y="294" width="48" height="58" rx="18" fill="#dff8ff" stroke="#9bb5d4" stroke-width="5"/>
+    <circle cx="62" cy="283" r="22" fill="#f4fbff" stroke="#9bb5d4" stroke-width="5"/>
+    <circle cx="298" cy="283" r="22" fill="#f4fbff" stroke="#9bb5d4" stroke-width="5"/>
+    <path d="M70 24 L90 44 M290 24 L270 44" stroke="#6fe7ff" stroke-width="8" stroke-linecap="round"/>
+    <circle cx="68" cy="22" r="9" fill="#6fe7ff"/><circle cx="292" cy="22" r="9" fill="#6fe7ff"/>
+  </svg>`;
+}
+$("astroPreview").innerHTML = astronautSvg();
+
+function startGame(){
+  levelResults = [];
+  currentLevelIndex = 0;
+  prepareLevelIntro();
+}
+
+function prepareLevelIntro(){
+  currentLevel = LEVELS[currentLevelIndex];
+  $("introBrand").textContent = currentLevel.name;
+  $("introPill").textContent = currentLevel.practice ? "练习不计分" : "正式计分";
+  $("levelIntroTitle").textContent = `${currentLevel.name}：${currentLevel.grid}×${currentLevel.grid} 数字坐标`;
+  $("levelIntroText").textContent = `请按 1 → 2 → 3 的顺序点击，直到找到 ${currentLevel.max}。`;
+  $("levelIntroNote").textContent = currentLevel.note;
+  show("levelIntro");
+}
+
+function beginLevel(){
+  currentLevel = LEVELS[currentLevelIndex];
+  numbers = shuffle(Array.from({length:currentLevel.max}, (_,i)=>i+1));
+  nextTarget = 1;
+  errors = 0;
+  found = 0;
+  running = true;
+  levelStart = performance.now();
+
+  renderGrid();
+  updateHud();
+  $("feedback").className = "feedback neutral";
+  $("feedback").textContent = "开始扫描：请点击 1";
+
+  clearInterval(tick);
+  tick = setInterval(updateHud, 100);
+  clearTimeout(timer);
+  timer = setTimeout(() => {
+    if(running) finishLevel(false);
+  }, currentLevel.limit * 1000);
+
+  show("game");
+}
+
+function renderGrid(){
+  const grid = $("grid");
+  grid.style.gridTemplateColumns = `repeat(${currentLevel.grid}, 1fr)`;
+  grid.innerHTML = numbers.map(n => `<button class="cell" id="cell-${n}" onclick="clickNumber(${n})">${n}</button>`).join("");
+  markNext();
+}
+
+function markNext(){
+  document.querySelectorAll(".cell").forEach(c => c.classList.remove("next"));
+  const next = $(`cell-${nextTarget}`);
+  if(next) next.classList.add("next");
+}
+
+function clickNumber(n){
+  if(!running) return;
+  const cell = $(`cell-${n}`);
+  if(n === nextTarget){
+    cell.classList.add("done");
+    cell.classList.remove("next");
+    found++;
+    nextTarget++;
+    $("feedback").className = "feedback good";
+    $("feedback").textContent = nextTarget <= currentLevel.max ? `找到 ${n}！下一个目标：${nextTarget}` : "本关完成！";
+    if(nextTarget > currentLevel.max){
+      finishLevel(true);
+    }else{
+      markNext();
+    }
+  }else{
+    errors++;
+    cell.classList.add("error");
+    $("feedback").className = "feedback bad";
+    $("feedback").textContent = `现在要找的是 ${nextTarget}，不是 ${n}`;
+    setTimeout(()=>cell.classList.remove("error"),220);
+  }
+  updateHud();
+}
+
+function updateHud(){
+  if(!currentLevel) return;
+  const elapsed = Math.max(0, (performance.now() - levelStart)/1000);
+  const remain = Math.max(0, currentLevel.limit - elapsed);
+  $("timerPill").textContent = `剩余时间：${remain.toFixed(0)}s`;
+  $("levelText").textContent = `${currentLevel.name} ${currentLevel.grid}×${currentLevel.grid}`;
+  $("targetText").textContent = nextTarget <= currentLevel.max ? `下一个目标：${nextTarget}` : "本关完成";
+  $("timeChip").textContent = elapsed.toFixed(1) + "s";
+  $("errorChip").textContent = errors;
+  $("doneChip").textContent = found;
+  $("progressBar").style.width = `${(found / currentLevel.max) * 100}%`;
+}
+
+function finishLevel(completed){
+  running = false;
+  clearInterval(tick);
+  clearTimeout(timer);
+  const elapsed = Math.round((performance.now() - levelStart)/100)/10;
+  const result = {
+    name: currentLevel.name,
+    practice: currentLevel.practice,
+    completed,
+    time: elapsed,
+    errors,
+    max: currentLevel.max,
+    found
+  };
+  if(!currentLevel.practice) levelResults.push(result);
+
+  if(currentLevel.practice){
+    currentLevelIndex++;
+    setTimeout(prepareLevelIntro, 700);
+    return;
+  }
+
+  currentLevelIndex++;
+  if(currentLevelIndex >= LEVELS.length){
+    setTimeout(showResult, 700);
+  }else{
+    setTimeout(prepareLevelIntro, 700);
+  }
+}
+
+function showResult(){
+  const completedCount = levelResults.filter(r => r.completed).length;
+  const totalTime = Math.round(levelResults.reduce((a,b)=>a+b.time,0)*10)/10;
+  const totalErrors = levelResults.reduce((a,b)=>a+b.errors,0);
+  const totalFound = levelResults.reduce((a,b)=>a+b.found,0);
+  const interval = totalFound ? Math.round((totalTime / totalFound) * 10)/10 : 0;
+
+  let grade = "C级";
+  if(completedCount === 2 && totalErrors <= 2 && totalTime <= 85) grade = "S级";
+  else if(completedCount === 2 && totalErrors <= 5 && totalTime <= 115) grade = "A级";
+  else if(completedCount >= 1) grade = "B级";
+
+  $("gradeText").textContent = grade;
+  $("totalTimeText").textContent = totalTime + "s";
+  $("totalErrorText").textContent = totalErrors;
+  $("intervalText").textContent = interval + "s";
+  $("levelCountText").textContent = completedCount + "/2";
+
+  let sentence = "你的注意力扫描报告已生成。";
+  if(grade === "S级") sentence = "太厉害了！你像真正的太空雷达一样，又快又稳。";
+  else if(grade === "A级") sentence = "很棒！你的扫描速度和准确性都不错。";
+  else if(grade === "B级") sentence = "不错！你已经完成了主要任务，继续练习会更快。";
+  else sentence = "没关系，舒尔特方格需要策略。下次试试先整体扫视，再点击目标。";
+  $("resultSentence").textContent = sentence;
+
+  show("result");
+}
+</script>
+</body>
+</html>
