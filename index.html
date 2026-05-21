@@ -5,55 +5,77 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>南京大学周仁来团队心理学科普实验体验平台</title>
 <style>
-*{box-sizing:border-box}
-body{margin:0;min-height:100vh;font-family:"Microsoft YaHei",Arial,sans-serif;background:radial-gradient(circle at top left,#dbeafe,transparent 34%),radial-gradient(circle at bottom right,#fee2e2,transparent 36%),#f8fafc;color:#111827}
-header{padding:64px 22px 36px;text-align:center}
-.badge{display:inline-block;padding:8px 16px;border-radius:999px;background:#111827;color:white;font-weight:800;margin-bottom:18px}
-h1{font-size:clamp(32px,5vw,56px);line-height:1.15;margin:0 0 16px}
-.subtitle{font-size:20px;color:#4b5563;line-height:1.7;max-width:860px;margin:0 auto}
-main{max-width:1050px;margin:0 auto;padding:12px 22px 64px}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;margin-top:26px}
-.card{background:rgba(255,255,255,.9);border:1px solid #e5e7eb;border-radius:24px;padding:24px;box-shadow:0 12px 32px rgba(15,23,42,.08)}
-.card h2{margin:0 0 10px;font-size:24px}
-.card p{font-size:16px;line-height:1.7;color:#4b5563}
-.btn{display:inline-block;margin-top:12px;padding:12px 18px;border-radius:16px;background:#2563eb;color:white;text-decoration:none;font-weight:900}
-.soon{background:#e5e7eb;color:#6b7280}
-footer{text-align:center;color:#6b7280;padding:30px 20px 50px;line-height:1.7}
+:root{--bg:#050816;--panel:#101932cc;--card:#ffffff12;--line:#7ee7ff33;--text:#f4f8ff;--muted:#aebbd3;--cyan:#6fe7ff;--green:#4df0a0;--yellow:#ffd45e;--pink:#ff7eb6}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;font-family:"Microsoft YaHei",Arial,sans-serif;color:var(--text);background:radial-gradient(circle at 15% 16%,#6fe7ff2b,transparent 25%),radial-gradient(circle at 88% 18%,#ff7eb62b,transparent 24%),linear-gradient(145deg,#050816,#0b1026 55%,#160820);min-height:100vh}
+body:before{content:"";position:fixed;inset:0;background:linear-gradient(90deg,transparent 49px,#6fe7ff12 50px),linear-gradient(transparent 49px,#6fe7ff0f 50px);background-size:50px 50px;mask-image:linear-gradient(to bottom,#000,transparent 78%);pointer-events:none}
+.page{position:relative;z-index:1}.wrap{width:min(1180px,94vw);margin:auto}
+.nav{margin-top:22px;padding:14px 18px;border:1px solid var(--line);border-radius:999px;background:#071026aa;backdrop-filter:blur(14px);display:flex;justify-content:space-between;gap:16px;align-items:center}
+.brand{display:flex;align-items:center;gap:12px;font-weight:950}.logo{width:42px;height:42px;border-radius:16px;display:grid;place-items:center;background:linear-gradient(135deg,var(--cyan),var(--green),var(--yellow));color:#07111c}
+.links{display:flex;gap:8px;flex-wrap:wrap}.links a{padding:9px 13px;border-radius:999px;text-decoration:none;background:#ffffff12;border:1px solid #ffffff16;color:#dff4ff;font-weight:800;font-size:14px}
+.hero{margin-top:24px;padding:48px;border:1px solid var(--line);border-radius:38px;background:radial-gradient(circle at 75% 28%,#6fe7ff22,transparent 30%),linear-gradient(180deg,#0c122ad9,#060a1abf);box-shadow:0 28px 90px #0008}
+.badge{display:inline-flex;padding:9px 15px;border-radius:999px;background:#6fe7ff18;border:1px solid #6fe7ff38;color:#dff8ff;font-weight:900}
+h1{font-size:clamp(38px,6vw,72px);line-height:1.06;margin:20px 0 18px;letter-spacing:-1.4px}h2{font-size:clamp(30px,4vw,46px);margin:0 0 14px}h3{font-size:23px;margin:0 0 10px}p{color:var(--muted);line-height:1.75;font-size:18px}.hero p{font-size:21px;max-width:860px}.hl{color:#fff;text-shadow:0 0 18px #6fe7ff99}.yellow{color:var(--yellow);font-weight:950}
+.btns{display:flex;gap:14px;flex-wrap:wrap;margin-top:28px}.btn{display:inline-flex;padding:14px 20px;border-radius:18px;background:linear-gradient(135deg,var(--cyan),var(--green));color:#07111c;text-decoration:none;font-weight:950}.btn.alt{background:#ffffff12;color:var(--text);border:1px solid #ffffff20}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;max-width:820px;margin-top:34px}.stat{border-radius:22px;padding:18px;background:#ffffff0f;border:1px solid #ffffff18}.stat b{display:block;font-size:30px}.stat span{color:var(--muted);font-weight:800}
+.block{margin-top:26px;padding:32px;border-radius:34px;border:1px solid var(--line);background:linear-gradient(180deg,#0c122abb,#080c1e99)}.head{display:flex;justify-content:space-between;gap:18px;align-items:flex-end;margin-bottom:20px}.head small{display:block;color:var(--cyan);font-weight:900;letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px}.note{max-width:430px;text-align:right;color:var(--muted);font-size:15px;line-height:1.7}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.card{min-height:255px;padding:22px;border-radius:26px;background:radial-gradient(circle at 85% 18%,#6fe7ff1f,transparent 30%),var(--card);border:1px solid #ffffff18;display:flex;flex-direction:column}.icon{width:52px;height:52px;border-radius:18px;background:#ffffff18;border:1px solid #ffffff20;display:grid;place-items:center;font-size:27px;margin-bottom:16px}.card p{font-size:15.5px;margin:0 0 14px}.tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:auto;padding-top:10px}.tag{border-radius:999px;padding:6px 9px;font-size:12px;font-weight:900;color:#dff4ff;border:1px solid #6fe7ff30;background:#6fe7ff14}.action{margin-top:16px}.action a,.action span{display:inline-flex;padding:10px 13px;border-radius:14px;text-decoration:none;font-weight:950;font-size:14px}.action a{background:linear-gradient(135deg,var(--cyan),var(--green));color:#07111c}.action span{color:#96a7c1;background:#ffffff10;border:1px solid #ffffff16}
+.footer{margin:28px auto 34px;padding:24px 26px;border-radius:28px;border:1px solid var(--line);background:#050816cc;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}.footer img{height:56px;width:auto;object-fit:contain;border-radius:12px;background:#000}.maker{color:var(--yellow);font-weight:950}
+@media(max-width:900px){.nav,.head{align-items:flex-start;flex-direction:column}.hero{padding:30px 22px}.grid,.stats{grid-template-columns:1fr}.block{padding:24px 18px}.note{text-align:left}}
 </style>
 </head>
 <body>
-<header>
-<div class="badge">凤凰城小学心理学科普活动</div>
-<h1>南京大学周仁来团队<br>心理学科普实验体验平台</h1>
-<p class="subtitle">本平台整合适合小学高年级学生体验的互动心理学范式，用小游戏的方式帮助同学们认识注意、记忆、反应控制和规则切换。</p>
-</header>
-<main>
-<div class="grid">
-<section class="card">
-<h2>🤖 红蓝机器人规则切换挑战</h2>
-<p>通过红蓝机器人分类任务，体验大脑如何学习规则、忽略干扰，并在不同规则之间灵活切换。</p>
-<a class="btn" href="./red-blue-robot/">开始体验</a>
-</section>
-<section class="card">
-<h2>🌈 Stroop 字色挑战</h2>
-<p>体验“读字”和“说颜色”之间的冲突，理解注意控制和抑制控制。</p>
-<span class="btn soon">即将加入</span>
-</section>
-<section class="card">
-<h2>🧠 错误记忆实验</h2>
-<p>看看大脑为什么会记住“好像出现过”的内容，理解记忆不是录像机。</p>
-<span class="btn soon">即将加入</span>
-</section>
-<section class="card">
-<h2>⚡ Go / No-Go 反应控制</h2>
-<p>不只是要反应快，还要会“刹车”。体验大脑如何控制冲动反应。</p>
-<span class="btn soon">即将加入</span>
-</section>
+<div class="page">
+  <nav class="nav wrap">
+    <div class="brand"><div class="logo">🧠</div><span>南京大学周仁来团队心理学科普实验体验平台</span></div>
+    <div class="links"><a href="#tech">科技体验区</a><a href="#challenge">认知挑战区</a><a href="#guide">现场导览</a></div>
+  </nav>
+
+  <header class="hero wrap">
+    <div class="badge">凤凰城小学心理学科普活动 · 互动体验合集</div>
+    <h1>欢迎来到<br><span class="hl">大脑探秘局</span></h1>
+    <p>这里把脑电、心电、VR 等科技体验，与注意、记忆、反应控制、规则切换等心理学范式整合成两大区域。同学们可以像闯关一样认识：大脑如何看、如何记、如何反应，又如何在关键时刻“刹车”。</p>
+    <div class="btns"><a class="btn" href="#tech">进入科技体验区</a><a class="btn alt" href="#challenge">进入认知挑战区</a></div>
+    <div class="stats"><div class="stat"><b>2</b><span>活动区域</span></div><div class="stat"><b>12+</b><span>互动体验项目</span></div><div class="stat"><b>50min</b><span>讲解 + 分站体验</span></div></div>
+  </header>
+
+  <section class="block wrap" id="tech">
+    <div class="head"><div><small>Zone A · Technology Experience</small><h2>科技体验区</h2><p>负责“看得见的科学感”：让孩子看到仪器如何记录身体与大脑信号。</p></div><div class="note">建议做成展示型小桌：1人体验，多人围观；尽量配投屏或备用视频。</div></div>
+    <div class="grid">
+      <article class="card"><div class="icon">🧠</div><h3>大脑信号探测站</h3><p>体验脑电设备，观察眨眼、放松、专注或轻微动作时，屏幕上的信号如何变化。</p><div class="tags"><span class="tag">脑电</span><span class="tag">展示型</span><span class="tag">4min/轮</span></div><div class="action"><span>现场设备体验</span></div></article>
+      <article class="card"><div class="icon">💓</div><h3>心跳侦察站</h3><p>用心电/心率设备观察安静、运动或紧张后的心跳变化，理解心理状态与身体信号的关系。</p><div class="tags"><span class="tag">心电</span><span class="tag">Shimmer3</span><span class="tag">3min/组</span></div><div class="action"><span>现场设备体验</span></div></article>
+      <article class="card"><div class="icon">🥽</div><h3>VR 时空传送门</h3><p>通过 VR 眼镜进入虚拟场景，体验视觉环境如何影响我们的距离感、沉浸感和身体反应。</p><div class="tags"><span class="tag">VR眼镜</span><span class="tag">限时体验</span><span class="tag">2min/人</span></div><div class="action"><span>现场设备体验</span></div></article>
+    </div>
+  </section>
+
+  <section class="block wrap" id="challenge">
+    <div class="head"><div><small>Zone B · Cognitive Challenge</small><h2>认知挑战区</h2><p>负责“玩得懂的心理学”：每个小游戏都对应一种大脑能力。</p></div><div class="note">建议孩子自由选择 3–5 个项目集章，不强制全部体验，避免排队拥堵。</div></div>
+    <div class="grid">
+      <article class="card"><div class="icon">🤖</div><h3>红蓝机器人大战</h3><p>蓝色看表情，红色看手臂，混合出现时要快速切换规则。</p><div class="tags"><span class="tag">规则切换</span><span class="tag">认知灵活性</span><span class="tag">2–3min</span></div><div class="action"><a href="./red-blue-robot/">开始体验</a></div></article>
+      <article class="card"><div class="icon">👾</div><h3>大脑刹车挑战</h3><p>绿色小怪兽出现要按，红色小怪兽出现要忍住不按。</p><div class="tags"><span class="tag">Go/No-Go</span><span class="tag">反应抑制</span><span class="tag">2min</span></div><div class="action"><a href="./go-nogo/">开始体验</a></div></article>
+      <article class="card"><div class="icon">👁️</div><h3>视觉错觉挑战</h3><p>线条、圆形、明暗和背景会骗过眼睛，看看你能否识破错觉。</p><div class="tags"><span class="tag">视觉知觉</span><span class="tag">错觉</span><span class="tag">排队可玩</span></div><div class="action"><a href="./visual-illusion/">开始体验</a></div></article>
+      <article class="card"><div class="icon">🚀</div><h3>宇航员舒尔特</h3><p>在数字方格中快速按顺序寻找目标，体验注意力扫描速度。</p><div class="tags"><span class="tag">舒尔特方格</span><span class="tag">注意扫描</span><span class="tag">2min</span></div><div class="action"><span>待加入网页</span></div></article>
+      <article class="card"><div class="icon">🔎</div><h3>哪里不一样</h3><p>在相似图形中快速找出不同项，体验视觉搜索和细节观察。</p><div class="tags"><span class="tag">特征搜索</span><span class="tag">视觉注意</span><span class="tag">1min</span></div><div class="action"><span>待加入网页</span></div></article>
+      <article class="card"><div class="icon">🌈</div><h3>字色大挑战</h3><p>不要读字，只说颜色。看看自动化阅读如何干扰注意控制。</p><div class="tags"><span class="tag">Stroop</span><span class="tag">抗干扰</span><span class="tag">3min</span></div><div class="action"><span>待加入网页</span></div></article>
+      <article class="card"><div class="icon">🦍</div><h3>注意力隐身术</h3><p>当你专心做任务时，眼前出现的东西也可能被“大脑忽略”。</p><div class="tags"><span class="tag">非注意盲视</span><span class="tag">选择性注意</span><span class="tag">2min</span></div><div class="action"><span>现场视频/演示</span></div></article>
+      <article class="card"><div class="icon">🗼</div><h3>汉诺塔计划大师</h3><p>移动圆盘完成目标，体验计划、步骤控制和问题解决能力。</p><div class="tags"><span class="tag">计划能力</span><span class="tag">问题解决</span><span class="tag">3min</span></div><div class="action"><span>现场桌面体验</span></div></article>
+      <article class="card"><div class="icon">📡</div><h3>传话游戏</h3><p>一句话传到最后会变成什么？体验记忆和信息传播中的失真。</p><div class="tags"><span class="tag">错误记忆</span><span class="tag">信息传播</span><span class="tag">5min</span></div><div class="action"><span>现场小组体验</span></div></article>
+    </div>
+  </section>
+
+  <section class="block wrap" id="guide">
+    <div class="head"><div><small>On-site Guide</small><h2>现场导览建议</h2><p>建议前 20 分钟统一讲解，后 30 分钟分站体验。</p></div><div class="note">每个桌子都放一句“心理学发现”，让孩子玩完后能说出自己学到了什么。</div></div>
+    <div class="grid">
+      <article class="card"><div class="icon">🎤</div><h3>前 20 分钟</h3><p>用 Stroop 或视觉错觉做全班破冰，再介绍注意、记忆、身体信号和规则切换。</p><div class="tags"><span class="tag">统一讲解</span><span class="tag">建立主线</span></div></article>
+      <article class="card"><div class="icon">🧭</div><h3>后 30 分钟</h3><p>孩子自由选择小桌体验，建议每人完成 3–5 个项目，不要求全部完成。</p><div class="tags"><span class="tag">分站体验</span><span class="tag">集章闯关</span></div></article>
+      <article class="card"><div class="icon">🏅</div><h3>结尾 3 分钟</h3><p>请孩子说出“今天大脑最让我惊讶的一点”，再发放探索员奖章。</p><div class="tags"><span class="tag">复盘</span><span class="tag">鼓励表达</span></div></article>
+    </div>
+  </section>
+
+  <footer class="footer wrap">
+    <img src="./assets/rlz-logo.png" alt="课题组图标">
+    <div>南京大学周仁来团队 · 心理学科普互动实验合集<br>本页面仅用于心理学科普活动体验，不用于医学诊断或能力评价。<br><span class="maker">制作人：zhangyinuo</span></div>
+  </footer>
 </div>
-</main>
-<footer>
-南京大学周仁来团队 · 心理学科普互动实验合集<br>
-本页面仅用于心理学科普活动体验，不用于医学诊断或能力评价。
-</footer>
 </body>
 </html>
