@@ -21,17 +21,16 @@
   --purple:#a78bfa;
 }
 *{box-sizing:border-box}
-html,body{height:100%}
+html,body{min-height:100%}
 body{
   margin:0;
-  min-height:100vh;
   font-family:"Microsoft YaHei",Arial,sans-serif;
   color:var(--text);
   background:
-    radial-gradient(circle at 16% 16%,#6fe7ff2b,transparent 25%),
-    radial-gradient(circle at 86% 20%,#a78bfa2b,transparent 25%),
-    radial-gradient(circle at 50% 105%,#4df0a022,transparent 30%),
-    linear-gradient(145deg,#050816,#0b1026 55%,#160820);
+    radial-gradient(circle at 14% 15%,#6fe7ff2c,transparent 24%),
+    radial-gradient(circle at 88% 16%,#a78bfa30,transparent 25%),
+    radial-gradient(circle at 50% 112%,#4df0a022,transparent 30%),
+    linear-gradient(145deg,#050816,#0b1026 56%,#160820);
   overflow-x:hidden;
 }
 body:before{
@@ -47,15 +46,15 @@ body:before{
   background-position:0 0,21px 34px,0 0,0 0;
   mask-image:linear-gradient(to bottom,#000,transparent 82%);
   pointer-events:none;
-  animation:starDrift 32s linear infinite;
+  animation:starDrift 34s linear infinite;
 }
 @keyframes starDrift{to{background-position:180px 240px,-120px 180px,0 0,0 0}}
+
 .app{
   position:relative;
   z-index:1;
-  width:min(1120px,95vw);
-  min-height:720px;
-  margin:24px auto;
+  width:min(1420px,98vw);
+  margin:14px auto;
   border-radius:34px;
   border:1px solid var(--line);
   background:linear-gradient(180deg,#0c122ade,#060a1bc7);
@@ -69,510 +68,713 @@ body:before{
   background:linear-gradient(90deg,var(--cyan),var(--green),var(--yellow),var(--pink),var(--purple));
   box-shadow:0 0 26px #6fe7ff99;
 }
-.screen{display:none;min-height:720px;padding:30px;position:relative}
-.screen.active{display:block;animation:enter .25s ease}
-@keyframes enter{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
-
-.topbar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:18px}
-.brand{display:flex;align-items:center;gap:12px;font-weight:950;font-size:23px}
-.logo{
-  width:48px;height:48px;border-radius:18px;display:grid;place-items:center;
-  background:linear-gradient(135deg,var(--cyan),var(--green),var(--yellow));
-  color:#06111c;font-size:24px;box-shadow:0 0 28px #6fe7ff55;
+.bg-planet{
+  position:absolute;
+  right:-90px;
+  top:76px;
+  width:240px;
+  height:240px;
+  border-radius:50%;
+  background:radial-gradient(circle at 32% 28%,#fff7,#6fe7ff55 22%,#4f8cff22 58%,transparent 70%);
+  border:1px solid #6fe7ff22;
+  filter:blur(.2px);
+  pointer-events:none;
 }
-.pill{
-  border-radius:999px;padding:9px 14px;background:#6fe7ff14;border:1px solid #6fe7ff33;
-  color:#dff8ff;font-weight:900;font-size:14px;white-space:nowrap;
+.bg-planet:after{
+  content:"";
+  position:absolute;
+  left:-35px;
+  top:100px;
+  width:310px;
+  height:38px;
+  border-radius:50%;
+  border:3px solid #ff7eb644;
+  transform:rotate(-16deg);
 }
-.hero{display:grid;grid-template-columns:1.04fr .96fr;gap:28px;align-items:center;padding:18px 8px 0}
-h1{font-size:clamp(42px,6vw,74px);line-height:1.04;margin:0 0 18px;letter-spacing:-1.5px}
-h2{font-size:clamp(30px,4vw,48px);line-height:1.15;margin:0 0 14px}
-h3{font-size:24px;margin:0 0 10px}
-p{font-size:19px;line-height:1.75;color:var(--muted);margin:10px 0}
-.hl{color:#fff;text-shadow:0 0 20px #6fe7ff99}
-.yellow{color:var(--yellow);font-weight:950}
-.cyan{color:var(--cyan);font-weight:950}
-.pink{color:var(--pink);font-weight:950}
-.glass{
-  border-radius:28px;border:1px solid #ffffff18;background:linear-gradient(180deg,#142044bb,#071027aa);
-  padding:24px;box-shadow:0 18px 50px #0005,inset 0 0 28px #6fe7ff0a;
+.header{
+  position:relative;
+  padding:20px 26px 10px;
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:18px;
 }
-.rule-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin:22px 0}
-.rule-card{border-radius:22px;padding:18px;background:#ffffff10;border:1px solid #ffffff18}
-.rule-card strong{display:block;color:#fff;font-size:20px;margin-bottom:8px}
-.rule-card span{color:var(--muted);line-height:1.6}
-.btn-row{display:flex;gap:14px;flex-wrap:wrap;margin-top:26px}
-button,.btn{
-  appearance:none;border:0;cursor:pointer;border-radius:18px;padding:15px 22px;font-size:18px;font-weight:950;
-  color:#07111c;background:linear-gradient(135deg,var(--cyan),var(--green));
+.title h1{
+  margin:0;
+  font-size:clamp(30px,4vw,48px);
+  line-height:1.08;
+  letter-spacing:-1px;
+}
+.title p{
+  color:var(--muted);
+  font-size:16px;
+  line-height:1.55;
+  margin:12px 0 0;
+  max-width:820px;
+}
+.badge{
+  border-radius:999px;
+  padding:10px 16px;
+  background:#6fe7ff14;
+  border:1px solid #6fe7ff33;
+  color:#dff8ff;
+  font-weight:950;
+  white-space:nowrap;
+}
+.main{
+  padding:0 26px 20px;
+  display:grid;
+  grid-template-columns:320px 1fr;
+  gap:18px;
+}
+.panel{
+  border-radius:28px;
+  border:1px solid #ffffff18;
+  background:linear-gradient(180deg,#142044bb,#071027aa);
+  box-shadow:0 18px 50px #0005,inset 0 0 28px #6fe7ff0a;
+}
+.sidebar{
+  padding:18px;
+}
+h2,h3{margin:0 0 12px}
+h2{font-size:26px}
+h3{font-size:20px}
+.help{
+  background:#ffffff10;
+  border:1px solid #ffffff14;
+  border-radius:16px;
+  padding:10px;
+  color:#d9e8ff;
+  line-height:1.55;
+  font-size:15px;
+  margin-bottom:12px;
+}
+.astro-card{
+  min-height:118px;
+  border-radius:24px;
+  border:1px solid #6fe7ff26;
+  background:radial-gradient(circle at 78% 28%,#6fe7ff20,transparent 35%),#ffffff0b;
+  position:relative;
+  overflow:hidden;
+  margin-bottom:12px;
+}
+.astro-card svg{
+  position:absolute;
+  right:2px;
+  bottom:-12px;
+  width:112px;
+  filter:drop-shadow(0 16px 24px #0009);
+  animation:floaty 3s ease-in-out infinite;
+}
+@keyframes floaty{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-8px) rotate(3deg)}}
+.astro-card .copy{
+  position:relative;
+  z-index:1;
+  padding:10px;
+  max-width:190px;
+}
+.astro-card b{
+  color:#fff;
+  font-size:16px;
+}
+.astro-card span{
+  display:block;
+  color:var(--muted);
+  line-height:1.6;
+  font-size:13px;
+  margin-top:8px;
+}
+.difficulty-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin:12px 0 18px;
+}
+.diff-btn{
+  border:1px solid #ffffff18;
+  background:#ffffff0f;
+  color:#f4f8ff;
+  border-radius:18px;
+  padding:10px 8px;
+  cursor:pointer;
+  text-align:center;
+  font-weight:950;
+  min-height:64px;
+  transition:transform .12s ease, background .12s ease, border .12s ease;
+}
+.diff-btn:hover{transform:translateY(-1px);background:#ffffff18}
+.diff-btn.active{
+  color:#06111c;
+  background:linear-gradient(135deg,var(--cyan),var(--green));
+  border-color:#4df0a0;
+  box-shadow:0 0 24px #4df0a044;
+}
+.diff-btn b{display:block;font-size:19px}
+.diff-btn span{display:block;font-size:12px;margin-top:5px;opacity:.85}
+.mode-row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-bottom:14px;
+}
+.mode-btn{
+  border:1px solid #ffffff18;
+  background:#ffffff0f;
+  color:#f4f8ff;
+  border-radius:16px;
+  padding:10px;
+  cursor:pointer;
+  font-weight:950;
+}
+.mode-btn.active{
+  background:#ffd45e22;
+  border-color:#ffd45e66;
+  color:#ffeab0;
+  box-shadow:0 0 18px #ffd45e22;
+}
+.btn{
+  width:100%;
+  border:0;
+  cursor:pointer;
+  border-radius:18px;
+  padding:12px 16px;
+  font-size:17px;
+  font-weight:950;
+  margin-top:9px;
+  color:#07111c;
+  background:linear-gradient(135deg,var(--cyan),var(--green));
   box-shadow:0 14px 30px #6fe7ff2a,inset 0 0 0 1px #ffffff26;
-  transition:transform .1s ease,filter .1s ease,opacity .1s ease;text-decoration:none;
 }
-button:hover,.btn:hover{transform:translateY(-1px);filter:brightness(1.04)}
-button:active,.btn:active{transform:translateY(1px) scale(.99)}
-.secondary{background:#ffffff12;color:var(--text);border:1px solid #ffffff20;box-shadow:none}
-.preview{min-height:430px;display:grid;place-items:center;position:relative;overflow:hidden}
-.preview:before{
-  content:"";position:absolute;width:420px;height:420px;border-radius:50%;
-  background:conic-gradient(from 0deg,#6fe7ff00,#6fe7ff40,#4df0a000,#a78bfa40,#6fe7ff00);
-  animation:spin 10s linear infinite;opacity:.7;
+.btn.secondary{
+  background:#ffffff12;
+  color:var(--text);
+  border:1px solid #ffffff20;
+  box-shadow:none;
+}
+.small-note{
+  color:#9fb0ce;
+  font-size:12px;
+  line-height:1.55;
+  margin-top:10px;
+  padding-top:14px;
+  border-top:1px dashed #ffffff1c;
+}
+.task{
+  padding:18px;
+}
+.dashboard{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:9px;
+  margin-bottom:12px;
+}
+.stat{
+  border-radius:18px;
+  background:#ffffff0e;
+  border:1px solid #ffffff16;
+  padding:10px 10px;
+  text-align:center;
+}
+.stat b{
+  display:block;
+  font-size:clamp(22px,3vw,32px);
+  color:#fff;
+  line-height:1.1;
+}
+.stat span{
+  display:block;
+  margin-top:5px;
+  color:var(--muted);
+  font-size:13px;
+  font-weight:850;
+}
+.prompt{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:9px;
+  margin:8px 0 18px;
+  font-size:19px;
+  font-weight:950;
+}
+.target-badge{
+  min-width:58px;
+  min-height:48px;
+  display:grid;
+  place-items:center;
+  border-radius:18px;
+  color:#07111c;
+  background:linear-gradient(135deg,var(--yellow),#ff9f1c);
+  box-shadow:0 0 24px #ffd45e55;
+  font-size:26px;
+}
+.board-wrap{
+  position:relative;
+  border-radius:28px;
+  border:1px solid #6fe7ff24;
+  background:
+    radial-gradient(circle at center,#6fe7ff12,transparent 55%),
+    linear-gradient(180deg,#ffffff08,#ffffff03);
+  padding:16px;
+  min-height:390px;
+  display:grid;
+  place-items:center;
+  overflow:hidden;
+}
+.board-wrap:before{
+  content:"";
+  position:absolute;
+  width:660px;
+  height:660px;
+  border-radius:50%;
+  border:1px dashed #6fe7ff2e;
+  animation:spin 22s linear infinite;
+}
+.board-wrap:after{
+  content:"";
+  position:absolute;
+  width:430px;
+  height:430px;
+  border-radius:50%;
+  border:1px solid #a78bfa26;
+}
+.orbit-dot{
+  position:absolute;
+  width:16px;
+  height:16px;
+  border-radius:50%;
+  background:#ffd45e;
+  box-shadow:0 0 20px #ffd45e99;
+  animation:orbit 9s linear infinite;
+  z-index:0;
 }
 @keyframes spin{to{transform:rotate(360deg)}}
-.astronaut-wrap{position:relative;z-index:1;width:320px;height:330px;display:grid;place-items:center;animation:float 2.7s ease-in-out infinite}
-@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
-.astronaut{width:290px;filter:drop-shadow(0 26px 28px #0008)}
-.note{
-  border-radius:20px;padding:16px 18px;background:#ffd45e18;border:1px solid #ffd45e40;
-  color:#ffeab0;font-size:17px;font-weight:850;line-height:1.7;margin-top:18px;
+@keyframes orbit{
+  from{transform:rotate(0deg) translateX(220px) rotate(0deg)}
+  to{transform:rotate(360deg) translateX(220px) rotate(-360deg)}
 }
-
-.game{
+.grid{
+  position:relative;
+  z-index:1;
   display:grid;
-  grid-template-rows:auto auto 1fr auto;
-  gap:15px;
-  min-height:650px;
-}
-.hud{display:grid;grid-template-columns:1fr auto;gap:16px;align-items:center}
-.hud-title{display:flex;justify-content:space-between;gap:12px;margin-bottom:9px;font-weight:900;color:#e5f8ff}
-.progress{height:13px;border-radius:999px;background:#ffffff12;border:1px solid #ffffff12;overflow:hidden}
-.progress div{height:100%;width:0%;background:linear-gradient(90deg,var(--cyan),var(--green),var(--yellow),var(--pink));box-shadow:0 0 18px #6fe7ffaa;transition:width .18s ease}
-.chips{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
-.chip{min-width:108px;border-radius:16px;padding:10px 12px;text-align:center;background:#ffffff10;border:1px solid #ffffff18}
-.chip b{display:block;font-size:18px;color:#fff}.chip span{display:block;font-size:12px;color:var(--muted);font-weight:850;margin-top:2px}
-.mission{text-align:center}.mission h2{margin-bottom:8px}.mission p{margin:0;font-size:17px}
-.arena{
-  min-height:430px;display:grid;place-items:center;position:relative;border-radius:30px;
-  background:radial-gradient(circle at center,#6fe7ff12,transparent 55%),linear-gradient(180deg,#ffffff08,#ffffff03);
-  border:1px solid #6fe7ff24;overflow:hidden;padding:18px;
-}
-.arena:before{content:"";position:absolute;width:620px;height:620px;border-radius:50%;border:1px dashed #6fe7ff2e;animation:spin 18s linear infinite}
-.arena:after{content:"";position:absolute;width:440px;height:440px;border-radius:50%;border:1px solid #a78bfa25}
-.schulte-grid{
-  position:relative;z-index:1;
-  display:grid;gap:10px;
-  width:min(620px,100%);
-  margin:auto;
+  gap:9px;
+  width:min(720px,100%);
 }
 .cell{
   aspect-ratio:1/1;
-  border-radius:18px;
-  border:1px solid #ffffff24;
-  color:#fff;
-  background:linear-gradient(180deg,#18244d,#0b1432);
-  font-size:clamp(22px,4vw,38px);
+  border:none;
+  border-radius:16px;
+  cursor:pointer;
+  color:#0b3b24;
+  background:linear-gradient(180deg,#d8ffe8,#bff8d5);
+  border:2px solid #6ee7a5;
   font-weight:1000;
-  display:grid;
-  place-items:center;
-  box-shadow:0 12px 24px #0004,inset 0 0 24px #6fe7ff10;
-  user-select:none;
+  font-size:clamp(20px,3.2vw,36px);
+  box-shadow:0 12px 26px #0003,inset 0 0 20px #ffffff80;
+  transition:transform .08s ease,filter .08s ease,opacity .12s ease;
 }
-.cell:hover{filter:brightness(1.12);transform:translateY(-1px)}
+.cell:hover{transform:translateY(-1px);filter:brightness(1.05)}
 .cell.done{
-  color:#07111c;
-  background:linear-gradient(135deg,var(--cyan),var(--green));
-  box-shadow:0 0 26px #4df0a055;
+  opacity:.42;
+  color:#ffffff;
+  background:#ffffff14;
+  border-color:#ffffff1c;
+  box-shadow:none;
 }
-.cell.next{
-  outline:3px solid #ffd45e99;
-  box-shadow:0 0 28px #ffd45e55,inset 0 0 24px #ffd45e22;
+.cell.wrong{
+  animation:shake .18s ease;
+  background:linear-gradient(135deg,#ff4d6d,#991b1b);
+  color:#fff;
+  border-color:#ffb4c4;
 }
-.cell.error{animation:shake .18s ease;background:linear-gradient(135deg,#ff4d6d,#991b1b)}
 @keyframes shake{0%,100%{transform:translateX(0)}30%{transform:translateX(-5px)}70%{transform:translateX(5px)}}
-.feedback{
-  position:absolute;bottom:18px;left:50%;transform:translateX(-50%);
-  width:min(720px,90%);text-align:center;border-radius:20px;padding:12px 16px;
-  font-size:23px;font-weight:950;backdrop-filter:blur(8px);
+.message{
+  margin-top:10px;
+  text-align:center;
+  border-radius:16px;
+  padding:10px 14px;
+  font-size:17px;
+  font-weight:950;
+  min-height:44px;
 }
-.feedback.neutral{background:#6fe7ff14;border:1px solid #6fe7ff2c;color:#e3f8ff}
-.feedback.good{background:#4df0a01f;border:1px solid #4df0a04a;color:#dcffec}
-.feedback.bad{background:#ff4d6d1f;border:1px solid #ff4d6d4a;color:#ffdbe4}
-.level-card{
-  max-width:900px;margin:24px auto 0;text-align:center;
+.message.neutral{background:#6fe7ff14;border:1px solid #6fe7ff2c;color:#e3f8ff}
+.message.good{background:#4df0a01f;border:1px solid #4df0a04a;color:#dcffec}
+.message.bad{background:#ff4d6d1f;border:1px solid #ff4d6d4a;color:#ffdbe4}
+.result{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:9px;
+  margin-top:10px;
 }
-.result-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin:26px 0}
-.result-card{border-radius:22px;padding:20px;text-align:center;background:#ffffff10;border:1px solid #ffffff18}
-.result-card .num{font-size:42px;font-weight:1000;color:#fff;margin:6px 0}
-.result-card .label{color:var(--muted);font-weight:900;font-size:14px;line-height:1.45}
-.big-score{
-  font-size:clamp(64px,10vw,108px);line-height:1;font-weight:1000;margin:14px 0 10px;
-  background:linear-gradient(135deg,var(--yellow),var(--cyan),var(--pink));-webkit-background-clip:text;color:transparent;
+.result-box{
+  border-radius:18px;
+  background:#ffffff0e;
+  border:1px solid #ffffff16;
+  padding:10px;
+  text-align:center;
 }
-.teacher-list{max-width:850px;margin:18px auto 0;text-align:left}
-.teacher-list li{color:var(--muted);font-size:18px;line-height:1.8;margin:8px 0}
-@media(max-width:850px){
-  .app{width:100%;min-height:100vh;margin:0;border-radius:0}.screen{min-height:100vh;padding:20px}
-  .hero{grid-template-columns:1fr}.rule-grid,.result-grid{grid-template-columns:1fr}.hud{grid-template-columns:1fr}.chips{justify-content:flex-start}
-  h1{font-size:40px}.preview{min-height:280px}.astronaut{width:230px}.arena{min-height:360px}
-  .schulte-grid{gap:7px}.cell{border-radius:13px}
+.result-box b{display:block;font-size:20px;color:#fff}
+.result-box span{display:block;color:var(--muted);font-size:12px;margin-top:4px;font-weight:850}
+.explain{
+  margin-top:12px;
+  border-radius:16px;
+  padding:12px 14px;
+  background:#ffd45e18;
+  border:1px solid #ffd45e40;
+  color:#ffeab0;
+  font-size:15px;
+  line-height:1.8;
+}
+.hidden{display:none}
+
+/* 桌面横屏紧凑版：更宽、更矮，适合投屏和电脑浏览器 */
+@media(min-width:901px){
+  .app{
+    min-height:auto;
+  }
+  .header{
+    align-items:center;
+  }
+  .title p{
+    max-width:980px;
+  }
+  .main{
+    align-items:start;
+  }
+  .sidebar{
+    max-height:calc(100vh - 128px);
+    overflow:auto;
+  }
+  .task{
+    min-height:0;
+  }
+  .board-wrap{
+    height:390px;
+  }
+  .grid{
+    max-height:350px;
+  }
+  .cell{
+    min-height:0;
+  }
+  .help{
+    font-size:14px;
+  }
+  .explain{
+    font-size:14px;
+  }
+}
+
+@media(max-width:900px){
+  .app{width:100%;margin:0;border-radius:0;min-height:100vh}
+  .header{flex-direction:column;padding:24px 20px 14px}
+  .main{grid-template-columns:1fr;padding:0 20px 24px}
+  .dashboard,.result{grid-template-columns:repeat(2,1fr)}
+  .board-wrap{min-height:360px;padding:16px}
+  .grid{gap:7px}
+  .cell{border-radius:13px}
 }
 </style>
 </head>
 <body>
 <main class="app">
-  <section id="home" class="screen active">
-    <div class="topbar">
-      <div class="brand"><div class="logo">🚀</div><span>宇航员舒尔特</span></div>
-      <div class="pill">星际数字扫描任务 · 约 2–3 分钟</div>
+  <div class="bg-planet"></div>
+
+  <header class="header">
+    <div class="title">
+      <h1>宇航员舒尔特小任务</h1>
+      <p>从 <b>1</b> 开始，按顺序快速点击数字。这个任务会记录完成时间、错误次数和完成进度。</p>
     </div>
-    <div class="hero">
-      <div>
-        <h1>化身<span class="cyan">宇航员</span><br>扫描星际数字坐标</h1>
-        <p>你将进入太空数字舱，按照 <span class="yellow">1 → 2 → 3</span> 的顺序快速找到数字。这个任务可以体验注意力扫描、视觉搜索和专注保持。</p>
-        <div class="rule-grid">
-          <div class="rule-card"><strong>怎么玩？</strong><span>从 1 开始，按顺序点击数字，直到完成整张方格。</span></div>
-          <div class="rule-card"><strong>有几关？</strong><span>练习 3×3，正式 4×4 和 5×5，总时长控制在 3 分钟内。</span></div>
-          <div class="rule-card"><strong>看什么结果？</strong><span>完成时间、错误次数、平均扫描间隔和注意力扫描等级。</span></div>
-          <div class="rule-card"><strong>小提示</strong><span>不要盯着一个格子，要像雷达一样从整体快速扫描。</span></div>
+    <div class="badge">心理学体验任务</div>
+  </header>
+
+  <section class="main">
+    <aside class="panel sidebar">
+      <div class="astro-card">
+        <div class="copy">
+          <b>星际数字扫描</b>
+          <span>像宇航员扫描星图一样，快速找到下一个数字坐标。</span>
         </div>
-        <div class="btn-row">
-          <button onclick="showRules()">开始任务</button>
-          <button class="secondary" onclick="showTeacher()">教师说明</button>
-        </div>
-      </div>
-      <div class="glass preview">
-        <div class="astronaut-wrap" id="astroPreview"></div>
-      </div>
-    </div>
-  </section>
-
-  <section id="teacher" class="screen">
-    <div class="topbar">
-      <div class="brand"><div class="logo">🧠</div><span>教师说明</span></div>
-      <div class="pill">适合五六年级 · 小桌体验</div>
-    </div>
-    <div class="glass" style="max-width:920px;margin:22px auto 0">
-      <h2>舒尔特方格在体验什么？</h2>
-      <p>舒尔特任务要求孩子在随机排列的数字中按顺序寻找目标，可以用于科普视觉搜索、注意广度、注意力稳定性和扫描策略。</p>
-      <ul class="teacher-list">
-        <li><b>心理学概念：</b>视觉搜索、注意扫描、专注保持、目标序列追踪。</li>
-        <li><b>儿童话术：</b>你的眼睛像太空雷达，要快速扫到下一个数字坐标。</li>
-        <li><b>现场玩法：</b>每个孩子独立体验 2–3 分钟；旁边同学可以观察他是“一个个找”还是“整体扫描”。</li>
-        <li><b>结果解释：</b>速度快不一定只是手快，也和搜索策略有关。错误多时可以提醒孩子先稳住，再加速。</li>
-      </ul>
-      <div class="btn-row">
-        <button onclick="showRules()">开始任务</button>
-        <button class="secondary" onclick="show('home')">返回首页</button>
-      </div>
-    </div>
-  </section>
-
-  <section id="rules" class="screen">
-    <div class="topbar">
-      <div class="brand"><div class="logo">🛰️</div><span>任务简报</span></div>
-      <div class="pill">先练习，再正式扫描</div>
-    </div>
-    <div class="glass level-card">
-      <h2>请按顺序点击数字</h2>
-      <p>从 <span class="yellow">1</span> 开始，找到下一个数字，再找到下下一个。目标是又快又稳地完成整张星际坐标图。</p>
-      <div class="rule-grid">
-        <div class="rule-card"><strong>练习舱</strong><span>3×3，数字 1–9，用来熟悉操作。</span></div>
-        <div class="rule-card"><strong>正式舱 1</strong><span>4×4，数字 1–16，适合快速进入状态。</span></div>
-        <div class="rule-card"><strong>正式舱 2</strong><span>5×5，数字 1–25，挑战完整注意力扫描。</span></div>
-        <div class="rule-card"><strong>时间设置</strong><span>每关有倒计时，全部体验一般 2–3 分钟。</span></div>
-      </div>
-      <div class="note">小提示：用眼睛先扫一圈，找到大概位置，再点击。不要乱点，错误会计入成绩。</div>
-      <div class="btn-row" style="justify-content:center">
-        <button onclick="startGame()">我准备好了</button>
-      </div>
-    </div>
-  </section>
-
-  <section id="levelIntro" class="screen">
-    <div class="topbar">
-      <div class="brand"><div class="logo">🌌</div><span id="introBrand">正式舱</span></div>
-      <div class="pill" id="introPill">准备扫描</div>
-    </div>
-    <div class="glass level-card">
-      <h2 id="levelIntroTitle">准备进入下一关</h2>
-      <p id="levelIntroText">请按顺序点击数字。</p>
-      <div class="note" id="levelIntroNote">准备好后点击开始。</div>
-      <div class="btn-row" style="justify-content:center">
-        <button onclick="beginLevel()">开始本关</button>
-      </div>
-    </div>
-  </section>
-
-  <section id="game" class="screen">
-    <div class="game">
-      <div class="topbar" style="margin-bottom:0">
-        <div class="brand"><div class="logo">🎮</div><span>星际数字扫描中</span></div>
-        <div class="pill" id="timerPill">剩余时间：60s</div>
+        <div id="astroSvg"></div>
       </div>
 
-      <div class="hud">
-        <div>
-          <div class="hud-title">
-            <span id="levelText">练习舱 3×3</span>
-            <span id="targetText">下一个目标：1</span>
-          </div>
-          <div class="progress"><div id="progressBar"></div></div>
-        </div>
-        <div class="chips">
-          <div class="chip"><b id="timeChip">0.0s</b><span>本关用时</span></div>
-          <div class="chip"><b id="errorChip">0</b><span>错误</span></div>
-          <div class="chip"><b id="doneChip">0</b><span>已找到</span></div>
-        </div>
+      <h2>任务设置</h2>
+      <div class="help">
+        <b>给小朋友的说明：</b><br>
+        看到数字方格后，请从 <b>1</b> 开始，依次点击 <b>2、3、4……</b>，直到最后一个数字。<br>
+        点错了没关系，继续找下一个正确数字就可以。
       </div>
 
-      <div class="mission">
-        <h2>像太空雷达一样扫描数字</h2>
-        <p>当前目标会显示在上方。请按顺序点击，不要跳号。</p>
+      <h3>选择难度</h3>
+      <div class="difficulty-grid">
+        <button class="diff-btn" data-size="3" onclick="selectSize(3)">
+          <b>3×3</b><span>小练习</span>
+        </button>
+        <button class="diff-btn active" data-size="4" onclick="selectSize(4)">
+          <b>4×4</b><span>简短版</span>
+        </button>
+        <button class="diff-btn" data-size="5" onclick="selectSize(5)">
+          <b>5×5</b><span>挑战版</span>
+        </button>
+        <button class="diff-btn" data-size="6" onclick="selectSize(6)">
+          <b>6×6</b><span>高手版</span>
+        </button>
       </div>
 
-      <div class="arena">
-        <div class="schulte-grid" id="grid"></div>
-        <div id="feedback" class="feedback neutral">准备开始扫描……</div>
-      </div>
-    </div>
-  </section>
-
-  <section id="result" class="screen">
-    <div class="topbar">
-      <div class="brand"><div class="logo">🏆</div><span>任务完成</span></div>
-      <div class="pill">扫描报告</div>
-    </div>
-
-    <div class="glass" style="max-width:980px;margin:16px auto 0;text-align:center">
-      <h2>星际数字扫描任务完成！</h2>
-      <div class="big-score" id="gradeText">A级</div>
-      <p id="resultSentence">你的注意力扫描报告已生成。</p>
-
-      <div class="result-grid">
-        <div class="result-card">
-          <div class="label">总完成时间</div>
-          <div class="num" id="totalTimeText">0s</div>
-        </div>
-        <div class="result-card">
-          <div class="label">错误次数</div>
-          <div class="num" id="totalErrorText">0</div>
-        </div>
-        <div class="result-card">
-          <div class="label">平均扫描间隔</div>
-          <div class="num" id="intervalText">0s</div>
-        </div>
-        <div class="result-card">
-          <div class="label">完成关卡</div>
-          <div class="num" id="levelCountText">0/3</div>
-        </div>
+      <h3>任务类型</h3>
+      <div class="mode-row">
+        <button class="mode-btn" data-mode="practice" onclick="selectMode('practice')">小练习</button>
+        <button class="mode-btn active" data-mode="formal" onclick="selectMode('formal')">正式</button>
       </div>
 
-      <div class="note">
-        心理学小发现：舒尔特任务不是只看手速，更考验眼睛如何搜索目标、大脑如何保持顺序和专注。找到更好的扫描策略，速度会明显变快。
+      <button class="btn" onclick="startTask()">开始任务</button>
+      <button class="btn secondary" onclick="startPracticeThenFormal()">3×3练习 → 4×4正式</button>
+      <button class="btn secondary" onclick="restartTask()">重新开始本轮</button>
+
+      <div class="small-note">
+        体验建议：五六年级学生可先做 3×3 小练习，再做 4×4 或 5×5；6×6 适合作为加分挑战。
+      </div>
+    </aside>
+
+    <section class="panel task">
+      <h2>点击任务区</h2>
+
+      <div class="dashboard">
+        <div class="stat"><b id="timeStat">0.00</b><span>用时 / 秒</span></div>
+        <div class="stat"><b id="statusStat">待开始</b><span>任务状态</span></div>
+        <div class="stat"><b id="errorStat">0</b><span>错误次数</span></div>
+        <div class="stat"><b id="progressStat">0%</b><span>完成进度</span></div>
       </div>
 
-      <div class="btn-row" style="justify-content:center">
-        <button onclick="startGame()">再挑战一次</button>
-        <button class="secondary" onclick="show('home')">返回首页</button>
+      <div class="prompt">
+        <span>现在请找：</span>
+        <span class="target-badge" id="targetStat">1</span>
       </div>
-    </div>
+
+      <div class="board-wrap">
+        <div class="orbit-dot"></div>
+        <div class="grid" id="grid"></div>
+      </div>
+
+      <div class="message neutral" id="message">请选择难度后点击“开始任务”。</div>
+
+      <div class="result" id="resultPanel">
+        <div class="result-box"><b id="finalTime">--</b><span>本轮用时</span></div>
+        <div class="result-box"><b id="finalError">--</b><span>本轮错误</span></div>
+        <div class="result-box"><b id="finalLevel">--</b><span>扫描等级</span></div>
+      </div>
+
+      <div class="explain">
+        <b>心理学小发现：</b>舒尔特方格考验的不是“会不会数数”，而是眼睛如何快速搜索目标、大脑如何保持顺序和专注。做得更快通常来自更好的扫描策略。
+      </div>
+    </section>
   </section>
 </main>
 
 <script>
-const LEVELS = [
-  {name:"练习舱", grid:3, max:9, limit:35, practice:true, note:"数字 1–9，熟悉操作，不计入最终评价。"},
-  {name:"正式舱 1", grid:4, max:16, limit:55, practice:false, note:"数字 1–16，开始计入扫描报告。"},
-  {name:"正式舱 2", grid:5, max:25, limit:85, practice:false, note:"数字 1–25，完成最终注意力扫描挑战。"}
-];
-
-let currentLevelIndex = 0;
-let currentLevel = null;
-let numbers = [];
-let nextTarget = 1;
+let currentSize = 4;
+let currentMode = "formal";
+let currentTarget = 1;
+let maxNumber = 16;
 let errors = 0;
-let found = 0;
-let levelStart = 0;
+let started = false;
+let finished = false;
+let startTime = 0;
 let timer = null;
-let tick = null;
-let levelResults = [];
-let running = false;
+let lastConfig = null;
+let autoFormalAfterPractice = false;
 
-function $(id){return document.getElementById(id)}
-function show(id){
-  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
-  $(id).classList.add("active");
-}
-function showRules(){show("rules")}
-function showTeacher(){show("teacher")}
-function shuffle(arr){return [...arr].sort(()=>Math.random()-0.5)}
+const $ = id => document.getElementById(id);
 
 function astronautSvg(){
-  return `<svg class="astronaut" viewBox="0 0 360 380" xmlns="http://www.w3.org/2000/svg">
+  return `<svg viewBox="0 0 260 300" xmlns="http://www.w3.org/2000/svg">
     <defs>
-      <radialGradient id="helmet" cx="45%" cy="35%" r="70%">
-        <stop offset="0%" stop-color="#e7fbff"/>
-        <stop offset="40%" stop-color="#8feeff"/>
-        <stop offset="100%" stop-color="#12365b"/>
+      <radialGradient id="helmet" cx="40%" cy="30%" r="70%">
+        <stop offset="0%" stop-color="#ffffff"/>
+        <stop offset="45%" stop-color="#94f1ff"/>
+        <stop offset="100%" stop-color="#15365c"/>
       </radialGradient>
-      <filter id="glow"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      <filter id="g"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
     </defs>
-    <ellipse cx="180" cy="346" rx="95" ry="20" fill="#000" opacity=".28"/>
-    <path d="M108 158 C66 184 50 235 67 282" stroke="#dff8ff" stroke-width="28" fill="none" stroke-linecap="round"/>
-    <path d="M252 158 C294 184 310 235 293 282" stroke="#dff8ff" stroke-width="28" fill="none" stroke-linecap="round"/>
-    <rect x="103" y="140" width="154" height="160" rx="38" fill="#f4fbff" stroke="#9bb5d4" stroke-width="6"/>
-    <rect x="133" y="204" width="94" height="56" rx="16" fill="#0b1026" stroke="#6fe7ff" stroke-width="4"/>
-    <circle cx="156" cy="232" r="8" fill="#4df0a0"/><circle cx="183" cy="232" r="8" fill="#ffd45e"/><circle cx="210" cy="232" r="8" fill="#ff7eb6"/>
-    <circle cx="180" cy="94" r="76" fill="#f4fbff" stroke="#9bb5d4" stroke-width="7"/>
-    <path d="M112 91 C124 42 166 26 205 39 C245 52 267 92 250 133 C225 146 161 151 116 131 C109 118 107 105 112 91Z" fill="url(#helmet)" filter="url(#glow)"/>
-    <circle cx="130" cy="78" r="8" fill="#fff" opacity=".9"/>
-    <rect x="92" y="294" width="48" height="58" rx="18" fill="#dff8ff" stroke="#9bb5d4" stroke-width="5"/>
-    <rect x="220" y="294" width="48" height="58" rx="18" fill="#dff8ff" stroke="#9bb5d4" stroke-width="5"/>
-    <circle cx="62" cy="283" r="22" fill="#f4fbff" stroke="#9bb5d4" stroke-width="5"/>
-    <circle cx="298" cy="283" r="22" fill="#f4fbff" stroke="#9bb5d4" stroke-width="5"/>
-    <path d="M70 24 L90 44 M290 24 L270 44" stroke="#6fe7ff" stroke-width="8" stroke-linecap="round"/>
-    <circle cx="68" cy="22" r="9" fill="#6fe7ff"/><circle cx="292" cy="22" r="9" fill="#6fe7ff"/>
+    <ellipse cx="132" cy="278" rx="68" ry="13" fill="#000" opacity=".28"/>
+    <path d="M78 127 C43 151 35 195 50 231" stroke="#e9fbff" stroke-width="22" fill="none" stroke-linecap="round"/>
+    <path d="M184 127 C219 151 227 195 212 231" stroke="#e9fbff" stroke-width="22" fill="none" stroke-linecap="round"/>
+    <rect x="77" y="112" width="110" height="126" rx="30" fill="#f4fbff" stroke="#9bb5d4" stroke-width="5"/>
+    <rect x="98" y="163" width="68" height="42" rx="12" fill="#0b1026" stroke="#6fe7ff" stroke-width="3"/>
+    <circle cx="113" cy="184" r="6" fill="#4df0a0"/><circle cx="132" cy="184" r="6" fill="#ffd45e"/><circle cx="151" cy="184" r="6" fill="#ff7eb6"/>
+    <circle cx="132" cy="72" r="58" fill="#f4fbff" stroke="#9bb5d4" stroke-width="6"/>
+    <path d="M81 70 C91 31 124 18 155 29 C188 40 204 73 190 104 C171 115 122 119 86 103 C80 93 77 82 81 70Z" fill="url(#helmet)" filter="url(#g)"/>
+    <circle cx="96" cy="57" r="6" fill="#fff" opacity=".9"/>
+    <rect x="70" y="232" width="35" height="46" rx="15" fill="#dff8ff" stroke="#9bb5d4" stroke-width="4"/>
+    <rect x="159" y="232" width="35" height="46" rx="15" fill="#dff8ff" stroke="#9bb5d4" stroke-width="4"/>
+    <circle cx="48" cy="230" r="17" fill="#f4fbff" stroke="#9bb5d4" stroke-width="4"/>
+    <circle cx="216" cy="230" r="17" fill="#f4fbff" stroke="#9bb5d4" stroke-width="4"/>
+    <path d="M42 28 L57 43 M218 28 L203 43" stroke="#6fe7ff" stroke-width="6" stroke-linecap="round"/>
+    <circle cx="40" cy="26" r="7" fill="#6fe7ff"/><circle cx="220" cy="26" r="7" fill="#6fe7ff"/>
   </svg>`;
 }
-$("astroPreview").innerHTML = astronautSvg();
+$("astroSvg").innerHTML = astronautSvg();
 
-function startGame(){
-  levelResults = [];
-  currentLevelIndex = 0;
-  prepareLevelIntro();
+function shuffle(arr){
+  return [...arr].sort(() => Math.random() - 0.5);
 }
 
-function prepareLevelIntro(){
-  currentLevel = LEVELS[currentLevelIndex];
-  $("introBrand").textContent = currentLevel.name;
-  $("introPill").textContent = currentLevel.practice ? "练习不计分" : "正式计分";
-  $("levelIntroTitle").textContent = `${currentLevel.name}：${currentLevel.grid}×${currentLevel.grid} 数字坐标`;
-  $("levelIntroText").textContent = `请按 1 → 2 → 3 的顺序点击，直到找到 ${currentLevel.max}。`;
-  $("levelIntroNote").textContent = currentLevel.note;
-  show("levelIntro");
+function selectSize(size){
+  currentSize = size;
+  document.querySelectorAll(".diff-btn").forEach(btn => {
+    btn.classList.toggle("active", Number(btn.dataset.size) === size);
+  });
+  previewGrid(size);
+  $("message").className = "message neutral";
+  $("message").textContent = `已选择 ${size}×${size}，点击“开始任务”即可体验。`;
 }
 
-function beginLevel(){
-  currentLevel = LEVELS[currentLevelIndex];
-  numbers = shuffle(Array.from({length:currentLevel.max}, (_,i)=>i+1));
-  nextTarget = 1;
-  errors = 0;
-  found = 0;
-  running = true;
-  levelStart = performance.now();
-
-  renderGrid();
-  updateHud();
-  $("feedback").className = "feedback neutral";
-  $("feedback").textContent = "开始扫描：请点击 1";
-
-  clearInterval(tick);
-  tick = setInterval(updateHud, 100);
-  clearTimeout(timer);
-  timer = setTimeout(() => {
-    if(running) finishLevel(false);
-  }, currentLevel.limit * 1000);
-
-  show("game");
+function selectMode(mode){
+  currentMode = mode;
+  document.querySelectorAll(".mode-btn").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.mode === mode);
+  });
 }
 
-function renderGrid(){
+function previewGrid(size){
+  if(started && !finished) return;
+  maxNumber = size * size;
+  currentTarget = 1;
+  buildGrid(size, true);
+  $("targetStat").textContent = "1";
+  $("progressStat").textContent = "0%";
+  $("errorStat").textContent = "0";
+  $("statusStat").textContent = "待开始";
+  $("timeStat").textContent = "0.00";
+  $("finalTime").textContent = "--";
+  $("finalError").textContent = "--";
+  $("finalLevel").textContent = "--";
+}
+
+function buildGrid(size, preview=false){
+  const nums = shuffle(Array.from({length:size*size}, (_,i)=>i+1));
   const grid = $("grid");
-  grid.style.gridTemplateColumns = `repeat(${currentLevel.grid}, 1fr)`;
-  grid.innerHTML = numbers.map(n => `<button class="cell" id="cell-${n}" onclick="clickNumber(${n})">${n}</button>`).join("");
-  markNext();
+  grid.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
+  grid.innerHTML = nums.map(n => `<button class="cell" id="num-${n}" onclick="clickNumber(${n})">${n}</button>`).join("");
+  if(preview){
+    document.querySelectorAll(".cell").forEach(btn => btn.style.pointerEvents = "none");
+  }
 }
 
-function markNext(){
-  document.querySelectorAll(".cell").forEach(c => c.classList.remove("next"));
-  const next = $(`cell-${nextTarget}`);
-  if(next) next.classList.add("next");
+function startTask(){
+  autoFormalAfterPractice = false;
+  begin(currentSize, currentMode);
+}
+
+function startPracticeThenFormal(){
+  autoFormalAfterPractice = true;
+  selectSize(3);
+  selectMode("practice");
+  begin(3, "practice");
+}
+
+function begin(size, mode){
+  currentSize = size;
+  currentMode = mode;
+  maxNumber = size * size;
+  currentTarget = 1;
+  errors = 0;
+  started = true;
+  finished = false;
+  startTime = performance.now();
+  lastConfig = {size, mode};
+
+  buildGrid(size, false);
+  $("targetStat").textContent = "1";
+  $("errorStat").textContent = "0";
+  $("progressStat").textContent = "0%";
+  $("statusStat").textContent = mode === "practice" ? "练习中" : "正式中";
+  $("message").className = "message neutral";
+  $("message").textContent = mode === "practice" ? "小练习开始：请从 1 开始点击。" : "正式任务开始：请从 1 开始点击。";
+  $("finalTime").textContent = "--";
+  $("finalError").textContent = "--";
+  $("finalLevel").textContent = "--";
+
+  clearInterval(timer);
+  timer = setInterval(updateTime, 30);
+  updateTime();
+}
+
+function restartTask(){
+  if(lastConfig){
+    begin(lastConfig.size, lastConfig.mode);
+  }else{
+    startTask();
+  }
+}
+
+function updateTime(){
+  if(!started || finished) return;
+  const t = (performance.now() - startTime) / 1000;
+  $("timeStat").textContent = t.toFixed(2);
 }
 
 function clickNumber(n){
-  if(!running) return;
-  const cell = $(`cell-${n}`);
-  if(n === nextTarget){
+  if(!started || finished) return;
+  const cell = $("num-" + n);
+  if(n === currentTarget){
     cell.classList.add("done");
-    cell.classList.remove("next");
-    found++;
-    nextTarget++;
-    $("feedback").className = "feedback good";
-    $("feedback").textContent = nextTarget <= currentLevel.max ? `找到 ${n}！下一个目标：${nextTarget}` : "本关完成！";
-    if(nextTarget > currentLevel.max){
-      finishLevel(true);
+    cell.disabled = true;
+    currentTarget++;
+    const done = currentTarget - 1;
+    $("progressStat").textContent = Math.round(done / maxNumber * 100) + "%";
+
+    if(currentTarget > maxNumber){
+      finishTask();
     }else{
-      markNext();
+      $("targetStat").textContent = currentTarget;
+      $("message").className = "message good";
+      $("message").textContent = `正确！继续找 ${currentTarget}。`;
     }
   }else{
     errors++;
-    cell.classList.add("error");
-    $("feedback").className = "feedback bad";
-    $("feedback").textContent = `现在要找的是 ${nextTarget}，不是 ${n}`;
-    setTimeout(()=>cell.classList.remove("error"),220);
-  }
-  updateHud();
-}
-
-function updateHud(){
-  if(!currentLevel) return;
-  const elapsed = Math.max(0, (performance.now() - levelStart)/1000);
-  const remain = Math.max(0, currentLevel.limit - elapsed);
-  $("timerPill").textContent = `剩余时间：${remain.toFixed(0)}s`;
-  $("levelText").textContent = `${currentLevel.name} ${currentLevel.grid}×${currentLevel.grid}`;
-  $("targetText").textContent = nextTarget <= currentLevel.max ? `下一个目标：${nextTarget}` : "本关完成";
-  $("timeChip").textContent = elapsed.toFixed(1) + "s";
-  $("errorChip").textContent = errors;
-  $("doneChip").textContent = found;
-  $("progressBar").style.width = `${(found / currentLevel.max) * 100}%`;
-}
-
-function finishLevel(completed){
-  running = false;
-  clearInterval(tick);
-  clearTimeout(timer);
-  const elapsed = Math.round((performance.now() - levelStart)/100)/10;
-  const result = {
-    name: currentLevel.name,
-    practice: currentLevel.practice,
-    completed,
-    time: elapsed,
-    errors,
-    max: currentLevel.max,
-    found
-  };
-  if(!currentLevel.practice) levelResults.push(result);
-
-  if(currentLevel.practice){
-    currentLevelIndex++;
-    setTimeout(prepareLevelIntro, 700);
-    return;
-  }
-
-  currentLevelIndex++;
-  if(currentLevelIndex >= LEVELS.length){
-    setTimeout(showResult, 700);
-  }else{
-    setTimeout(prepareLevelIntro, 700);
+    $("errorStat").textContent = errors;
+    cell.classList.add("wrong");
+    $("message").className = "message bad";
+    $("message").textContent = `现在要找的是 ${currentTarget}，不是 ${n}。`;
+    setTimeout(() => cell.classList.remove("wrong"), 220);
   }
 }
 
-function showResult(){
-  const completedCount = levelResults.filter(r => r.completed).length;
-  const totalTime = Math.round(levelResults.reduce((a,b)=>a+b.time,0)*10)/10;
-  const totalErrors = levelResults.reduce((a,b)=>a+b.errors,0);
-  const totalFound = levelResults.reduce((a,b)=>a+b.found,0);
-  const interval = totalFound ? Math.round((totalTime / totalFound) * 10)/10 : 0;
-
-  let grade = "C级";
-  if(completedCount === 2 && totalErrors <= 2 && totalTime <= 85) grade = "S级";
-  else if(completedCount === 2 && totalErrors <= 5 && totalTime <= 115) grade = "A级";
-  else if(completedCount >= 1) grade = "B级";
-
-  $("gradeText").textContent = grade;
-  $("totalTimeText").textContent = totalTime + "s";
-  $("totalErrorText").textContent = totalErrors;
-  $("intervalText").textContent = interval + "s";
-  $("levelCountText").textContent = completedCount + "/2";
-
-  let sentence = "你的注意力扫描报告已生成。";
-  if(grade === "S级") sentence = "太厉害了！你像真正的太空雷达一样，又快又稳。";
-  else if(grade === "A级") sentence = "很棒！你的扫描速度和准确性都不错。";
-  else if(grade === "B级") sentence = "不错！你已经完成了主要任务，继续练习会更快。";
-  else sentence = "没关系，舒尔特方格需要策略。下次试试先整体扫视，再点击目标。";
-  $("resultSentence").textContent = sentence;
-
-  show("result");
+function evaluateLevel(time, err, size){
+  const base = {3:16, 4:35, 5:75, 6:130}[size] || 80;
+  if(err <= 1 && time <= base * .65) return "S级";
+  if(err <= 3 && time <= base) return "A级";
+  if(err <= 6 && time <= base * 1.35) return "B级";
+  return "C级";
 }
+
+function finishTask(){
+  finished = true;
+  started = false;
+  clearInterval(timer);
+  const totalTime = Number($("timeStat").textContent);
+  const level = evaluateLevel(totalTime, errors, currentSize);
+
+  $("statusStat").textContent = "完成";
+  $("targetStat").textContent = "✓";
+  $("message").className = "message good";
+  $("message").textContent = `完成啦！本次用时 ${totalTime.toFixed(2)} 秒，错误 ${errors} 次。`;
+  $("finalTime").textContent = totalTime.toFixed(2) + "s";
+  $("finalError").textContent = errors;
+  $("finalLevel").textContent = level;
+
+  if(autoFormalAfterPractice && currentMode === "practice"){
+    $("message").textContent = `练习完成！3 秒后进入 4×4 正式任务。`;
+    setTimeout(() => {
+      selectSize(4);
+      selectMode("formal");
+      begin(4, "formal");
+    }, 3000);
+  }
+}
+
+selectSize(4);
 </script>
 </body>
 </html>
