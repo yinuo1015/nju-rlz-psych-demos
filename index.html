@@ -22,6 +22,17 @@ h1{font-size:clamp(38px,6vw,72px);line-height:1.06;margin:20px 0 18px;letter-spa
 .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.card{min-height:255px;padding:22px;border-radius:26px;background:radial-gradient(circle at 85% 18%,#6fe7ff1f,transparent 30%),var(--card);border:1px solid #ffffff18;display:flex;flex-direction:column}.icon{width:52px;height:52px;border-radius:18px;background:#ffffff18;border:1px solid #ffffff20;display:grid;place-items:center;font-size:27px;margin-bottom:16px}.card p{font-size:15.5px;margin:0 0 14px}.tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:auto;padding-top:10px}.tag{border-radius:999px;padding:6px 9px;font-size:12px;font-weight:900;color:#dff4ff;border:1px solid #6fe7ff30;background:#6fe7ff14}.action{margin-top:16px}.action a,.action span{display:inline-flex;padding:10px 13px;border-radius:14px;text-decoration:none;font-weight:950;font-size:14px}.action a{background:linear-gradient(135deg,var(--cyan),var(--green));color:#07111c}.action span{color:#96a7c1;background:#ffffff10;border:1px solid #ffffff16}
 .footer{margin:28px auto 34px;padding:24px 26px;border-radius:28px;border:1px solid var(--line);background:#050816cc;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}.footer img{height:56px;width:auto;object-fit:contain;border-radius:12px;background:#000}.maker{color:var(--yellow);font-weight:950}
 @media(max-width:900px){.nav,.head{align-items:flex-start;flex-direction:column}.hero{padding:30px 22px}.grid,.stats{grid-template-columns:1fr}.block{padding:24px 18px}.note{text-align:left}}
+
+.footer{margin:28px auto 34px;padding:26px 28px;border-radius:30px;border:1px solid var(--line);background:#050816cc;display:grid;grid-template-columns:auto 1fr;gap:24px;align-items:center}
+.footer-logos{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.footer-logo-lab{height:78px;width:auto;object-fit:contain;border-radius:16px;background:#fff;padding:8px}
+.footer-logo-nju{height:72px;width:auto;object-fit:contain;border-radius:12px;background:transparent}
+.footer-info{color:#dfe9ff;line-height:1.8}
+.footer-info b{color:#fff}
+.maker{color:#ff7eb6;font-weight:950}
+.email{color:#ffb6d6;font-weight:900}
+@media(max-width:900px){.footer{grid-template-columns:1fr}.footer-logo-lab{height:68px}.footer-logo-nju{height:56px}}
+
 </style>
 </head>
 <body>
@@ -73,8 +84,16 @@ h1{font-size:clamp(38px,6vw,72px);line-height:1.06;margin:20px 0 18px;letter-spa
   </section>
 
   <footer class="footer wrap">
-    <img src="./assets/rlz-logo.png" alt="课题组图标">
-    <div>南京大学周仁来团队 · 心理学科普互动实验合集<br>本页面仅用于心理学科普活动体验，不用于医学诊断或能力评价。<br><span class="maker">制作人：zhangyinuo</span></div>
+    <div class="footer-logos">
+      <img class="footer-logo-lab" src="./assets/rlzhou-lab-logo.png" alt="周仁来团队课题组图标">
+      <img class="footer-logo-nju" src="./assets/nju-logo.png" alt="南京大学标识">
+    </div>
+    <div class="footer-info">
+      <b>南京大学周仁来团队 · 心理学科普互动实验合集</b><br>
+      本页面仅用于心理学科普活动体验，不用于医学诊断或能力评价。<br>
+      <span class="maker">制作人：zhangyinuo</span><br>
+      <span class="email">邮箱：yinuozhang1015@163.com</span>
+    </div>
   </footer>
 </div>
 </body>
