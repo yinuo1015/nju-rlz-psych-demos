@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>面语心言小程序</title>
+  <style>
+    :root{
+      --bg:#050816;
+      --panel:#101932dd;
+      --line:#7ee7ff33;
+      --text:#f4f8ff;
+      --muted:#aebbd3;
+      --cyan:#6fe7ff;
+      --green:#4df0a0;
+      --yellow:#ffd45e;
+      --pink:#ff7eb6;
+      font-family:"Microsoft YaHei",Arial,sans-serif;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      min-height:100vh;
+      color:var(--text);
+      background:
+        radial-gradient(circle at 15% 16%,#6fe7ff2b,transparent 25%),
+        radial-gradient(circle at 88% 18%,#ff7eb62b,transparent 24%),
+        linear-gradient(145deg,#050816,#0b1026 55%,#160820);
+    }
+    body:before{
+      content:"";
+      position:fixed;
+      inset:0;
+      background:
+        linear-gradient(90deg,transparent 49px,#6fe7ff12 50px),
+        linear-gradient(transparent 49px,#6fe7ff0f 50px);
+      background-size:50px 50px;
+      mask-image:linear-gradient(to bottom,#000,transparent 78%);
+      pointer-events:none;
+    }
+    .page{
+      position:relative;
+      z-index:1;
+      width:min(1120px,94vw);
+      margin:auto;
+      padding:24px 0 40px;
+    }
+    .nav{
+      padding:14px 18px;
+      border:1px solid var(--line);
+      border-radius:999px;
+      background:#071026aa;
+      backdrop-filter:blur(14px);
+      display:flex;
+      justify-content:space-between;
+      gap:16px;
+      align-items:center;
+    }
+    .brand{display:flex;align-items:center;gap:12px;font-weight:950}
+    .logo{
+      width:42px;
+      height:42px;
+      border-radius:16px;
+      display:grid;
+      place-items:center;
+      background:linear-gradient(135deg,var(--cyan),var(--green),var(--yellow));
+      color:#07111c;
+    }
+    .back{
+      padding:10px 14px;
+      border-radius:999px;
+      text-decoration:none;
+      background:#ffffff12;
+      border:1px solid #ffffff18;
+      color:#e8f6ff;
+      font-weight:900;
+    }
+    .hero{
+      margin-top:24px;
+      display:grid;
+      grid-template-columns:minmax(0,1fr) minmax(280px,360px);
+      gap:24px;
+      padding:42px;
+      border:1px solid var(--line);
+      border-radius:36px;
+      background:
+        radial-gradient(circle at 78% 12%,#4df0a02b,transparent 30%),
+        linear-gradient(180deg,#0c122add,#060a1ac9);
+      box-shadow:0 28px 90px #0008;
+    }
+    .badge{
+      display:inline-flex;
+      padding:9px 15px;
+      border-radius:999px;
+      background:#6fe7ff18;
+      border:1px solid #6fe7ff38;
+      color:#dff8ff;
+      font-weight:900;
+    }
+    h1{
+      font-size:clamp(42px,7vw,78px);
+      line-height:1.02;
+      margin:20px 0 18px;
+    }
+    p{
+      color:var(--muted);
+      line-height:1.75;
+      font-size:18px;
+    }
+    .actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+      margin-top:26px;
+    }
+    .btn,.soft{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-height:46px;
+      padding:0 16px;
+      border-radius:16px;
+      text-decoration:none;
+      font-weight:950;
+    }
+    .btn{
+      background:linear-gradient(135deg,var(--cyan),var(--green));
+      color:#07111c;
+    }
+    .soft{
+      color:#d8e6ff;
+      background:#ffffff10;
+      border:1px solid #ffffff16;
+    }
+    .qr-card{
+      padding:18px;
+      border:1px solid #ffffff18;
+      border-radius:28px;
+      background:#ffffff10;
+      text-align:center;
+    }
+    .qr-card img{
+      display:block;
+      width:100%;
+      aspect-ratio:1;
+      object-fit:cover;
+      border-radius:22px;
+      background:#fff;
+      padding:10px;
+    }
+    .qr-card strong{
+      display:block;
+      margin-top:14px;
+      font-size:20px;
+    }
+    .qr-card span{
+      display:block;
+      margin-top:6px;
+      color:var(--muted);
+      font-weight:800;
+    }
+    .block{
+      margin-top:22px;
+      padding:26px;
+      border-radius:30px;
+      border:1px solid var(--line);
+      background:#050816cc;
+    }
+    .tips{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:14px;
+      margin-top:16px;
+    }
+    .tip{
+      min-height:120px;
+      padding:18px;
+      border-radius:22px;
+      border:1px solid #ffffff18;
+      background:#ffffff0f;
+    }
+    .tip b{display:block;margin-bottom:8px;color:#fff}
+    .tip span{color:var(--muted);line-height:1.6;font-weight:800}
+    @media(max-width:860px){
+      .nav,.hero{grid-template-columns:1fr}
+      .hero{padding:28px 20px}
+      .tips{grid-template-columns:1fr}
+      .back{align-self:flex-start}
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <nav class="nav">
+      <div class="brand">
+        <div class="logo">💬</div>
+        <span>南京大学周仁来团队心理学科普实验体验平台</span>
+      </div>
+      <a class="back" href="../">返回首页</a>
+    </nav>
+
+    <section class="hero">
+      <div>
+        <span class="badge">微信小程序 · 科技体验区</span>
+        <h1>面语心言</h1>
+        <p>只需注视镜头 60 秒，看看你的身心“压力值”。本项目适合在现场通过手机微信扫码体验，用轻松的方式认识身体状态、表情与心理感受之间可能存在的联系。</p>
+        <p>体验结果仅用于科普活动和课堂讨论，不作为真实心理测评或医学诊断。</p>
+        <div class="actions">
+          <a class="btn" href="../assets/mianyu-xinyan-qrcode.png">打开二维码图片</a>
+          <a class="soft" href="https://mp.weixin.qq.com/s/qllHgDqnb3FiobpRumllBA" target="_blank" rel="noopener">查看介绍文章</a>
+        </div>
+      </div>
+      <aside class="qr-card">
+        <img src="../assets/mianyu-xinyan-qrcode.png" alt="面语心言小程序二维码">
+        <strong>微信扫码体验</strong>
+        <span>请使用手机微信扫一扫</span>
+      </aside>
+    </section>
+
+    <section class="block">
+      <h2>现场使用建议</h2>
+      <div class="tips">
+        <div class="tip"><b>1. 放在科技体验区</b><span>和脑电、心电、VR、表情体验站放在同一区域，作为手机扫码体验项目。</span></div>
+        <div class="tip"><b>2. 二维码要够大</b><span>展台屏幕上建议保留大二维码，方便小朋友和老师直接扫码。</span></div>
+        <div class="tip"><b>3. 可阅读介绍文章</b><span>点击“查看介绍文章”，可以了解小程序的活动说明和体验背景。</span></div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

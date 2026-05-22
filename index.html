@@ -229,6 +229,42 @@ p{color:var(--muted);line-height:1.75;font-size:18px}
   background:#ffffff10;
   border:1px solid #ffffff16;
 }
+.mini-program-card{
+  background:
+    radial-gradient(circle at 82% 12%,#4df0a02e,transparent 34%),
+    radial-gradient(circle at 10% 90%,#ff7eb61f,transparent 30%),
+    var(--card);
+}
+.qr-preview{
+  display:grid;
+  grid-template-columns:86px 1fr;
+  gap:12px;
+  align-items:center;
+  margin:6px 0 14px;
+  padding:10px;
+  border-radius:18px;
+  border:1px solid #ffffff18;
+  background:#ffffff0e;
+}
+.qr-preview img{
+  width:86px;
+  height:86px;
+  object-fit:cover;
+  border-radius:14px;
+  background:#fff;
+  padding:5px;
+}
+.qr-preview b{
+  display:block;
+  color:#fff;
+  font-size:15px;
+  margin-bottom:4px;
+}
+.qr-preview span{
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.45;
+}
 
 /* 底部：南京大学 logo 最左；右侧为课题组 logo + 文字信息 */
 .footer{
@@ -288,6 +324,8 @@ p{color:var(--muted);line-height:1.75;font-size:18px}
   .nav{align-items:flex-start;flex-direction:column}
   .hero{padding:30px 22px}
   .grid,.stats{grid-template-columns:1fr}
+  .qr-preview{grid-template-columns:72px 1fr}
+  .qr-preview img{width:72px;height:72px}
   .block{padding:24px 18px}
   .footer{
     grid-template-columns:1fr;
@@ -361,6 +399,21 @@ p{color:var(--muted);line-height:1.75;font-size:18px}
         <p>通过 VR 眼镜进入虚拟场景，体验视觉环境如何影响我们的距离感、沉浸感和身体反应。</p>
         <div class="tags"><span class="tag">VR眼镜</span><span class="tag">沉浸体验</span><span class="tag">虚拟现实</span></div>
         <div class="action"><span>现场设备体验</span><a href="./vr/">开始体验</a></div>
+      </article>
+
+      <article class="card mini-program-card">
+        <div class="icon">💬</div>
+        <h3>面语心言小程序</h3>
+        <p>注视镜头 60 秒，看透身心压力值。现场用微信扫码进入小程序，体验摄像头状态观察。</p>
+        <div class="qr-preview">
+          <img src="./assets/mianyu-xinyan-qrcode.png" alt="面语心言小程序二维码">
+          <div>
+            <b>微信扫码体验</b>
+            <span>建议用手机微信扫描二维码打开，小程序体验更稳定。</span>
+          </div>
+        </div>
+        <div class="tags"><span class="tag">微信小程序</span><span class="tag">摄像头</span><span class="tag">压力观察</span></div>
+        <div class="action"><a href="./mianyu-xinyan/">查看二维码</a><a href="https://mp.weixin.qq.com/s/qllHgDqnb3FiobpRumllBA" target="_blank" rel="noopener">介绍文章</a></div>
       </article>
 
       <article class="card">
