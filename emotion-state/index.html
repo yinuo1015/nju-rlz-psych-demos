@@ -1,0 +1,2456 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>表情与身心状态体验站</title>
+  <meta name="description" content="儿童科普版表情与身心状态体验站，摄像头 60 秒观察与趣味反馈。" />
+  <script defer src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js"></script>
+  <style>
+    :root {
+      --bg: #070b1b;
+      --panel: rgba(15, 22, 45, 0.86);
+      --panel-strong: rgba(22, 31, 58, 0.94);
+      --line: rgba(112, 203, 255, 0.22);
+      --line-strong: rgba(100, 235, 222, 0.54);
+      --text: #f4f8ff;
+      --muted: #aebbd4;
+      --soft: #d7e2f8;
+      --mint: #51f2c2;
+      --cyan: #64dcff;
+      --pink: #ff5d9f;
+      --amber: #ffd166;
+      --good: #55f0a7;
+      --warn: #ffd166;
+      --danger: #ff6b91;
+      --shadow: 0 24px 90px rgba(0, 0, 0, 0.46);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      min-height: 100%;
+    }
+
+    body {
+      margin: 0;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 15% 12%, rgba(74, 224, 199, 0.15), transparent 27rem),
+        radial-gradient(circle at 90% 8%, rgba(255, 93, 159, 0.18), transparent 32rem),
+        linear-gradient(125deg, #071321 0%, #080b1e 48%, #171127 100%);
+      overflow-x: hidden;
+    }
+
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    body::before {
+      background-image:
+        linear-gradient(rgba(113, 222, 255, 0.055) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(113, 222, 255, 0.055) 1px, transparent 1px);
+      background-size: 72px 72px;
+      mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.95), rgba(0, 0, 0, 0.3));
+    }
+
+    body::after {
+      background-image: radial-gradient(circle, rgba(145, 221, 255, 0.22) 1px, transparent 1.6px);
+      background-size: 54px 54px;
+      opacity: 0.34;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.55;
+    }
+
+    .page {
+      width: min(1360px, calc(100% - 44px));
+      margin: 0 auto;
+      padding: 32px 0 48px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      min-height: 76px;
+      padding: 16px 20px;
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      background: rgba(9, 14, 34, 0.78);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      min-width: 0;
+      gap: 14px;
+    }
+
+    .brand-mark {
+      display: grid;
+      place-items: center;
+      width: 46px;
+      height: 46px;
+      border-radius: 15px;
+      background: linear-gradient(135deg, var(--mint), var(--cyan));
+      box-shadow: 0 0 28px rgba(81, 242, 194, 0.44);
+      color: #071321;
+      font-size: 25px;
+      font-weight: 900;
+    }
+
+    .brand-text {
+      min-width: 0;
+    }
+
+    .brand-text strong {
+      display: block;
+      color: #f8fbff;
+      font-size: clamp(17px, 2vw, 22px);
+      letter-spacing: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .brand-text span {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .nav-pills {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 38px;
+      padding: 0 15px;
+      border: 1px solid rgba(255, 255, 255, 0.11);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.07);
+      color: #e9f2ff;
+      font-size: 14px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .hero {
+      margin-top: 26px;
+      border: 1px solid var(--line);
+      border-radius: 34px;
+      background:
+        linear-gradient(140deg, rgba(14, 22, 48, 0.96), rgba(9, 12, 31, 0.93) 55%, rgba(31, 19, 46, 0.9)),
+        radial-gradient(circle at 72% 18%, rgba(81, 242, 194, 0.13), transparent 28rem);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 0.98fr) minmax(420px, 1.02fr);
+      gap: 28px;
+      padding: clamp(26px, 4vw, 50px);
+    }
+
+    .intro {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-width: 0;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      align-self: flex-start;
+      gap: 9px;
+      min-height: 42px;
+      padding: 0 16px;
+      border: 1px solid rgba(100, 220, 255, 0.24);
+      border-radius: 999px;
+      background: rgba(100, 220, 255, 0.11);
+      color: #78e9ff;
+      font-size: 14px;
+      font-weight: 900;
+      letter-spacing: 1.8px;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      max-width: 760px;
+      margin: 24px 0 18px;
+      color: #f7fbff;
+      font-size: clamp(44px, 7vw, 84px);
+      line-height: 0.96;
+      letter-spacing: 0;
+      text-shadow: 0 0 24px rgba(100, 220, 255, 0.18);
+    }
+
+    .lead {
+      max-width: 760px;
+      margin: 0;
+      color: #c6d1e7;
+      font-size: clamp(17px, 2vw, 22px);
+      line-height: 1.8;
+      font-weight: 650;
+    }
+
+    .safety-note {
+      display: flex;
+      gap: 13px;
+      align-items: flex-start;
+      max-width: 760px;
+      margin-top: 22px;
+      padding: 16px 18px;
+      border: 1px solid rgba(255, 209, 102, 0.32);
+      border-radius: 18px;
+      background: rgba(255, 209, 102, 0.08);
+      color: #ffe7a4;
+      line-height: 1.65;
+      font-weight: 750;
+    }
+
+    .safety-note b {
+      color: #fff5c9;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-top: 28px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      min-height: 54px;
+      padding: 0 22px;
+      border-radius: 18px;
+      color: #061421;
+      background: linear-gradient(135deg, #69efff, #4ff0a8);
+      font-size: 17px;
+      font-weight: 950;
+      box-shadow: 0 14px 36px rgba(80, 238, 184, 0.24);
+      transition: transform 180ms ease, box-shadow 180ms ease, opacity 180ms ease;
+    }
+
+    .btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 18px 44px rgba(80, 238, 184, 0.32);
+    }
+
+    .btn.secondary {
+      color: #f5f8ff;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      box-shadow: none;
+    }
+
+    .btn.danger {
+      color: #fff;
+      background: linear-gradient(135deg, #ff6b91, #ff9c66);
+    }
+
+    .mini-stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 34px;
+      max-width: 760px;
+    }
+
+    .mini-card {
+      min-height: 98px;
+      padding: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.07);
+    }
+
+    .mini-card strong {
+      display: block;
+      font-size: 34px;
+      line-height: 1;
+    }
+
+    .mini-card span {
+      display: block;
+      margin-top: 7px;
+      color: #c8d4e9;
+      font-weight: 850;
+    }
+
+    .mascot-panel {
+      position: relative;
+      display: grid;
+      min-height: 460px;
+      place-items: center;
+      border: 1px solid rgba(100, 220, 255, 0.2);
+      border-radius: 28px;
+      background:
+        radial-gradient(circle at 42% 42%, rgba(81, 242, 194, 0.18), transparent 15rem),
+        radial-gradient(circle at 70% 50%, rgba(255, 93, 159, 0.17), transparent 15rem),
+        rgba(13, 20, 43, 0.82);
+      overflow: hidden;
+    }
+
+    .mascot-panel::before {
+      content: "";
+      position: absolute;
+      inset: 34px;
+      border-radius: 50%;
+      background:
+        conic-gradient(from 160deg, rgba(81, 242, 194, 0.05), rgba(100, 220, 255, 0.22), rgba(255, 93, 159, 0.12), rgba(81, 242, 194, 0.05));
+      filter: blur(0.2px);
+      opacity: 0.85;
+    }
+
+    .orbit {
+      position: absolute;
+      width: min(72%, 420px);
+      aspect-ratio: 1;
+      border: 1px dashed rgba(120, 233, 255, 0.28);
+      border-radius: 50%;
+      animation: spin 24s linear infinite;
+    }
+
+    .orbit::before,
+    .orbit::after {
+      content: "";
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--mint);
+      box-shadow: 0 0 18px var(--mint);
+    }
+
+    .orbit::before {
+      top: 9%;
+      left: 20%;
+    }
+
+    .orbit::after {
+      right: 14%;
+      bottom: 17%;
+      background: var(--pink);
+      box-shadow: 0 0 18px var(--pink);
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .faces {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: clamp(22px, 5vw, 46px);
+      width: 100%;
+      padding: 30px;
+    }
+
+    .face-bot {
+      position: relative;
+      width: clamp(128px, 17vw, 190px);
+      aspect-ratio: 0.76;
+      border-radius: 46% 46% 42% 42%;
+      background: linear-gradient(150deg, #afffe2 0%, #40efac 34%, #16b686 100%);
+      box-shadow: 0 0 55px rgba(81, 242, 194, 0.5);
+    }
+
+    .face-bot.hot {
+      background: linear-gradient(150deg, #ffd0d8 0%, #ff5d89 36%, #d92754 100%);
+      box-shadow: 0 0 55px rgba(255, 93, 159, 0.5);
+    }
+
+    .face-bot::before,
+    .face-bot::after {
+      content: "";
+      position: absolute;
+      top: -36px;
+      width: 48px;
+      height: 74px;
+      border: 11px solid currentColor;
+      border-bottom: 0;
+      border-radius: 34px 34px 0 0;
+      color: inherit;
+    }
+
+    .face-bot {
+      color: #3ff1aa;
+    }
+
+    .face-bot.hot {
+      color: #ff3e74;
+    }
+
+    .face-bot::before {
+      left: 18px;
+      transform: rotate(-22deg);
+    }
+
+    .face-bot::after {
+      right: 18px;
+      transform: rotate(22deg);
+    }
+
+    .eye {
+      position: absolute;
+      top: 38%;
+      width: 34px;
+      height: 42px;
+      border-radius: 50%;
+      background: #fff;
+    }
+
+    .eye.left {
+      left: 24%;
+    }
+
+    .eye.right {
+      right: 24%;
+    }
+
+    .eye::after {
+      content: "";
+      position: absolute;
+      left: 10px;
+      top: 12px;
+      width: 16px;
+      height: 18px;
+      border-radius: 50%;
+      background: #071321;
+    }
+
+    .mouth {
+      position: absolute;
+      left: 50%;
+      top: 63%;
+      width: 70px;
+      height: 32px;
+      border: 9px solid #061421;
+      border-top: 0;
+      border-left-color: transparent;
+      border-right-color: transparent;
+      border-radius: 0 0 60px 60px;
+      transform: translateX(-50%);
+    }
+
+    .hot .mouth {
+      top: 66%;
+      border: 9px solid #fff;
+      border-bottom: 0;
+      border-left-color: transparent;
+      border-right-color: transparent;
+      border-radius: 60px 60px 0 0;
+    }
+
+    .scanner {
+      margin-top: 28px;
+      border: 1px solid var(--line);
+      border-radius: 34px;
+      background: rgba(8, 13, 31, 0.88);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .scanner-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 22px clamp(22px, 4vw, 38px);
+      border-bottom: 1px solid rgba(112, 203, 255, 0.14);
+      background: rgba(255, 255, 255, 0.025);
+    }
+
+    .scanner-head h2 {
+      margin: 0;
+      font-size: clamp(24px, 3vw, 38px);
+      letter-spacing: 0;
+    }
+
+    .status-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 40px;
+      padding: 0 14px;
+      border: 1px solid rgba(100, 220, 255, 0.24);
+      border-radius: 999px;
+      background: rgba(100, 220, 255, 0.09);
+      color: #d9f8ff;
+      font-size: 14px;
+      font-weight: 850;
+      white-space: nowrap;
+    }
+
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 999px;
+      background: var(--warn);
+      box-shadow: 0 0 14px currentColor;
+    }
+
+    .dot.ready {
+      background: var(--good);
+    }
+
+    .dot.busy {
+      background: var(--cyan);
+    }
+
+    .scanner-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.28fr) minmax(320px, 0.72fr);
+      gap: 18px;
+      align-items: stretch;
+      padding: clamp(20px, 3vw, 30px);
+    }
+
+    .camera-shell {
+      min-width: 0;
+      height: 100%;
+    }
+
+    .video-card {
+      position: relative;
+      height: 100%;
+      min-height: clamp(390px, 44vh, 500px);
+      border: 1px solid rgba(100, 220, 255, 0.22);
+      border-radius: 28px;
+      background:
+        linear-gradient(145deg, rgba(17, 31, 56, 0.94), rgba(10, 13, 33, 0.96)),
+        radial-gradient(circle at 50% 50%, rgba(81, 242, 194, 0.1), transparent 18rem);
+      overflow: hidden;
+    }
+
+    video,
+    .overlay-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    video {
+      object-fit: cover;
+      transform: scaleX(-1);
+      background: #050816;
+    }
+
+    .overlay-canvas {
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .camera-idle {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      display: grid;
+      place-items: center;
+      padding: 28px;
+      text-align: center;
+      background:
+        radial-gradient(circle at 50% 42%, rgba(81, 242, 194, 0.16), transparent 18rem),
+        rgba(5, 8, 22, 0.72);
+    }
+
+    .camera-idle.hidden {
+      display: none;
+    }
+
+    .idle-inner {
+      width: min(520px, 100%);
+    }
+
+    .idle-icon {
+      display: grid;
+      place-items: center;
+      width: 86px;
+      height: 86px;
+      margin: 0 auto 20px;
+      border: 1px solid rgba(81, 242, 194, 0.36);
+      border-radius: 28px;
+      background: rgba(81, 242, 194, 0.12);
+      color: var(--mint);
+      font-size: 42px;
+      box-shadow: 0 0 38px rgba(81, 242, 194, 0.19);
+    }
+
+    .idle-inner h3 {
+      margin: 0 0 12px;
+      font-size: clamp(26px, 4vw, 40px);
+    }
+
+    .idle-inner p {
+      margin: 0 auto;
+      max-width: 460px;
+      color: #c3cee4;
+      font-size: 17px;
+      line-height: 1.75;
+      font-weight: 700;
+    }
+
+    .timer-badge {
+      position: absolute;
+      z-index: 4;
+      right: 20px;
+      top: 20px;
+      display: grid;
+      place-items: center;
+      width: 106px;
+      height: 106px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 50%;
+      background: conic-gradient(var(--mint) var(--progress), rgba(255, 255, 255, 0.08) 0);
+      box-shadow: 0 0 28px rgba(81, 242, 194, 0.2);
+    }
+
+    .timer-badge::before {
+      content: "";
+      position: absolute;
+      inset: 8px;
+      border-radius: 50%;
+      background: rgba(8, 13, 31, 0.88);
+    }
+
+    .timer-badge span {
+      position: relative;
+      font-size: 34px;
+      font-weight: 950;
+      line-height: 1;
+    }
+
+    .timer-badge small {
+      position: relative;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    .scan-caption {
+      position: absolute;
+      z-index: 4;
+      left: 22px;
+      right: 146px;
+      bottom: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+      padding: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 18px;
+      background: rgba(4, 8, 20, 0.72);
+      backdrop-filter: blur(14px);
+    }
+
+    .scan-caption strong {
+      color: #f8fbff;
+      font-size: 16px;
+    }
+
+    .scan-caption span {
+      color: #b9c6dc;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .panel-stack {
+      display: grid;
+      gap: 14px;
+      align-content: start;
+    }
+
+    .observation-deck {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: minmax(0, 1.42fr) minmax(390px, 0.82fr);
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .control-panel,
+    .live-panel,
+    .note-panel {
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 24px;
+      background: var(--panel);
+      overflow: hidden;
+    }
+
+    .panel-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 18px 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+    }
+
+    .panel-title h3 {
+      margin: 0;
+      font-size: 19px;
+    }
+
+    .panel-body {
+      padding: 18px 20px 20px;
+    }
+
+    .control-buttons {
+      display: grid;
+      gap: 12px;
+    }
+
+    .full {
+      width: 100%;
+    }
+
+    .steps {
+      display: grid;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .step {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-height: 54px;
+      padding: 11px 13px;
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.055);
+      color: #d8e4f8;
+      font-weight: 800;
+    }
+
+    .step-icon {
+      display: grid;
+      flex: 0 0 auto;
+      place-items: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 11px;
+      background: rgba(100, 220, 255, 0.12);
+      color: var(--cyan);
+    }
+
+    .step.ok .step-icon {
+      background: rgba(85, 240, 167, 0.14);
+      color: var(--good);
+    }
+
+    .step.warn .step-icon {
+      background: rgba(255, 209, 102, 0.14);
+      color: var(--warn);
+    }
+
+    .live-panel {
+      position: relative;
+      background:
+        linear-gradient(145deg, rgba(17, 26, 55, 0.98), rgba(10, 14, 34, 0.94)),
+        radial-gradient(circle at 88% 8%, rgba(100, 220, 255, 0.16), transparent 11rem);
+    }
+
+    .live-panel::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-top: 2px solid rgba(81, 242, 194, 0.5);
+      pointer-events: none;
+    }
+
+    .live-panel .panel-title,
+    .note-panel .panel-title {
+      background: rgba(255, 255, 255, 0.025);
+    }
+
+    .live-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .live-tile {
+      display: grid;
+      grid-template-columns: 40px minmax(0, 1fr);
+      grid-template-areas:
+        "icon copy"
+        "bar bar";
+      align-items: center;
+      min-height: 104px;
+      padding: 12px;
+      border: 1px solid rgba(100, 220, 255, 0.14);
+      border-radius: 18px;
+      background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.035)),
+        radial-gradient(circle at 0% 0%, rgba(81, 242, 194, 0.1), transparent 8rem);
+    }
+
+    .live-icon {
+      grid-area: icon;
+      display: grid;
+      place-items: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 13px;
+      background: rgba(100, 220, 255, 0.12);
+      color: var(--cyan);
+      font-size: 20px;
+      box-shadow: inset 0 0 0 1px rgba(100, 220, 255, 0.12);
+    }
+
+    .live-copy {
+      grid-area: copy;
+      min-width: 0;
+    }
+
+    .live-label {
+      display: block;
+      color: #aebbd4;
+      font-size: 13px;
+      font-weight: 850;
+    }
+
+    .live-tile strong {
+      display: block;
+      margin-top: 7px;
+      color: #f8fbff;
+      font-size: 27px;
+      line-height: 1;
+    }
+
+    .live-tile .bar {
+      grid-area: bar;
+      width: 100%;
+    }
+
+    .live-hint {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-top: 10px;
+      padding: 10px 12px;
+      border: 1px solid rgba(81, 242, 194, 0.18);
+      border-radius: 16px;
+      background: rgba(81, 242, 194, 0.07);
+      color: #ccefe8;
+      line-height: 1.55;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .live-hint span {
+      display: grid;
+      flex: 0 0 auto;
+      place-items: center;
+      width: 24px;
+      height: 24px;
+      border-radius: 9px;
+      background: rgba(81, 242, 194, 0.16);
+      color: var(--mint);
+    }
+
+    .bar {
+      position: relative;
+      height: 8px;
+      margin-top: 13px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.1);
+      overflow: hidden;
+    }
+
+    .bar i {
+      display: block;
+      width: var(--value, 0%);
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--cyan), var(--mint));
+    }
+
+    .note-panel {
+      background:
+        linear-gradient(145deg, rgba(16, 22, 47, 0.96), rgba(9, 13, 32, 0.94)),
+        radial-gradient(circle at 14% 0%, rgba(255, 209, 102, 0.1), transparent 10rem);
+    }
+
+    .note-panel .panel-body {
+      display: grid;
+      gap: 10px;
+    }
+
+    .note-lead {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      padding: 12px;
+      border: 1px solid rgba(255, 209, 102, 0.2);
+      border-radius: 17px;
+      background: rgba(255, 209, 102, 0.075);
+    }
+
+    .note-orb {
+      display: grid;
+      flex: 0 0 auto;
+      place-items: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 14px;
+      background: rgba(255, 209, 102, 0.16);
+      color: var(--amber);
+      font-size: 20px;
+    }
+
+    .note-lead strong {
+      display: block;
+      color: #fff5cf;
+      font-size: 15px;
+      line-height: 1.25;
+    }
+
+    .note-lead p {
+      margin: 0;
+      margin-top: 4px;
+      color: #c7d3e9;
+      line-height: 1.45;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .note-list {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .note-list li {
+      display: grid;
+      grid-template-columns: 34px minmax(0, 1fr);
+      align-items: center;
+      gap: 10px;
+      min-height: auto;
+      padding: 9px 10px;
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.045);
+      color: #d9e4f6;
+      font-size: 13px;
+      line-height: 1.45;
+      font-weight: 800;
+    }
+
+    .note-list span {
+      display: grid;
+      place-items: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 12px;
+      background: rgba(100, 220, 255, 0.11);
+      color: var(--cyan);
+      font-size: 18px;
+    }
+
+    .results {
+      display: none;
+      margin-top: 28px;
+      border: 1px solid var(--line);
+      border-radius: 34px;
+      background: rgba(8, 13, 31, 0.9);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .results.show {
+      display: block;
+    }
+
+    .results-head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 20px;
+      padding: clamp(24px, 4vw, 40px);
+      border-bottom: 1px solid rgba(112, 203, 255, 0.14);
+      background:
+        radial-gradient(circle at 20% 0%, rgba(81, 242, 194, 0.12), transparent 30rem),
+        radial-gradient(circle at 90% 0%, rgba(255, 93, 159, 0.12), transparent 28rem);
+    }
+
+    .results-head h2 {
+      margin: 0;
+      font-size: clamp(30px, 5vw, 54px);
+      letter-spacing: 0;
+    }
+
+    .results-head p {
+      margin: 8px 0 0;
+      max-width: 760px;
+      color: #bdc8de;
+      font-size: 17px;
+      line-height: 1.7;
+      font-weight: 750;
+    }
+
+    .result-badge {
+      flex: 0 0 auto;
+      display: grid;
+      place-items: center;
+      min-width: 144px;
+      min-height: 144px;
+      padding: 16px;
+      border: 1px solid rgba(81, 242, 194, 0.32);
+      border-radius: 28px;
+      background: rgba(81, 242, 194, 0.1);
+      text-align: center;
+    }
+
+    .result-badge strong {
+      display: block;
+      font-size: 48px;
+      line-height: 1;
+    }
+
+    .result-badge span {
+      display: block;
+      margin-top: 8px;
+      color: #c9f8e7;
+      font-weight: 900;
+    }
+
+    .result-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      padding: clamp(22px, 4vw, 38px);
+    }
+
+    .result-card {
+      min-height: 218px;
+      padding: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.062);
+    }
+
+    .card-top {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-height: 44px;
+    }
+
+    .card-icon {
+      display: grid;
+      flex: 0 0 auto;
+      place-items: center;
+      width: 42px;
+      height: 42px;
+      border-radius: 15px;
+      background: rgba(100, 220, 255, 0.12);
+      color: var(--cyan);
+      font-size: 23px;
+    }
+
+    .result-card h3 {
+      margin: 0;
+      font-size: 19px;
+    }
+
+    .metric {
+      display: flex;
+      align-items: baseline;
+      gap: 7px;
+      margin-top: 18px;
+    }
+
+    .metric strong {
+      font-size: clamp(34px, 4vw, 46px);
+      line-height: 1;
+    }
+
+    .metric span {
+      color: #aebbd4;
+      font-weight: 900;
+    }
+
+    .result-card p {
+      margin: 14px 0 0;
+      color: #c5d0e5;
+      line-height: 1.65;
+      font-weight: 700;
+    }
+
+    .wide-result {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(280px, 0.75fr);
+      gap: 18px;
+      padding: 0 clamp(22px, 4vw, 38px) clamp(24px, 4vw, 38px);
+    }
+
+    .tip-box,
+    .science-box {
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 24px;
+      background: rgba(255, 255, 255, 0.06);
+      padding: 22px;
+    }
+
+    .tip-box h3,
+    .science-box h3 {
+      margin: 0 0 12px;
+      font-size: 22px;
+    }
+
+    .tip-list {
+      display: grid;
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .tip-list li {
+      display: flex;
+      gap: 10px;
+      color: #d6e2f5;
+      line-height: 1.65;
+      font-weight: 750;
+    }
+
+    .tip-list li::before {
+      content: "✦";
+      color: var(--mint);
+      font-weight: 900;
+    }
+
+    .science-box p {
+      margin: 0;
+      color: #c4d0e5;
+      line-height: 1.75;
+      font-weight: 700;
+    }
+
+    .quality-row {
+      display: grid;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .quality-item {
+      display: grid;
+      grid-template-columns: 96px minmax(0, 1fr) 48px;
+      align-items: center;
+      gap: 10px;
+      color: #cbd6ea;
+      font-size: 14px;
+      font-weight: 850;
+    }
+
+    .quality-item .bar {
+      margin: 0;
+    }
+
+    .hidden-work {
+      display: none;
+    }
+
+    @media (max-width: 1120px) {
+      .hero-grid,
+      .scanner-grid,
+      .observation-deck,
+      .wide-result {
+        grid-template-columns: 1fr;
+      }
+
+      .live-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .mascot-panel {
+        min-height: 360px;
+      }
+
+      .result-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 760px) {
+      .page {
+        width: min(100% - 24px, 1360px);
+        padding-top: 16px;
+      }
+
+      .topbar,
+      .scanner-head,
+      .results-head {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .brand-text strong {
+        white-space: normal;
+      }
+
+      .hero-grid,
+      .scanner-grid {
+        padding: 20px;
+      }
+
+      h1 {
+        font-size: clamp(38px, 12vw, 48px);
+        line-height: 1.05;
+      }
+
+      .mini-stats,
+      .result-grid,
+      .live-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .note-list {
+        grid-template-columns: 1fr;
+      }
+
+      .note-list li {
+        display: grid;
+        grid-template-columns: 34px minmax(0, 1fr);
+        align-items: center;
+        min-height: auto;
+      }
+
+      .note-list span {
+        margin-bottom: 0;
+      }
+
+      .video-card {
+        min-height: 430px;
+      }
+
+      .scan-caption {
+        right: 20px;
+        bottom: 16px;
+      }
+
+      .timer-badge {
+        width: 86px;
+        height: 86px;
+      }
+
+      .timer-badge span {
+        font-size: 28px;
+      }
+
+      .result-badge {
+        width: 100%;
+        min-height: 112px;
+      }
+
+      .quality-item {
+        grid-template-columns: 82px minmax(0, 1fr) 44px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">☘</div>
+        <div class="brand-text">
+          <strong>南京大学周仁来团队心理学科普实验体验平台</strong>
+          <span>科技体验区 · 儿童科普版</span>
+        </div>
+      </div>
+      <nav class="nav-pills" aria-label="体验区导航">
+        <span class="pill">科技体验区</span>
+        <span class="pill">表情观察</span>
+        <span class="pill">60 秒采样</span>
+      </nav>
+    </header>
+
+    <section class="hero" aria-labelledby="page-title">
+      <div class="hero-grid">
+        <div class="intro">
+          <span class="eyebrow">Zone A · Body Signal Lab</span>
+          <h1 id="page-title">表情与身心状态体验站</h1>
+          <p class="lead">摄像头会观察脸部位置、眨眼、表情稳定度和画面里的微小颜色变化，带大家体验“身体状态、表情、情绪之间可能有关联”。</p>
+          <div class="safety-note">
+            <span aria-hidden="true">⚠</span>
+            <div><b>这是科普小游戏：</b>结果只用于课堂体验和科学讨论，不代表真实心理测评，也不用于判断健康状况。</div>
+          </div>
+          <div class="hero-actions">
+            <button class="btn" id="heroStartBtn" type="button">打开摄像头</button>
+            <button class="btn secondary" id="jumpScannerBtn" type="button">查看体验台</button>
+          </div>
+          <div class="mini-stats" aria-label="体验信息">
+            <div class="mini-card">
+              <strong>60s</strong>
+              <span>连续观察</span>
+            </div>
+            <div class="mini-card">
+              <strong>6+</strong>
+              <span>趣味指标</span>
+            </div>
+            <div class="mini-card">
+              <strong>0</strong>
+              <span>诊断结论</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="mascot-panel" aria-hidden="true">
+          <div class="orbit"></div>
+          <div class="faces">
+            <div class="face-bot">
+              <span class="eye left"></span>
+              <span class="eye right"></span>
+              <span class="mouth"></span>
+            </div>
+            <div class="face-bot hot">
+              <span class="eye left"></span>
+              <span class="eye right"></span>
+              <span class="mouth"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="scanner" id="scanner" aria-labelledby="scanner-title">
+      <div class="scanner-head">
+        <div>
+          <h2 id="scanner-title">星际表情扫描台</h2>
+          <span class="status-chip"><i class="dot" id="statusDot"></i><span id="statusText">等待打开摄像头</span></span>
+        </div>
+        <span class="pill">请保持脸在框内</span>
+      </div>
+
+      <div class="scanner-grid">
+        <div class="camera-shell">
+          <div class="video-card">
+            <video id="video" playsinline muted></video>
+            <canvas class="overlay-canvas" id="overlay" aria-hidden="true"></canvas>
+            <div class="camera-idle" id="cameraIdle">
+              <div class="idle-inner">
+                <div class="idle-icon" aria-hidden="true">📷</div>
+                <h3>准备好了吗？</h3>
+                <p>点击打开摄像头后，把脸放进中间的扫描框。开始后会倒计时 60 秒，屏幕只在本机浏览器中分析画面。</p>
+              </div>
+            </div>
+            <div class="timer-badge" id="timerBadge" style="--progress: 0%">
+              <div>
+                <span id="timeLeft">60</span>
+                <small>秒</small>
+              </div>
+            </div>
+            <div class="scan-caption">
+              <strong id="guideTitle">请保持脸在框内</strong>
+              <span id="guideText">光线越稳定，心率颜色信号越清楚。</span>
+            </div>
+          </div>
+        </div>
+
+        <aside class="panel-stack" aria-label="操作面板">
+          <section class="control-panel">
+            <div class="panel-title">
+              <h3>体验控制台</h3>
+              <span class="status-chip"><i class="dot" id="modelDot"></i><span id="modelText">模型待加载</span></span>
+            </div>
+            <div class="panel-body">
+              <div class="control-buttons">
+                <button class="btn full" id="cameraBtn" type="button">打开摄像头</button>
+                <button class="btn full" id="startBtn" type="button" disabled>开始 60 秒扫描</button>
+                <button class="btn secondary full" id="resetBtn" type="button">重新体验</button>
+              </div>
+              <div class="steps">
+                <div class="step" id="stepCamera"><span class="step-icon">1</span><span>打开摄像头</span></div>
+                <div class="step" id="stepFace"><span class="step-icon">2</span><span>脸在扫描框内</span></div>
+                <div class="step" id="stepPulse"><span class="step-icon">3</span><span>采集 60 秒颜色信号</span></div>
+              </div>
+            </div>
+          </section>
+        </aside>
+
+        <div class="observation-deck">
+          <section class="live-panel">
+            <div class="panel-title">
+              <h3>实时观察</h3>
+              <span class="pill" id="liveMode">待机</span>
+            </div>
+            <div class="panel-body">
+              <div class="live-grid">
+                <div class="live-tile">
+                  <span class="live-icon" aria-hidden="true">◎</span>
+                  <div class="live-copy">
+                    <span class="live-label">脸部框内</span>
+                    <strong id="liveFace">--</strong>
+                  </div>
+                  <div class="bar" style="--value: 0%" id="faceBar"><i></i></div>
+                </div>
+                <div class="live-tile">
+                  <span class="live-icon" aria-hidden="true">▣</span>
+                  <div class="live-copy">
+                    <span class="live-label">画面稳定</span>
+                    <strong id="liveStable">--</strong>
+                  </div>
+                  <div class="bar" style="--value: 0%" id="stableBar"><i></i></div>
+                </div>
+                <div class="live-tile">
+                  <span class="live-icon" aria-hidden="true">◐</span>
+                  <div class="live-copy">
+                    <span class="live-label">眨眼记录</span>
+                    <strong id="liveBlink">--</strong>
+                  </div>
+                  <div class="bar" style="--value: 0%" id="blinkBar"><i></i></div>
+                </div>
+                <div class="live-tile">
+                  <span class="live-icon" aria-hidden="true">✦</span>
+                  <div class="live-copy">
+                    <span class="live-label">采样质量</span>
+                    <strong id="liveQuality">--</strong>
+                  </div>
+                  <div class="bar" style="--value: 0%" id="qualityBar"><i></i></div>
+                </div>
+              </div>
+              <div class="live-hint"><span aria-hidden="true">i</span><div>开始扫描后，这里会像小仪表盘一样显示实时变化；数值只是现场观察，不是测评结论。</div></div>
+            </div>
+          </section>
+
+          <section class="note-panel">
+            <div class="panel-title">
+              <h3>小提示</h3>
+            </div>
+            <div class="panel-body">
+              <div class="note-lead">
+                <span class="note-orb" aria-hidden="true">💡</span>
+                <div>
+                  <strong>让信号更清楚的小方法</strong>
+                  <p>自然观察，不用刻意做表情。</p>
+                </div>
+              </div>
+              <ul class="note-list">
+                <li><span aria-hidden="true">坐</span><div>坐稳一点，让脸留在扫描框中间。</div></li>
+                <li><span aria-hidden="true">光</span><div>不要挡住额头和脸颊，光线尽量稳定。</div></li>
+                <li><span aria-hidden="true">科</span><div>心率来自视频颜色变化，动作太多会影响可信度。</div></li>
+              </ul>
+            </div>
+          </section>
+        </div>
+      </div>
+    </section>
+
+    <section class="results" id="results" aria-labelledby="results-title">
+      <div class="results-head">
+        <div>
+          <span class="eyebrow">Science Report</span>
+          <h2 id="results-title">我的状态观察报告</h2>
+          <p id="summaryText">扫描结束后，这里会出现本次体验的科普型反馈。</p>
+        </div>
+        <div class="result-badge">
+          <strong id="stateScore">--</strong>
+          <span>状态观察指数</span>
+        </div>
+      </div>
+
+      <div class="result-grid">
+        <article class="result-card">
+          <div class="card-top"><span class="card-icon">🎯</span><h3>专注指数</h3></div>
+          <div class="metric"><strong id="focusScore">--</strong><span>/100</span></div>
+          <div class="bar" id="focusBar" style="--value: 0%"><i></i></div>
+          <p id="focusText">保持脸部在框内时，专注指数会更稳定。</p>
+        </article>
+
+        <article class="result-card">
+          <div class="card-top"><span class="card-icon">🌿</span><h3>放松指数</h3></div>
+          <div class="metric"><strong id="relaxScore">--</strong><span>/100</span></div>
+          <div class="bar" id="relaxBar" style="--value: 0%"><i></i></div>
+          <p id="relaxText">呼吸平稳、表情自然时，放松指数通常会更高。</p>
+        </article>
+
+        <article class="result-card">
+          <div class="card-top"><span class="card-icon">👀</span><h3>眨眼观察</h3></div>
+          <div class="metric"><strong id="blinkScore">--</strong><span>次/分</span></div>
+          <div class="bar" id="blinkResultBar" style="--value: 0%"><i></i></div>
+          <p id="blinkText">眨眼次数会受光线、注意力和个人习惯影响。</p>
+        </article>
+
+        <article class="result-card">
+          <div class="card-top"><span class="card-icon">🙂</span><h3>表情稳定度</h3></div>
+          <div class="metric"><strong id="expressionScore">--</strong><span>/100</span></div>
+          <div class="bar" id="expressionBar" style="--value: 0%"><i></i></div>
+          <p id="expressionText">表情稳定度观察嘴角、眼部和面部动作的变化。</p>
+        </article>
+
+        <article class="result-card">
+          <div class="card-top"><span class="card-icon">💓</span><h3>心率观察</h3></div>
+          <div class="metric"><strong id="heartScore">--</strong><span>bpm</span></div>
+          <div class="bar" id="heartBar" style="--value: 0%"><i></i></div>
+          <p id="heartText">心率来自 rPPG 视频颜色信号估计，运动和光线会影响结果。</p>
+        </article>
+
+        <article class="result-card">
+          <div class="card-top"><span class="card-icon">⚡</span><h3>压力观察指数</h3></div>
+          <div class="metric"><strong id="stressScore">--</strong><span>/100</span></div>
+          <div class="bar" id="stressBar" style="--value: 0%"><i></i></div>
+          <p id="stressText">这里更像“唤醒度小雷达”，不是压力诊断。</p>
+        </article>
+      </div>
+
+      <div class="wide-result">
+        <section class="tip-box">
+          <h3>身心状态小提示</h3>
+          <ul class="tip-list" id="tipList">
+            <li>完成一次扫描后，会给出适合课堂讨论的小提示。</li>
+          </ul>
+        </section>
+
+        <section class="science-box">
+          <h3>本次数据可信度</h3>
+          <p id="qualityText">可信度会结合脸部在框内时间、画面稳定度、rPPG 信号强度一起计算。</p>
+          <div class="quality-row">
+            <div class="quality-item"><span>脸部在框</span><div class="bar" id="qFace" style="--value: 0%"><i></i></div><b id="qFaceNum">--</b></div>
+            <div class="quality-item"><span>稳定画面</span><div class="bar" id="qStable" style="--value: 0%"><i></i></div><b id="qStableNum">--</b></div>
+            <div class="quality-item"><span>脉搏信号</span><div class="bar" id="qPulse" style="--value: 0%"><i></i></div><b id="qPulseNum">--</b></div>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <canvas class="hidden-work" id="workCanvas"></canvas>
+  </main>
+
+  <script>
+    const DURATION_SECONDS = 60;
+    const SAMPLE_INTERVAL_MS = 80;
+    const FACE_INTERVAL_MS = 90;
+    const HEART_MIN_BPM = 45;
+    const HEART_MAX_BPM = 180;
+
+    const els = {};
+    [
+      "video", "overlay", "workCanvas", "cameraIdle", "timerBadge", "timeLeft", "guideTitle", "guideText",
+      "cameraBtn", "heroStartBtn", "jumpScannerBtn", "startBtn", "resetBtn", "statusDot", "statusText",
+      "modelDot", "modelText", "stepCamera", "stepFace", "stepPulse", "liveMode", "liveFace", "liveStable",
+      "liveBlink", "liveQuality", "faceBar", "stableBar", "blinkBar", "qualityBar", "results", "summaryText",
+      "stateScore", "focusScore", "focusBar", "focusText", "relaxScore", "relaxBar", "relaxText",
+      "blinkScore", "blinkResultBar", "blinkText", "expressionScore", "expressionBar", "expressionText",
+      "heartScore", "heartBar", "heartText", "stressScore", "stressBar", "stressText", "tipList",
+      "qualityText", "qFace", "qFaceNum", "qStable", "qStableNum", "qPulse", "qPulseNum"
+    ].forEach((id) => {
+      els[id] = document.getElementById(id);
+    });
+
+    const state = {
+      stream: null,
+      faceMesh: null,
+      modelStatus: "idle",
+      cameraReady: false,
+      scanning: false,
+      startTime: 0,
+      lastSample: 0,
+      lastFaceSend: 0,
+      faceBusy: false,
+      scan: null,
+      currentFace: null,
+      prevSmall: null,
+      raf: 0
+    };
+
+    function createScanState() {
+      return {
+        samples: [],
+        faceFrames: 0,
+        faceOkFrames: 0,
+        modelFrames: 0,
+        stableValues: [],
+        motionValues: [],
+        centerErrors: [],
+        earValues: [],
+        expressionValues: [],
+        blinkCount: 0,
+        eyeClosed: false,
+        closedAt: 0,
+        lastBlinkAt: 0,
+        firstFaceAt: 0
+      };
+    }
+
+    function clamp(value, min = 0, max = 100) {
+      return Math.min(max, Math.max(min, value));
+    }
+
+    function lerp(a, b, t) {
+      return a + (b - a) * t;
+    }
+
+    function round(value, digits = 0) {
+      const p = 10 ** digits;
+      return Math.round(value * p) / p;
+    }
+
+    function mean(values) {
+      if (!values.length) return 0;
+      return values.reduce((sum, value) => sum + value, 0) / values.length;
+    }
+
+    function std(values) {
+      if (values.length < 2) return 0;
+      const m = mean(values);
+      return Math.sqrt(mean(values.map((value) => (value - m) ** 2)));
+    }
+
+    function percentile(values, p) {
+      if (!values.length) return 0;
+      const sorted = [...values].sort((a, b) => a - b);
+      const index = clamp((sorted.length - 1) * p, 0, sorted.length - 1);
+      const low = Math.floor(index);
+      const high = Math.ceil(index);
+      if (low === high) return sorted[low];
+      return lerp(sorted[low], sorted[high], index - low);
+    }
+
+    function dist(a, b) {
+      const dx = a.x - b.x;
+      const dy = a.y - b.y;
+      return Math.sqrt(dx * dx + dy * dy);
+    }
+
+    function setStatus(text, mode = "warn") {
+      els.statusText.textContent = text;
+      els.statusDot.className = `dot ${mode}`;
+    }
+
+    function setModelStatus(text, mode = "warn") {
+      els.modelText.textContent = text;
+      els.modelDot.className = `dot ${mode}`;
+    }
+
+    function setStep(el, kind) {
+      el.classList.remove("ok", "warn");
+      if (kind) el.classList.add(kind);
+    }
+
+    function setBar(el, value) {
+      el.style.setProperty("--value", `${clamp(value)}%`);
+    }
+
+    function setScore(id, value) {
+      els[id].textContent = Number.isFinite(value) ? String(Math.round(value)) : "--";
+    }
+
+    function scrollToScanner() {
+      document.getElementById("scanner").scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    async function startCamera() {
+      if (!window.isSecureContext) {
+        setStatus("请用 HTTPS 或 localhost 打开页面", "warn");
+        alert("摄像头需要在 HTTPS 或 localhost 环境中使用。部署到 GitHub Pages 后可以正常打开。");
+        return;
+      }
+
+      if (state.stream) {
+        scrollToScanner();
+        return;
+      }
+
+      setStatus("正在请求摄像头权限", "busy");
+      try {
+        state.stream = await navigator.mediaDevices.getUserMedia({
+          video: {
+            facingMode: "user",
+            width: { ideal: 1280 },
+            height: { ideal: 720 },
+            frameRate: { ideal: 30, max: 30 }
+          },
+          audio: false
+        });
+        els.video.srcObject = state.stream;
+        await els.video.play();
+        state.cameraReady = true;
+        els.cameraIdle.classList.add("hidden");
+        els.startBtn.disabled = false;
+        setStep(els.stepCamera, "ok");
+        setStatus("摄像头已打开", "ready");
+        sizeCanvases();
+        drawGuide();
+        await ensureFaceModel();
+        loop();
+        scrollToScanner();
+      } catch (error) {
+        console.error(error);
+        setStatus("摄像头没有打开成功", "warn");
+        els.guideTitle.textContent = "摄像头没有打开成功";
+        els.guideText.textContent = "请检查浏览器权限，或换用 HTTPS / localhost 环境。";
+      }
+    }
+
+    async function ensureFaceModel() {
+      if (state.faceMesh || state.modelStatus === "loading" || state.modelStatus === "fallback") return;
+      if (!window.FaceMesh) {
+        state.modelStatus = "fallback";
+        setModelStatus("基础采样模式", "warn");
+        return;
+      }
+
+      state.modelStatus = "loading";
+      setModelStatus("模型加载中", "busy");
+      try {
+        state.faceMesh = new FaceMesh({
+          locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`
+        });
+        state.faceMesh.setOptions({
+          maxNumFaces: 1,
+          refineLandmarks: true,
+          minDetectionConfidence: 0.55,
+          minTrackingConfidence: 0.55
+        });
+        state.faceMesh.onResults(onFaceResults);
+        state.modelStatus = "ready";
+        setModelStatus("脸部模型已就绪", "ready");
+      } catch (error) {
+        console.warn(error);
+        state.faceMesh = null;
+        state.modelStatus = "fallback";
+        setModelStatus("基础采样模式", "warn");
+      }
+    }
+
+    function sizeCanvases() {
+      const rect = els.video.getBoundingClientRect();
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      [els.overlay].forEach((canvas) => {
+        canvas.width = Math.max(1, Math.round(rect.width * dpr));
+        canvas.height = Math.max(1, Math.round(rect.height * dpr));
+        const ctx = canvas.getContext("2d");
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      });
+      els.workCanvas.width = Math.max(1, els.video.videoWidth || 640);
+      els.workCanvas.height = Math.max(1, els.video.videoHeight || 360);
+    }
+
+    function drawRoundedRect(ctx, x, y, w, h, r) {
+      const radius = Math.min(r, w / 2, h / 2);
+      ctx.beginPath();
+      ctx.moveTo(x + radius, y);
+      ctx.arcTo(x + w, y, x + w, y + h, radius);
+      ctx.arcTo(x + w, y + h, x, y + h, radius);
+      ctx.arcTo(x, y + h, x, y, radius);
+      ctx.arcTo(x, y, x + w, y, radius);
+      ctx.closePath();
+    }
+
+    function getGuideRect(width, height) {
+      const w = width * 0.52;
+      const h = Math.min(height * 0.72, w * 1.25);
+      return {
+        x: (width - w) / 2,
+        y: (height - h) / 2,
+        w,
+        h
+      };
+    }
+
+    function drawGuide() {
+      const canvas = els.overlay;
+      const ctx = canvas.getContext("2d");
+      const width = canvas.getBoundingClientRect().width;
+      const height = canvas.getBoundingClientRect().height;
+      ctx.clearRect(0, 0, width, height);
+
+      const guide = getGuideRect(width, height);
+      const faceOk = state.currentFace?.inside;
+      const color = faceOk ? "rgba(85, 240, 167, 0.95)" : "rgba(100, 220, 255, 0.95)";
+
+      ctx.save();
+      ctx.lineWidth = 4;
+      ctx.strokeStyle = color;
+      ctx.shadowColor = color;
+      ctx.shadowBlur = 18;
+      drawRoundedRect(ctx, guide.x, guide.y, guide.w, guide.h, 26);
+      ctx.stroke();
+      ctx.restore();
+
+      ctx.save();
+      ctx.strokeStyle = faceOk ? "rgba(85, 240, 167, 0.25)" : "rgba(100, 220, 255, 0.2)";
+      ctx.lineWidth = 1;
+      for (let i = 1; i < 5; i += 1) {
+        const y = guide.y + (guide.h / 5) * i;
+        ctx.beginPath();
+        ctx.moveTo(guide.x + 16, y);
+        ctx.lineTo(guide.x + guide.w - 16, y);
+        ctx.stroke();
+      }
+      ctx.restore();
+
+      if (state.currentFace?.box) {
+        const box = state.currentFace.box;
+        const x = box.x * width;
+        const y = box.y * height;
+        const w = box.w * width;
+        const h = box.h * height;
+        ctx.save();
+        ctx.strokeStyle = faceOk ? "rgba(85, 240, 167, 0.88)" : "rgba(255, 209, 102, 0.88)";
+        ctx.lineWidth = 2;
+        drawRoundedRect(ctx, x, y, w, h, 18);
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      const sweepY = guide.y + ((performance.now() / 18) % guide.h);
+      ctx.save();
+      const gradient = ctx.createLinearGradient(guide.x, sweepY - 18, guide.x, sweepY + 18);
+      gradient.addColorStop(0, "rgba(81, 242, 194, 0)");
+      gradient.addColorStop(0.5, "rgba(81, 242, 194, 0.28)");
+      gradient.addColorStop(1, "rgba(81, 242, 194, 0)");
+      ctx.fillStyle = gradient;
+      ctx.fillRect(guide.x + 8, sweepY - 18, guide.w - 16, 36);
+      ctx.restore();
+    }
+
+    function startScan() {
+      if (!state.cameraReady || state.scanning) return;
+      state.scanning = true;
+      state.scan = createScanState();
+      state.prevSmall = null;
+      state.startTime = performance.now();
+      state.lastSample = 0;
+      els.results.classList.remove("show");
+      els.liveMode.textContent = "扫描中";
+      els.startBtn.disabled = true;
+      els.cameraBtn.disabled = true;
+      setStatus("60 秒扫描中", "busy");
+      setStep(els.stepPulse, "warn");
+      els.guideTitle.textContent = "请保持脸在框内";
+      els.guideText.textContent = "自然呼吸，像看星星一样看着屏幕。";
+      loop();
+    }
+
+    function resetExperience() {
+      state.scanning = false;
+      state.scan = createScanState();
+      state.prevSmall = null;
+      state.startTime = 0;
+      state.lastSample = 0;
+      state.currentFace = null;
+      els.results.classList.remove("show");
+      els.timeLeft.textContent = String(DURATION_SECONDS);
+      els.timerBadge.style.setProperty("--progress", "0%");
+      els.liveMode.textContent = state.cameraReady ? "待开始" : "待机";
+      els.liveFace.textContent = "--";
+      els.liveStable.textContent = "--";
+      els.liveBlink.textContent = "--";
+      els.liveQuality.textContent = "--";
+      [els.faceBar, els.stableBar, els.blinkBar, els.qualityBar].forEach((el) => setBar(el, 0));
+      setStep(els.stepFace, null);
+      setStep(els.stepPulse, null);
+      setStatus(state.cameraReady ? "摄像头已打开" : "等待打开摄像头", state.cameraReady ? "ready" : "warn");
+      els.startBtn.disabled = !state.cameraReady;
+      els.cameraBtn.disabled = false;
+      els.guideTitle.textContent = "请保持脸在框内";
+      els.guideText.textContent = "光线越稳定，心率颜色信号越清楚。";
+      drawGuide();
+    }
+
+    function loop() {
+      cancelAnimationFrame(state.raf);
+      const tick = async (now) => {
+        if (state.cameraReady) {
+          sizeWorkCanvasIfNeeded();
+          drawGuide();
+          maybeRunFaceModel(now);
+          if (state.scanning) {
+            updateCountdown(now);
+            if (now - state.lastSample >= SAMPLE_INTERVAL_MS) {
+              state.lastSample = now;
+              collectSample(now);
+              updateLivePanel(now);
+            }
+            if ((now - state.startTime) / 1000 >= DURATION_SECONDS) {
+              finishScan();
+              return;
+            }
+          } else {
+            updateFaceStep();
+          }
+          state.raf = requestAnimationFrame(tick);
+        }
+      };
+      state.raf = requestAnimationFrame(tick);
+    }
+
+    function sizeWorkCanvasIfNeeded() {
+      const w = els.video.videoWidth || 640;
+      const h = els.video.videoHeight || 360;
+      if (els.workCanvas.width !== w || els.workCanvas.height !== h) {
+        els.workCanvas.width = w;
+        els.workCanvas.height = h;
+      }
+    }
+
+    function maybeRunFaceModel(now) {
+      if (!state.faceMesh || state.faceBusy || now - state.lastFaceSend < FACE_INTERVAL_MS) return;
+      if (els.video.readyState < 2) return;
+      state.faceBusy = true;
+      state.lastFaceSend = now;
+      state.faceMesh.send({ image: els.video }).catch((error) => {
+        console.warn(error);
+        state.faceMesh = null;
+        state.modelStatus = "fallback";
+        setModelStatus("基础采样模式", "warn");
+      }).finally(() => {
+        state.faceBusy = false;
+      });
+    }
+
+    function onFaceResults(results) {
+      const landmarks = results.multiFaceLandmarks?.[0];
+      if (!landmarks) {
+        state.currentFace = { found: false, inside: false, timestamp: performance.now() };
+        updateFaceStep();
+        return;
+      }
+
+      const xs = landmarks.map((point) => point.x);
+      const ys = landmarks.map((point) => point.y);
+      const minX = Math.max(0, Math.min(...xs));
+      const maxX = Math.min(1, Math.max(...xs));
+      const minY = Math.max(0, Math.min(...ys));
+      const maxY = Math.min(1, Math.max(...ys));
+      const rawBox = { x: minX, y: minY, w: maxX - minX, h: maxY - minY };
+      const box = { x: 1 - maxX, y: minY, w: rawBox.w, h: rawBox.h };
+      const centerX = minX + rawBox.w / 2;
+      const centerY = minY + rawBox.h / 2;
+      const sizeOk = rawBox.w > 0.18 && rawBox.w < 0.72 && rawBox.h > 0.24 && rawBox.h < 0.88;
+      const centerError = Math.sqrt(((centerX - 0.5) / 0.34) ** 2 + ((centerY - 0.5) / 0.42) ** 2);
+      const inside = sizeOk && centerError < 1.0 && minX > 0.04 && maxX < 0.96 && minY > 0.02 && maxY < 0.98;
+      const ear = computeEyeAspectRatio(landmarks);
+      const expression = computeExpressionValue(landmarks, box);
+
+      state.currentFace = {
+        found: true,
+        inside,
+        box,
+        centerError,
+        ear,
+        expression,
+        timestamp: performance.now()
+      };
+
+      if (state.scanning && state.scan) {
+        const scan = state.scan;
+        scan.modelFrames += 1;
+        scan.faceFrames += 1;
+        if (inside) scan.faceOkFrames += 1;
+        scan.centerErrors.push(clamp(centerError, 0, 2));
+        scan.earValues.push(ear);
+        scan.expressionValues.push(expression);
+        if (!scan.firstFaceAt) scan.firstFaceAt = performance.now();
+        updateBlink(scan, ear, performance.now());
+      }
+      updateFaceStep();
+    }
+
+    function updateFaceStep() {
+      const face = state.currentFace;
+      if (!face?.found) {
+        setStep(els.stepFace, null);
+        return;
+      }
+      setStep(els.stepFace, face.inside ? "ok" : "warn");
+    }
+
+    function computeEyeAspectRatio(lm) {
+      const left = (dist(lm[159], lm[145]) + dist(lm[158], lm[153])) / (2 * dist(lm[33], lm[133]));
+      const right = (dist(lm[386], lm[374]) + dist(lm[385], lm[380])) / (2 * dist(lm[263], lm[362]));
+      return (left + right) / 2;
+    }
+
+    function computeExpressionValue(lm, box) {
+      const mouthOpen = dist(lm[13], lm[14]) / Math.max(0.001, dist(lm[61], lm[291]));
+      const smileWidth = dist(lm[61], lm[291]) / Math.max(0.001, box.w);
+      const browEyeLeft = dist(lm[105], lm[159]) / Math.max(0.001, box.h);
+      const browEyeRight = dist(lm[334], lm[386]) / Math.max(0.001, box.h);
+      return mouthOpen * 1.8 + smileWidth * 0.6 + (browEyeLeft + browEyeRight) * 0.4;
+    }
+
+    function updateBlink(scan, ear, now) {
+      const recent = scan.earValues.slice(-80);
+      const baseline = percentile(recent, 0.82) || ear;
+      const threshold = Math.max(0.13, baseline * 0.72);
+      const openThreshold = threshold * 1.16;
+      if (!scan.eyeClosed && ear < threshold && now - scan.lastBlinkAt > 180) {
+        scan.eyeClosed = true;
+        scan.closedAt = now;
+      } else if (scan.eyeClosed && ear > openThreshold) {
+        const closedMs = now - scan.closedAt;
+        if (closedMs >= 45 && closedMs <= 700) {
+          scan.blinkCount += 1;
+          scan.lastBlinkAt = now;
+        }
+        scan.eyeClosed = false;
+      }
+    }
+
+    function updateCountdown(now) {
+      const elapsed = (now - state.startTime) / 1000;
+      const remain = Math.max(0, DURATION_SECONDS - elapsed);
+      els.timeLeft.textContent = String(Math.ceil(remain));
+      els.timerBadge.style.setProperty("--progress", `${(elapsed / DURATION_SECONDS) * 100}%`);
+    }
+
+    function getRoi(videoWidth, videoHeight) {
+      const face = state.currentFace;
+      if (face?.box && face.inside) {
+        const x = (face.box.x + face.box.w * 0.28) * videoWidth;
+        const y = (face.box.y + face.box.h * 0.16) * videoHeight;
+        const w = face.box.w * 0.44 * videoWidth;
+        const h = face.box.h * 0.22 * videoHeight;
+        return sanitizeRect({ x, y, w, h }, videoWidth, videoHeight);
+      }
+      const guideW = videoWidth * 0.28;
+      const guideH = videoHeight * 0.2;
+      return sanitizeRect({
+        x: (videoWidth - guideW) / 2,
+        y: videoHeight * 0.26,
+        w: guideW,
+        h: guideH
+      }, videoWidth, videoHeight);
+    }
+
+    function sanitizeRect(rect, maxW, maxH) {
+      const x = clamp(Math.round(rect.x), 0, maxW - 2);
+      const y = clamp(Math.round(rect.y), 0, maxH - 2);
+      const w = clamp(Math.round(rect.w), 2, maxW - x);
+      const h = clamp(Math.round(rect.h), 2, maxH - y);
+      return { x, y, w, h };
+    }
+
+    function collectSample(now) {
+      const video = els.video;
+      if (video.readyState < 2) return;
+      const canvas = els.workCanvas;
+      const ctx = canvas.getContext("2d", { willReadFrequently: true });
+      ctx.save();
+      ctx.translate(canvas.width, 0);
+      ctx.scale(-1, 1);
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      ctx.restore();
+
+      const roi = getRoi(canvas.width, canvas.height);
+      const image = ctx.getImageData(roi.x, roi.y, roi.w, roi.h);
+      const avg = averageColor(image.data);
+      const motion = estimateMotion(ctx, roi);
+      const faceOk = Boolean(state.currentFace?.inside) || state.modelStatus === "fallback";
+      const stable = clamp(100 - motion * 170, 0, 100);
+
+      state.scan.samples.push({
+        t: (now - state.startTime) / 1000,
+        r: avg.r,
+        g: avg.g,
+        b: avg.b,
+        ok: faceOk,
+        motion,
+        stable
+      });
+      state.scan.motionValues.push(motion);
+      state.scan.stableValues.push(stable);
+    }
+
+    function averageColor(data) {
+      let r = 0;
+      let g = 0;
+      let b = 0;
+      let count = 0;
+      for (let i = 0; i < data.length; i += 16) {
+        r += data[i];
+        g += data[i + 1];
+        b += data[i + 2];
+        count += 1;
+      }
+      return {
+        r: r / Math.max(1, count),
+        g: g / Math.max(1, count),
+        b: b / Math.max(1, count)
+      };
+    }
+
+    function estimateMotion(ctx, roi) {
+      const size = 24;
+      const tmp = document.createElement("canvas");
+      tmp.width = size;
+      tmp.height = size;
+      const tctx = tmp.getContext("2d", { willReadFrequently: true });
+      tctx.drawImage(els.workCanvas, roi.x, roi.y, roi.w, roi.h, 0, 0, size, size);
+      const data = tctx.getImageData(0, 0, size, size).data;
+      const luma = new Float32Array(size * size);
+      for (let i = 0, j = 0; i < data.length; i += 4, j += 1) {
+        luma[j] = (data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114) / 255;
+      }
+      if (!state.prevSmall) {
+        state.prevSmall = luma;
+        return 0;
+      }
+      let diff = 0;
+      for (let i = 0; i < luma.length; i += 1) {
+        diff += Math.abs(luma[i] - state.prevSmall[i]);
+      }
+      state.prevSmall = luma;
+      return diff / luma.length;
+    }
+
+    function updateLivePanel(now) {
+      const scan = state.scan;
+      const elapsed = Math.max(1, (now - state.startTime) / 1000);
+      const faceRatio = scan.modelFrames ? scan.faceOkFrames / scan.modelFrames : (state.modelStatus === "fallback" ? 0.72 : 0);
+      const stable = mean(scan.stableValues.slice(-20)) || 0;
+      const blinkPerMin = scan.blinkCount / elapsed * 60;
+      const quality = computeLiveQuality(faceRatio, stable, scan.samples.length);
+
+      els.liveFace.textContent = `${Math.round(faceRatio * 100)}%`;
+      els.liveStable.textContent = `${Math.round(stable)}%`;
+      els.liveBlink.textContent = state.modelStatus === "ready" ? `${Math.round(blinkPerMin)}` : "--";
+      els.liveQuality.textContent = `${Math.round(quality)}%`;
+      setBar(els.faceBar, faceRatio * 100);
+      setBar(els.stableBar, stable);
+      setBar(els.blinkBar, clamp((blinkPerMin / 26) * 100));
+      setBar(els.qualityBar, quality);
+
+      if (faceRatio > 0.72) {
+        els.guideTitle.textContent = "很好，继续保持";
+        els.guideText.textContent = "脸在框内，采样信号正在变得更完整。";
+      } else if (state.modelStatus === "fallback") {
+        els.guideTitle.textContent = "基础采样中";
+        els.guideText.textContent = "模型未加载时，会用中间区域的颜色和运动信号做科普观察。";
+      } else {
+        els.guideTitle.textContent = "请把脸移回框内";
+        els.guideText.textContent = "额头和脸颊不要被遮挡，效果会更好。";
+      }
+    }
+
+    function computeLiveQuality(faceRatio, stable, samples) {
+      const sampleRatio = clamp(samples / (DURATION_SECONDS * (1000 / SAMPLE_INTERVAL_MS)), 0, 1);
+      return clamp(faceRatio * 45 + stable * 0.35 + sampleRatio * 20);
+    }
+
+    function finishScan() {
+      state.scanning = false;
+      els.liveMode.textContent = "已完成";
+      els.startBtn.disabled = false;
+      els.cameraBtn.disabled = false;
+      setStep(els.stepPulse, "ok");
+      setStatus("扫描完成", "ready");
+      els.timeLeft.textContent = "0";
+      els.timerBadge.style.setProperty("--progress", "100%");
+      const metrics = computeMetrics(state.scan);
+      renderResults(metrics);
+      els.results.classList.add("show");
+      els.results.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function computeMetrics(scan) {
+      const faceRatio = scan.modelFrames ? scan.faceOkFrames / scan.modelFrames : (state.modelStatus === "fallback" ? 0.62 : 0);
+      const stableScore = mean(scan.stableValues) || 0;
+      const movementScore = clamp(100 - (mean(scan.motionValues) || 0) * 150, 0, 100);
+      const centerScore = scan.centerErrors.length ? clamp(100 - mean(scan.centerErrors) * 75, 0, 100) : faceRatio * 80;
+      const expressionSd = std(scan.expressionValues);
+      const expressionScore = scan.expressionValues.length > 8 ? clamp(100 - expressionSd * 520, 28, 99) : clamp(stableScore * 0.75, 20, 82);
+      const blinkPerMin = scan.blinkCount / DURATION_SECONDS * 60;
+      const blinkBalance = scan.earValues.length ? clamp(100 - Math.abs(blinkPerMin - 16) * 3.2, 28, 98) : 48;
+      const heart = estimateHeartRate(scan.samples);
+
+      const focusScore = clamp(faceRatio * 44 + centerScore * 0.26 + movementScore * 0.18 + blinkBalance * 0.12, 0, 100);
+      const pulseReliability = heart.quality;
+      const hrActivation = heart.bpm ? clamp((heart.bpm - 72) / 46 * 100, 0, 100) : 45;
+      const expressionCalm = expressionScore;
+      const stressScore = clamp(hrActivation * 0.42 + (100 - movementScore) * 0.22 + (100 - expressionCalm) * 0.2 + (100 - blinkBalance) * 0.16, 0, 100);
+      const relaxScore = clamp(100 - stressScore * 0.62 + movementScore * 0.14 + expressionCalm * 0.14 - (1 - pulseReliability) * 10, 0, 100);
+      const quality = clamp(faceRatio * 42 + stableScore * 0.24 + pulseReliability * 100 * 0.24 + (scan.samples.length / 650) * 10, 0, 100);
+      const stateScore = clamp(focusScore * 0.28 + relaxScore * 0.22 + expressionScore * 0.2 + blinkBalance * 0.12 + quality * 0.18, 0, 100);
+
+      return {
+        faceRatio,
+        stableScore,
+        movementScore,
+        centerScore,
+        expressionScore,
+        blinkPerMin,
+        blinkCount: scan.blinkCount,
+        blinkBalance,
+        heart,
+        focusScore,
+        relaxScore,
+        stressScore,
+        stateScore,
+        quality,
+        modelReady: state.modelStatus === "ready",
+        sampleCount: scan.samples.length
+      };
+    }
+
+    function estimateHeartRate(samples) {
+      const valid = samples.filter((sample) => sample.ok && sample.t > 2 && sample.t < DURATION_SECONDS - 1);
+      if (valid.length < 260) {
+        return { bpm: null, quality: 0, label: "采样不足", peakRatio: 0 };
+      }
+
+      const fs = 12.5;
+      const firstT = valid[0].t;
+      const lastT = valid[valid.length - 1].t;
+      const uniform = [];
+      let cursor = 0;
+      for (let t = firstT; t <= lastT; t += 1 / fs) {
+        while (cursor < valid.length - 2 && valid[cursor + 1].t < t) cursor += 1;
+        const a = valid[cursor];
+        const b = valid[Math.min(cursor + 1, valid.length - 1)];
+        const mix = b.t === a.t ? 0 : clamp((t - a.t) / (b.t - a.t), 0, 1);
+        uniform.push({
+          r: lerp(a.r, b.r, mix),
+          g: lerp(a.g, b.g, mix),
+          b: lerp(a.b, b.b, mix),
+          motion: lerp(a.motion, b.motion, mix)
+        });
+      }
+
+      if (uniform.length < 250) {
+        return { bpm: null, quality: 0, label: "采样不足", peakRatio: 0 };
+      }
+
+      const rMean = mean(uniform.map((p) => p.r));
+      const gMean = mean(uniform.map((p) => p.g));
+      const bMean = mean(uniform.map((p) => p.b));
+      const rn = uniform.map((p) => p.r / rMean - 1);
+      const gn = uniform.map((p) => p.g / gMean - 1);
+      const bn = uniform.map((p) => p.b / bMean - 1);
+      const x = rn.map((r, i) => 3 * r - 2 * gn[i]);
+      const y = rn.map((r, i) => 1.5 * r + gn[i] - 1.5 * bn[i]);
+      const alpha = std(y) ? std(x) / std(y) : 1;
+      let signal = x.map((value, i) => value - alpha * y[i]);
+      signal = removeMovingAverage(signal, Math.round(fs * 1.4));
+      const spectrum = [];
+
+      for (let bpm = HEART_MIN_BPM; bpm <= HEART_MAX_BPM; bpm += 1) {
+        const freq = bpm / 60;
+        let real = 0;
+        let imag = 0;
+        for (let n = 0; n < signal.length; n += 1) {
+          const windowValue = 0.54 - 0.46 * Math.cos((2 * Math.PI * n) / (signal.length - 1));
+          const angle = (2 * Math.PI * freq * n) / fs;
+          const value = signal[n] * windowValue;
+          real += value * Math.cos(angle);
+          imag -= value * Math.sin(angle);
+        }
+        spectrum.push({ bpm, power: real * real + imag * imag });
+      }
+
+      spectrum.sort((a, b) => b.power - a.power);
+      const best = spectrum[0];
+      const powers = spectrum.map((item) => item.power);
+      const base = percentile(powers, 0.55) || 1;
+      const peakRatio = best.power / base;
+      const motionPenalty = clamp(mean(uniform.map((p) => p.motion)) * 5, 0, 0.55);
+      const quality = clamp((peakRatio - 1.8) / 7.2 - motionPenalty, 0, 1);
+      const label = quality > 0.62 ? "信号清楚" : quality > 0.34 ? "信号一般" : "信号偏弱";
+      return {
+        bpm: Math.round(best.bpm),
+        quality,
+        label,
+        peakRatio
+      };
+    }
+
+    function removeMovingAverage(signal, windowSize) {
+      const half = Math.max(2, Math.floor(windowSize / 2));
+      return signal.map((value, index) => {
+        let sum = 0;
+        let count = 0;
+        for (let i = Math.max(0, index - half); i <= Math.min(signal.length - 1, index + half); i += 1) {
+          sum += signal[i];
+          count += 1;
+        }
+        return value - sum / count;
+      });
+    }
+
+    function renderResults(metrics) {
+      const heartText = metrics.heart.bpm ? String(metrics.heart.bpm) : "--";
+      setScore("stateScore", metrics.stateScore);
+      setScore("focusScore", metrics.focusScore);
+      setScore("relaxScore", metrics.relaxScore);
+      els.blinkScore.textContent = metrics.modelReady ? String(Math.round(metrics.blinkPerMin)) : "--";
+      setScore("expressionScore", metrics.expressionScore);
+      els.heartScore.textContent = heartText;
+      setScore("stressScore", metrics.stressScore);
+
+      setBar(els.focusBar, metrics.focusScore);
+      setBar(els.relaxBar, metrics.relaxScore);
+      setBar(els.blinkResultBar, metrics.modelReady ? clamp((metrics.blinkPerMin / 28) * 100) : 0);
+      setBar(els.expressionBar, metrics.expressionScore);
+      setBar(els.heartBar, metrics.heart.quality * 100);
+      setBar(els.stressBar, metrics.stressScore);
+
+      els.summaryText.textContent = makeSummary(metrics);
+      els.focusText.textContent = makeFocusText(metrics);
+      els.relaxText.textContent = makeRelaxText(metrics);
+      els.blinkText.textContent = makeBlinkText(metrics);
+      els.expressionText.textContent = makeExpressionText(metrics);
+      els.heartText.textContent = makeHeartText(metrics);
+      els.stressText.textContent = makeStressText(metrics);
+      renderTips(metrics);
+      renderQuality(metrics);
+    }
+
+    function makeSummary(metrics) {
+      const qualityWord = metrics.quality >= 75 ? "本次采样质量不错" : metrics.quality >= 50 ? "本次采样基本可参考" : "本次采样信号有点调皮";
+      return `${qualityWord}。这些数字来自 60 秒摄像头画面中的脸部位置、运动、眨眼和 rPPG 颜色信号，只适合科普体验和同学们一起讨论。`;
+    }
+
+    function makeFocusText(metrics) {
+      if (metrics.focusScore >= 78) return "你大部分时间都在扫描框中，画面也比较稳定，像一位认真观察数据的小研究员。";
+      if (metrics.focusScore >= 55) return "你完成了扫描任务，中间可能有一些移动。下次把脸放在框中央，指数会更稳。";
+      return "脸部离开框或移动较多时，系统会更难观察。可以坐稳一点再试一次。";
+    }
+
+    function makeRelaxText(metrics) {
+      if (metrics.relaxScore >= 75) return "这次画面动作较少、表情变化也比较自然，放松指数偏高。";
+      if (metrics.relaxScore >= 52) return "放松指数处在中间区域。深呼吸几次、肩膀放松，可能会让下一次更平稳。";
+      return "这次可能有较多动作或心率颜色信号偏高。它不是坏事，只说明当时身体比较活跃。";
+    }
+
+    function makeBlinkText(metrics) {
+      if (!metrics.modelReady) return "脸部模型未成功加载，所以这次没有输出准确眨眼次数。";
+      if (metrics.blinkPerMin < 8) return `大约 ${Math.round(metrics.blinkPerMin)} 次/分。眨眼偏少时，可能是太专心盯着屏幕了，记得让眼睛休息。`;
+      if (metrics.blinkPerMin > 26) return `大约 ${Math.round(metrics.blinkPerMin)} 次/分。眨眼偏多可能和光线、眼睛干涩或好奇心有关。`;
+      return `大约 ${Math.round(metrics.blinkPerMin)} 次/分，处在常见观察范围内。`;
+    }
+
+    function makeExpressionText(metrics) {
+      if (!metrics.modelReady) return "基础模式下无法精确追踪表情，只用画面稳定度做了保守估计。";
+      if (metrics.expressionScore >= 78) return "嘴角、眼部和面部动作变化较小，表情稳定度较高。";
+      if (metrics.expressionScore >= 55) return "表情有一些变化，这在体验活动中很正常，也让数据更有讨论空间。";
+      return "这次表情变化比较丰富，像给系统出了一道有趣的观察题。";
+    }
+
+    function makeHeartText(metrics) {
+      if (!metrics.heart.bpm) return "有效颜色信号不足，心率没有输出。请保持光线稳定、减少头部移动后再测。";
+      return `估计约 ${metrics.heart.bpm} bpm，${metrics.heart.label}。这是视频 rPPG 估计值，不等同于医疗设备读数。`;
+    }
+
+    function makeStressText(metrics) {
+      if (metrics.stressScore >= 72) return "唤醒度较高，可能和运动、兴奋、紧张或光线信号不稳定有关。它不是压力诊断。";
+      if (metrics.stressScore >= 45) return "唤醒度处在中间区域，说明身体状态正在活动和安静之间切换。";
+      return "唤醒度偏低，通常表示画面稳定、表情和心率颜色信号比较平稳。";
+    }
+
+    function renderTips(metrics) {
+      const tips = [];
+      if (metrics.quality < 55) {
+        tips.push("下次可以面对均匀光线，坐稳一点，让系统看到更多有效信号。");
+      } else {
+        tips.push("这次数据可以拿来讨论：身体信号会随着姿势、光线、动作和注意力一起变化。");
+      }
+      if (metrics.blinkPerMin < 8 && metrics.modelReady) {
+        tips.push("看屏幕太认真时，眼睛可能忘记眨一眨，可以试试 20 秒看远处。");
+      } else if (metrics.blinkPerMin > 26 && metrics.modelReady) {
+        tips.push("如果眼睛觉得干，可以眨眨眼、看看远处，再继续体验。");
+      } else {
+        tips.push("自然眨眼、自然呼吸就很好，不需要刻意做表情。");
+      }
+      if (metrics.stressScore > 70) {
+        tips.push("可以做一次“吸气 3 秒、呼气 4 秒”的小练习，再看看数字会不会变化。");
+      } else {
+        tips.push("把这份报告当成一次科学观察：同一个人换个姿势或心情，数据也可能变化。");
+      }
+
+      els.tipList.innerHTML = tips.map((tip) => `<li>${tip}</li>`).join("");
+    }
+
+    function renderQuality(metrics) {
+      const pulse = metrics.heart.quality * 100;
+      els.qualityText.textContent = metrics.quality >= 70
+        ? "本次采样质量较好，可以用于现场科普讨论。"
+        : metrics.quality >= 48
+          ? "本次采样质量中等，部分结果需要结合现场情况理解。"
+          : "本次采样质量偏低，建议重测后再比较数据。";
+      setBar(els.qFace, metrics.faceRatio * 100);
+      setBar(els.qStable, metrics.stableScore);
+      setBar(els.qPulse, pulse);
+      els.qFaceNum.textContent = `${Math.round(metrics.faceRatio * 100)}%`;
+      els.qStableNum.textContent = `${Math.round(metrics.stableScore)}%`;
+      els.qPulseNum.textContent = `${Math.round(pulse)}%`;
+    }
+
+    els.cameraBtn.addEventListener("click", startCamera);
+    els.heroStartBtn.addEventListener("click", startCamera);
+    els.jumpScannerBtn.addEventListener("click", scrollToScanner);
+    els.startBtn.addEventListener("click", startScan);
+    els.resetBtn.addEventListener("click", resetExperience);
+    window.addEventListener("resize", () => {
+      sizeCanvases();
+      drawGuide();
+    });
+
+    resetExperience();
+  </script>
+</body>
+</html>
