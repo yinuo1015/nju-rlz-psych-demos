@@ -1,15 +1,885 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>VR 时空传送门</title>
-<style>
-body{margin:0;min-height:100vh;font-family:"Microsoft YaHei",Arial,sans-serif;color:#f4f8ff;background:radial-gradient(circle at 20% 20%,#6fe7ff2b,transparent 26%),linear-gradient(145deg,#050816,#0b1026 60%,#160820);display:grid;place-items:center;padding:24px}
-.card{width:min(900px,94vw);padding:38px;border-radius:32px;background:#0c122ad9;border:1px solid #7ee7ff33;box-shadow:0 24px 80px #0008}
-h1{font-size:clamp(34px,6vw,60px);margin:0 0 18px}p{color:#aebbd3;font-size:20px;line-height:1.8}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin:22px 0}.box{background:#ffffff12;border:1px solid #ffffff18;border-radius:22px;padding:18px}.box b{display:block;color:#fff;font-size:20px;margin-bottom:8px}a{display:inline-flex;margin-top:18px;padding:13px 18px;border-radius:16px;background:linear-gradient(135deg,#6fe7ff,#4df0a0);color:#07111c;text-decoration:none;font-weight:950}
-</style></head><body><main class="card">
-<h1>🥽 VR 时空传送门</h1>
-<p>VR 通过视觉和空间线索制造沉浸感，让我们像进入另一个场景一样。它能帮助我们体验环境对感受和行为的影响。</p>
-<div class="grid"><div class='box'><b>观察什么</b><span>虚拟场景中的距离感、沉浸感和身体反应。</span></div><div class='box'><b>心理学发现</b><span>眼睛看到的环境会影响大脑对空间和安全感的判断。</span></div><div class='box'><b>提醒</b><span>体验时注意安全，感到不舒服可以立刻停止。</span></div></div>
-<a href="../">返回首页</a>
-</main></body></html>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VR 时空传送门｜大脑与虚拟的奇妙碰撞</title>
+  <meta name="description" content="面向五、六年级小学生的 VR 与认知科学互动科普网页：时空传送门、VR 设备拆解、双眼视差、空间知觉、眩晕原理与互动挑战。" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <style>
+    :root{
+      --bg0:#050512;
+      --bg1:#090d2d;
+      --bg2:#150936;
+      --cyan:#27f5ff;
+      --green:#65ff9a;
+      --purple:#b86cff;
+      --pink:#ff4fd8;
+      --yellow:#ffe96a;
+      --glass:rgba(255,255,255,.075);
+      --glass2:rgba(255,255,255,.12);
+      --text:#ecf8ff;
+      --muted:#a9b7d7;
+      --line:rgba(39,245,255,.25);
+      --shadow: 0 0 35px rgba(39,245,255,.22), 0 0 70px rgba(184,108,255,.12);
+      --radius: 28px;
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      color:var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", "PingFang SC", sans-serif;
+      background:
+        radial-gradient(circle at 20% 5%, rgba(184,108,255,.35), transparent 35%),
+        radial-gradient(circle at 90% 15%, rgba(39,245,255,.18), transparent 35%),
+        linear-gradient(135deg,var(--bg0),var(--bg1) 42%,var(--bg2));
+      overflow-x:hidden;
+    }
+
+    body::before{
+      content:"";
+      position:fixed; inset:0;
+      pointer-events:none;
+      background-image:
+        linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+      background-size: 38px 38px;
+      mask-image: radial-gradient(circle at center, black 0%, transparent 85%);
+      z-index:0;
+    }
+
+    body::after{
+      content:"";
+      position:fixed; inset:0;
+      pointer-events:none;
+      background:
+        repeating-linear-gradient(180deg, rgba(255,255,255,.02) 0, rgba(255,255,255,.02) 1px, transparent 2px, transparent 6px);
+      mix-blend-mode:screen;
+      opacity:.35;
+      z-index:0;
+    }
+
+    a{color:inherit;text-decoration:none}
+    button,input,select{font:inherit}
+
+    .nav{
+      position:fixed;
+      top:16px; left:50%; transform:translateX(-50%);
+      width:min(1120px, calc(100vw - 28px));
+      height:58px;
+      z-index:50;
+      display:flex; align-items:center; justify-content:space-between;
+      padding:0 16px 0 18px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(8,12,35,.62);
+      backdrop-filter: blur(18px);
+      border-radius:999px;
+      box-shadow:0 10px 35px rgba(0,0,0,.28);
+    }
+
+    .brand{
+      display:flex; align-items:center; gap:10px;
+      font-weight:900; letter-spacing:.5px;
+      white-space:nowrap;
+    }
+    .brand-badge{
+      width:36px;height:36px;border-radius:50%;
+      display:grid;place-items:center;
+      background: radial-gradient(circle at 35% 30%, white, var(--cyan) 25%, var(--purple) 74%);
+      box-shadow:0 0 22px rgba(39,245,255,.75);
+      color:#051026;
+    }
+    .nav-links{display:flex; gap:6px; align-items:center; font-size:14px; color:var(--muted)}
+    .nav-links a{padding:9px 12px; border-radius:999px; transition:.25s}
+    .nav-links a:hover{background:rgba(39,245,255,.12); color:white}
+
+    .section{
+      position:relative;
+      z-index:1;
+      min-height:100vh;
+      padding:112px max(24px, calc((100vw - 1120px)/2)) 80px;
+    }
+
+    .hero{
+      display:grid;
+      place-items:center;
+      padding-top:92px;
+      overflow:hidden;
+    }
+    #portalCanvas{
+      position:absolute; inset:0;
+      width:100%; height:100%;
+      z-index:0;
+    }
+    .hero-orbit{
+      position:absolute;
+      width:min(86vw,760px); aspect-ratio:1/1;
+      border:1px solid rgba(39,245,255,.18);
+      border-radius:50%;
+      box-shadow: inset 0 0 50px rgba(39,245,255,.12), 0 0 75px rgba(184,108,255,.15);
+      animation: spin 22s linear infinite;
+      opacity:.65;
+    }
+    .hero-orbit::before,.hero-orbit::after{
+      content:""; position:absolute; inset:7%; border-radius:50%;
+      border:1px dashed rgba(101,255,154,.18);
+    }
+    .hero-orbit::after{inset:18%; border-color:rgba(255,79,216,.18); animation: spin 13s linear infinite reverse;}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    .hero-card{
+      position:relative;
+      z-index:3;
+      width:min(92vw,760px);
+      padding:38px;
+      border:1px solid rgba(255,255,255,.18);
+      border-radius:36px;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.14), rgba(255,255,255,.055)),
+        radial-gradient(circle at top left, rgba(39,245,255,.22), transparent 42%),
+        radial-gradient(circle at bottom right, rgba(255,79,216,.18), transparent 48%);
+      backdrop-filter: blur(22px);
+      box-shadow: var(--shadow), 0 28px 90px rgba(0,0,0,.42);
+      text-align:center;
+      overflow:hidden;
+    }
+    .hero-card::before{
+      content:""; position:absolute; inset:-2px;
+      background: linear-gradient(120deg, transparent 0%, rgba(39,245,255,.18) 35%, rgba(101,255,154,.18) 50%, transparent 65%);
+      transform: translateX(-80%);
+      animation: scan 4.8s ease-in-out infinite;
+      pointer-events:none;
+    }
+    @keyframes scan{50%{transform:translateX(80%)}100%{transform:translateX(80%)}}
+    .eyebrow{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:8px 14px;
+      border:1px solid rgba(101,255,154,.28);
+      border-radius:999px;
+      background:rgba(101,255,154,.08);
+      color:#caffda;
+      font-weight:700;
+      font-size:14px;
+      margin-bottom:18px;
+    }
+    .pulse-dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 18px var(--green);animation:pulse 1.4s infinite}
+    @keyframes pulse{50%{transform:scale(1.6);opacity:.55}}
+    h1{
+      font-size:clamp(42px, 8vw, 86px);
+      line-height:.96;
+      margin:0 0 18px;
+      letter-spacing:-2px;
+      text-shadow:0 0 28px rgba(39,245,255,.28);
+    }
+    .gradient-text{
+      background:linear-gradient(90deg,#fff,var(--cyan),var(--green),#fff);
+      -webkit-background-clip:text;
+      background-clip:text;
+      color:transparent;
+    }
+    .hero-card p{
+      margin:0 auto 26px;
+      max-width:650px;
+      color:#d7e5ff;
+      font-size:clamp(16px,2.2vw,20px);
+      line-height:1.75;
+    }
+    .hero-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+    .btn{
+      border:0;
+      cursor:pointer;
+      color:#06101f;
+      font-weight:900;
+      padding:14px 20px;
+      border-radius:999px;
+      background:linear-gradient(135deg,var(--green),var(--cyan));
+      box-shadow:0 0 24px rgba(101,255,154,.35), 0 12px 30px rgba(0,0,0,.25);
+      transition:.25s transform, .25s box-shadow, .25s filter;
+    }
+    .btn:hover{transform:translateY(-2px);filter:saturate(1.2);box-shadow:0 0 36px rgba(39,245,255,.5),0 16px 36px rgba(0,0,0,.28)}
+    .btn.secondary{
+      color:var(--text);
+      background:rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.16);
+      box-shadow:none;
+    }
+
+    .scroll-hint{
+      position:absolute; bottom:28px; left:50%; transform:translateX(-50%);
+      color:var(--muted); font-size:13px; display:flex; flex-direction:column; align-items:center; gap:8px;
+      z-index:5;
+    }
+    .mouse{
+      width:24px; height:38px; border-radius:999px; border:1px solid rgba(255,255,255,.35); position:relative;
+    }
+    .mouse::after{content:"";position:absolute;left:50%;top:8px;transform:translateX(-50%);width:4px;height:7px;border-radius:99px;background:var(--cyan);animation:wheel 1.5s infinite}
+    @keyframes wheel{to{top:20px;opacity:0}}
+
+    .section-title{max-width:860px;margin:0 auto 28px;text-align:center}
+    .section-title .eyebrow{margin-bottom:14px}
+    .section-title h2{font-size:clamp(30px,5vw,56px);margin:0 0 14px;letter-spacing:-1.5px;line-height:1.05}
+    .section-title p{margin:0 auto;color:var(--muted);line-height:1.8;font-size:17px;max-width:760px}
+
+    .glass{
+      background:linear-gradient(135deg,rgba(255,255,255,.11),rgba(255,255,255,.045));
+      border:1px solid rgba(255,255,255,.14);
+      border-radius:var(--radius);
+      box-shadow:0 18px 65px rgba(0,0,0,.28);
+      backdrop-filter: blur(18px);
+    }
+
+    .device-grid{
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap:22px;
+      align-items:stretch;
+      margin-top:34px;
+    }
+    .device-stage{min-height:520px;position:relative;overflow:hidden;padding:18px}
+    .device-stage::before{
+      content:""; position:absolute; inset:24px; border-radius:28px;
+      background:radial-gradient(circle at center,rgba(39,245,255,.16),transparent 58%);
+      border:1px solid rgba(39,245,255,.12);
+      pointer-events:none;
+    }
+    #vrCanvas{width:100%;height:100%;display:block;position:relative;z-index:2;min-height:480px;cursor:grab}
+    .drag-tip{
+      position:absolute;left:26px;bottom:24px;z-index:3;
+      padding:10px 14px;border-radius:999px;background:rgba(0,0,0,.36);border:1px solid rgba(255,255,255,.14);color:#dbe8ff;font-size:14px;
+    }
+    .part-list{display:grid;gap:14px}
+    .part-card{
+      position:relative;
+      padding:20px;
+      cursor:pointer;
+      overflow:hidden;
+      transition:.25s transform, .25s border-color, .25s background;
+    }
+    .part-card::before{
+      content:""; position:absolute; inset:0;
+      background:linear-gradient(90deg,transparent,rgba(39,245,255,.1),transparent);
+      transform:translateX(-90%);transition:.5s;
+    }
+    .part-card:hover,.part-card.active{transform:translateX(4px);border-color:rgba(39,245,255,.48);background:rgba(39,245,255,.08)}
+    .part-card:hover::before,.part-card.active::before{transform:translateX(90%)}
+    .part-card h3{margin:0 0 8px;font-size:20px;display:flex;align-items:center;gap:10px}
+    .part-card p{margin:0;color:var(--muted);line-height:1.7}
+    .chip{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:12px;background:rgba(39,245,255,.12);color:var(--cyan);border:1px solid rgba(39,245,255,.22);box-shadow:0 0 20px rgba(39,245,255,.15)}
+
+    .science-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:34px}
+    .lab-card{padding:22px;min-height:470px;display:flex;flex-direction:column;gap:16px;overflow:hidden;position:relative}
+    .lab-card h3{font-size:24px;margin:0;line-height:1.2}
+    .lab-card p{color:var(--muted);line-height:1.75;margin:0}
+    .lab-screen{
+      position:relative;
+      flex:1;
+      min-height:210px;
+      border-radius:24px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(0,0,0,.22);
+      overflow:hidden;
+    }
+
+    .stereo-wrap{display:grid;grid-template-columns:1fr 1fr;gap:10px;height:100%;padding:14px}
+    .eye-panel{
+      position:relative;border-radius:18px;background:linear-gradient(160deg,rgba(39,245,255,.11),rgba(184,108,255,.08));border:1px solid rgba(255,255,255,.1);overflow:hidden;
+    }
+    .eye-panel::before{content:attr(data-eye);position:absolute;left:10px;top:9px;color:#d5e9ff;font-size:12px;font-weight:800;opacity:.8}
+    .cube-dot{position:absolute;width:62px;height:62px;border-radius:18px;background:linear-gradient(135deg,var(--cyan),var(--purple));box-shadow:0 0 22px rgba(39,245,255,.42);top:50%;left:50%;transform:translate(-50%,-50%) rotate(16deg)}
+    .fuse-badge{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);padding:8px 12px;border-radius:999px;background:rgba(0,0,0,.4);border:1px solid rgba(39,245,255,.2);font-size:12px;color:#dffbff;white-space:nowrap}
+    .range{width:100%;accent-color:var(--cyan)}
+
+    .depth-world{
+      position:absolute; inset:0;
+      perspective:520px;
+      background:linear-gradient(180deg,rgba(39,245,255,.08),rgba(0,0,0,.18));
+    }
+    .cliff-lines{position:absolute;inset:0;transform-style:preserve-3d;transform:rotateX(62deg) translateY(20px)}
+    .cliff-lines i{position:absolute;left:50%;top:50%;width:2px;height:520px;background:linear-gradient(transparent,rgba(39,245,255,.8),transparent);transform-origin:top center}
+    .cliff-lines i:nth-child(1){transform:rotate(0deg)}
+    .cliff-lines i:nth-child(2){transform:rotate(22.5deg)}
+    .cliff-lines i:nth-child(3){transform:rotate(45deg)}
+    .cliff-lines i:nth-child(4){transform:rotate(67.5deg)}
+    .cliff-lines i:nth-child(5){transform:rotate(90deg)}
+    .cliff-lines i:nth-child(6){transform:rotate(112.5deg)}
+    .cliff-lines i:nth-child(7){transform:rotate(135deg)}
+    .cliff-lines i:nth-child(8){transform:rotate(157.5deg)}
+    .ledge{
+      position:absolute;left:50%;bottom:18%;transform:translateX(-50%);
+      width:48%;height:48px;border-radius:16px;background:linear-gradient(135deg,rgba(255,255,255,.24),rgba(255,255,255,.05));border:1px solid rgba(255,255,255,.18);box-shadow:0 14px 45px rgba(0,0,0,.45);
+    }
+    .floating-rock{
+      position:absolute;left:50%;top:50%;width:72px;height:72px;border-radius:24px;background:linear-gradient(135deg,var(--yellow),var(--pink));box-shadow:0 0 40px rgba(255,233,106,.35);transform:translate(-50%,-50%) scale(.9);
+      transition:.2s transform, .2s filter;
+    }
+    .fear-meter{display:flex;align-items:center;gap:10px;color:#dfe8ff;font-size:14px}
+    .meter{flex:1;height:10px;border-radius:999px;background:rgba(255,255,255,.12);overflow:hidden}
+    .meter span{display:block;height:100%;width:45%;border-radius:999px;background:linear-gradient(90deg,var(--green),var(--yellow),var(--pink));transition:.25s;width:var(--w,45%)}
+
+    .motion-scene{position:absolute;inset:0;background:
+      radial-gradient(circle at 50% 50%,rgba(255,255,255,.2) 0 2px,transparent 3px),
+      linear-gradient(135deg,rgba(39,245,255,.1),rgba(184,108,255,.12));
+      background-size:34px 34px,100% 100%;
+      transition:.2s;
+    }
+    .motion-scene.run{animation:spaceMove .65s linear infinite}
+    @keyframes spaceMove{to{background-position:80px 0, 0 0}}
+    .seat{position:absolute;left:50%;bottom:28px;transform:translateX(-50%);width:95px;height:85px;border-radius:50% 50% 24px 24px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);box-shadow:0 0 30px rgba(39,245,255,.18)}
+    .seat::before{content:"小脑袋";position:absolute;left:50%;top:-58px;transform:translateX(-50%);width:58px;height:58px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,var(--cyan),var(--purple));font-size:11px;color:#06101f;font-weight:900;box-shadow:0 0 24px rgba(39,245,255,.4)}
+    .mini-btn{border:1px solid rgba(39,245,255,.3);background:rgba(39,245,255,.09);color:#dffcff;border-radius:16px;padding:10px 12px;cursor:pointer;font-weight:800;transition:.2s}
+    .mini-btn:hover{background:rgba(39,245,255,.18);transform:translateY(-1px)}
+
+    .challenge-wrap{display:grid;grid-template-columns:1fr .88fr;gap:22px;margin-top:34px;align-items:stretch}
+    .fog-card{padding:24px;position:relative;overflow:hidden;min-height:560px}
+    .fog-stage{position:relative;height:380px;border-radius:26px;border:1px solid rgba(255,255,255,.13);overflow:hidden;background:
+      radial-gradient(circle at 50% 45%,rgba(39,245,255,.18),transparent 40%),
+      linear-gradient(135deg,rgba(101,255,154,.09),rgba(184,108,255,.08));
+      margin-top:16px;
+    }
+    .maze-lines{position:absolute;inset:0;background-image:linear-gradient(90deg,rgba(39,245,255,.18) 1px,transparent 1px),linear-gradient(rgba(39,245,255,.18) 1px,transparent 1px);background-size:44px 44px;filter:drop-shadow(0 0 8px rgba(39,245,255,.5));}
+    #fogCanvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:crosshair}
+    .signal-core{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:126px;height:126px;border-radius:34px;background:linear-gradient(135deg,var(--green),var(--cyan),var(--purple));display:grid;place-items:center;color:#051026;font-weight:1000;text-align:center;box-shadow:0 0 55px rgba(39,245,255,.45);}
+    .score-row{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:16px;color:#d8e9ff}
+    .score-row strong{color:var(--green)}
+
+    .quiz-card{padding:24px;display:flex;flex-direction:column;gap:18px}
+    .quiz-question{padding:18px;border-radius:24px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12)}
+    .quiz-question h3{margin:0 0 12px;font-size:22px}
+    .answers{display:grid;gap:10px}
+    .answer{border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.18);border-radius:18px;padding:12px 14px;text-align:left;color:#eaf7ff;cursor:pointer;transition:.2s}
+    .answer:hover{border-color:rgba(39,245,255,.45);background:rgba(39,245,255,.08)}
+    .answer.correct{border-color:rgba(101,255,154,.7);background:rgba(101,255,154,.16)}
+    .answer.wrong{border-color:rgba(255,79,216,.7);background:rgba(255,79,216,.14)}
+    .quiz-result{min-height:46px;color:#bfefff;line-height:1.6}
+
+    .event-grid{display:grid;grid-template-columns:.95fr 1.05fr;gap:22px;margin-top:34px}
+    .event-card{padding:24px;position:relative;overflow:hidden}
+    .timeline{display:grid;gap:14px;margin-top:18px}
+    .time-item{display:grid;grid-template-columns:95px 1fr;gap:14px;align-items:start;padding:16px;border-radius:22px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.1)}
+    .time{color:var(--green);font-weight:1000;text-shadow:0 0 18px rgba(101,255,154,.35)}
+    .time-item h3{margin:0 0 6px;font-size:18px}
+    .time-item p{margin:0;color:var(--muted);line-height:1.6}
+    .form{display:grid;gap:13px;margin-top:18px}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .field{display:grid;gap:6px;color:#d8e8ff;font-size:14px;font-weight:800}
+    .field input,.field select{
+      width:100%;border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.22);color:white;border-radius:16px;padding:13px 14px;outline:none;
+    }
+    .field input:focus,.field select:focus{border-color:rgba(39,245,255,.65);box-shadow:0 0 0 4px rgba(39,245,255,.09)}
+    .toast{min-height:28px;color:var(--green);font-weight:900}
+
+    .footer{
+      position:relative;z-index:1;text-align:center;padding:34px 22px 56px;color:var(--muted);border-top:1px solid rgba(255,255,255,.08);
+      background:rgba(0,0,0,.18)
+    }
+
+    .reveal{opacity:0;transform:translateY(24px);transition:.7s ease}
+    .reveal.show{opacity:1;transform:none}
+
+    @media (max-width:960px){
+      .nav-links{display:none}
+      .device-grid,.science-grid,.challenge-wrap,.event-grid{grid-template-columns:1fr}
+      .science-grid .lab-card{min-height:auto}
+      .device-stage{min-height:430px}
+      #vrCanvas{min-height:390px}
+      .hero-card{padding:28px 20px}
+      .section{padding-left:18px;padding-right:18px}
+    }
+    @media (max-width:560px){
+      .form-row{grid-template-columns:1fr}
+      .time-item{grid-template-columns:1fr}
+      .hero-actions{flex-direction:column}
+      .btn{width:100%}
+      .brand span:last-child{display:none}
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <a class="brand" href="#top" aria-label="回到顶部"><span class="brand-badge">VR</span><span>脑洞探秘局</span></a>
+    <div class="nav-links">
+      <a href="#device">拆设备</a>
+      <a href="#science">骗大脑</a>
+      <a href="#challenge">互动挑战</a>
+      <a href="#event">线下体验</a>
+    </div>
+  </nav>
+
+  <main id="top" class="section hero">
+    <canvas id="portalCanvas" aria-hidden="true"></canvas>
+    <div class="hero-orbit" aria-hidden="true"></div>
+    <section class="hero-card reveal show" aria-label="VR 时空传送门介绍">
+      <div class="eyebrow"><span class="pulse-dot"></span> 大脑与虚拟的奇妙碰撞</div>
+      <h1><span class="gradient-text">VR 时空传送门</span></h1>
+      <p>带上这副眼镜，你的大脑即将开始一场奇妙的时空旅行。准备好看看：为什么明明坐在椅子上，却会感觉自己站在悬崖边、飞进太空、穿过未来城市？</p>
+      <div class="hero-actions">
+        <a class="btn" href="#device">开始体验</a>
+        <a class="btn secondary" href="#science">先破解大脑魔法</a>
+      </div>
+    </section>
+    <div class="scroll-hint"><span class="mouse"></span><span>向下滑动，进入实验室</span></div>
+  </main>
+
+  <section id="device" class="section">
+    <div class="section-title reveal">
+      <div class="eyebrow"><span class="pulse-dot"></span> 第 1 关：拆解魔法设备</div>
+      <h2>VR 眼镜不是魔法，<span class="gradient-text">它是会“骗大脑”的计算机设备</span></h2>
+      <p>拖动中间的 3D 眼镜看看它的结构。右侧每张卡片都藏着一个秘密：屏幕、透镜和传感器如何一起制造“另一个世界”。</p>
+    </div>
+
+    <div class="device-grid reveal">
+      <div class="device-stage glass">
+        <canvas id="vrCanvas" aria-label="可拖拽旋转的 VR 眼镜模型"></canvas>
+        <div class="drag-tip">拖拽旋转模型 · 找到三个核心部件</div>
+      </div>
+      <div class="part-list">
+        <article class="part-card glass active" data-part="lenses">
+          <h3><span class="chip">01</span> 透镜 Lenses</h3>
+          <p>它不只是放大镜，更像“视野扩展器”。透镜会把小屏幕里的画面拉到眼前，让你觉得自己真的走进了虚拟世界。</p>
+        </article>
+        <article class="part-card glass" data-part="screens">
+          <h3><span class="chip">02</span> 双屏 Screens</h3>
+          <p>左眼看到一张图，右眼看到另一张略有差别的图。大脑把两张图合成以后，就会产生“立体感”。</p>
+        </article>
+        <article class="part-card glass" data-part="sensors">
+          <h3><span class="chip">03</span> 传感器 Sensors</h3>
+          <p>陀螺仪会追踪你头部的方向：你往左看，虚拟世界也往左转。大脑因此相信“我真的在那里”。</p>
+        </article>
+        <article class="part-card glass" data-part="computer">
+          <h3><span class="chip">04</span> 计算机 Computer</h3>
+          <p>电脑每秒都要快速计算画面位置、光影、距离和动作反馈。慢一点点，大脑就会发现“不对劲”。</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="science" class="section">
+    <div class="section-title reveal">
+      <div class="eyebrow"><span class="pulse-dot"></span> 第 2 关：破解大脑魔法</div>
+      <h2>为什么 VR 能让人感觉<span class="gradient-text">又真实又刺激？</span></h2>
+      <p>VR 最厉害的地方，不是屏幕多清楚，而是它懂得利用大脑判断世界的方式。下面三个小实验，能看懂核心原理。</p>
+    </div>
+
+    <div class="science-grid reveal">
+      <article class="lab-card glass">
+        <h3>① 为什么画面会立体？</h3>
+        <p>两只眼睛位置不同，看到的画面也会有一点点差别。这个差别叫“双眼视差”。移动滑块，看看左右眼画面怎样错开。</p>
+        <div class="lab-screen">
+          <div class="stereo-wrap">
+            <div class="eye-panel" data-eye="左眼"><span id="leftDot" class="cube-dot"></span></div>
+            <div class="eye-panel" data-eye="右眼"><span id="rightDot" class="cube-dot"></span></div>
+          </div>
+          <div class="fuse-badge">大脑：两张图合起来，就是 3D！</div>
+        </div>
+        <input id="disparity" class="range" type="range" min="0" max="36" value="18" aria-label="调整双眼视差" />
+      </article>
+
+      <article class="lab-card glass">
+        <h3>② 为什么会像站在悬崖边？</h3>
+        <p>大脑会用大小、阴影、远近线条判断距离。VR 把这些线索做得很像真的，于是身体也会跟着紧张。</p>
+        <div class="lab-screen">
+          <div class="depth-world">
+            <div class="cliff-lines"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+            <div id="rock" class="floating-rock"></div>
+            <div class="ledge"></div>
+          </div>
+        </div>
+        <input id="depth" class="range" type="range" min="10" max="95" value="45" aria-label="调整距离感强度" />
+        <div class="fear-meter"><span>真实感</span><div class="meter"><span id="depthMeter"></span></div><b id="depthText">45%</b></div>
+      </article>
+
+      <article class="lab-card glass">
+        <h3>③ 为什么玩久了会晕？</h3>
+        <p>眼睛说：“我们在飞！”耳朵里的平衡器官却说：“你明明坐着没动。”大脑收到矛盾信息，就可能晕。</p>
+        <div class="lab-screen">
+          <div id="motionScene" class="motion-scene"></div>
+          <div class="seat"></div>
+        </div>
+        <button id="motionBtn" class="mini-btn">启动“视觉在飞”模拟</button>
+        <div class="fear-meter"><span>冲突值</span><div class="meter"><span id="motionMeter" style="--w:20%"></span></div><b id="motionText">20%</b></div>
+      </article>
+    </div>
+  </section>
+
+  <section id="challenge" class="section">
+    <div class="section-title reveal">
+      <div class="eyebrow"><span class="pulse-dot"></span> 第 3 关：线上互动挑战</div>
+      <h2>用手指/鼠标，体验一次<span class="gradient-text">人机交互</span></h2>
+      <p>真正的 VR 会用摄像头、手柄或传感器捕捉你的动作。这里先用鼠标或手指模拟“手势追踪”：挥动它，驱散虚拟迷雾。</p>
+    </div>
+
+    <div class="challenge-wrap reveal">
+      <article class="fog-card glass">
+        <h2 style="margin:0 0 8px">虚拟迷雾驱散任务</h2>
+        <p style="margin:0;color:var(--muted);line-height:1.75">移动鼠标或手指，就像在 VR 里挥手一样。清除 70% 以上迷雾，即可解锁“信号核心”。</p>
+        <div class="fog-stage" id="fogStage">
+          <div class="maze-lines"></div>
+          <div class="signal-core">信号核心<br/>CORE</div>
+          <canvas id="fogCanvas" aria-label="移动鼠标或手指清除虚拟迷雾"></canvas>
+        </div>
+        <div class="score-row">
+          <span>迷雾清除率：<strong id="fogScore">0%</strong></span>
+          <button id="fogReset" class="mini-btn">重新挑战</button>
+        </div>
+      </article>
+
+      <article class="quiz-card glass">
+        <div class="quiz-question">
+          <h3>小测验：哪一句最像 VR 眩晕的原因？</h3>
+          <div class="answers" data-quiz="1">
+            <button class="answer" data-correct="false">A. 眼睛变成了蓝色，所以大脑不适应</button>
+            <button class="answer" data-correct="true">B. 眼睛看到运动，但身体的平衡器官觉得没动</button>
+            <button class="answer" data-correct="false">C. VR 眼镜会发出神秘磁场</button>
+          </div>
+        </div>
+        <div class="quiz-question">
+          <h3>小测验：为什么 VR 画面能有立体感？</h3>
+          <div class="answers" data-quiz="2">
+            <button class="answer" data-correct="true">A. 左眼和右眼看到略有差别的图，大脑合成 3D</button>
+            <button class="answer" data-correct="false">B. 因为屏幕越亮，东西就越立体</button>
+            <button class="answer" data-correct="false">C. 因为戴上眼镜后想象力会自动增加</button>
+          </div>
+        </div>
+        <div id="quizResult" class="quiz-result">答对题目后，这里会出现破解提示。</div>
+      </article>
+    </div>
+  </section>
+
+  <section id="event" class="section">
+    <div class="section-title reveal">
+      <div class="eyebrow"><span class="pulse-dot"></span> 第 4 关：集结号角</div>
+      <h2>理论知识已加载完毕，<span class="gradient-text">现在轮到身体来感受了</span></h2>
+      <p>线上网页负责点燃好奇心，线下体验负责让学生真正理解：技术、身体和大脑是如何一起工作的。</p>
+    </div>
+
+    <div class="event-grid reveal">
+      <article class="event-card glass">
+        <h2 style="margin:0">现场设备体验流程</h2>
+        <div class="timeline">
+          <div class="time-item"><div class="time">00-05 min</div><div><h3>安全说明</h3><p>讲清楚 VR 设备佩戴方法、体验边界和不适时举手暂停。</p></div></div>
+          <div class="time-item"><div class="time">05-15 min</div><div><h3>VR 初体验</h3><p>体验太空、海底或悬崖场景，观察自己的距离感和身体反应。</p></div></div>
+          <div class="time-item"><div class="time">15-25 min</div><div><h3>大脑揭秘</h3><p>老师用双眼视差、前庭觉冲突解释“为什么会这样”。</p></div></div>
+          <div class="time-item"><div class="time">25-35 min</div><div><h3>挑战打卡</h3><p>完成空间记忆、反应速度或手势交互任务，获得通关印章。</p></div></div>
+        </div>
+      </article>
+
+      <article class="event-card glass">
+        <h2 style="margin:0">预约体验</h2>
+        <p style="color:var(--muted);line-height:1.75">这个表单是静态演示版，适合放在活动网页里。正式使用时可以接入问卷星、腾讯文档、飞书表单或后端接口。</p>
+        <form class="form" id="signupForm">
+          <div class="form-row">
+            <label class="field">姓名<input required name="name" placeholder="请输入姓名" /></label>
+            <label class="field">年级<select name="grade"><option>五年级</option><option>六年级</option></select></label>
+          </div>
+          <div class="form-row">
+            <label class="field">想体验的主题<select name="theme"><option>太空旅行</option><option>悬崖挑战</option><option>海底探险</option><option>未来实验室</option></select></label>
+            <label class="field">联系方式<input name="phone" placeholder="家长手机号 / 班级编号" /></label>
+          </div>
+          <button class="btn" type="submit">提交预约</button>
+          <div class="toast" id="toast"></div>
+        </form>
+      </article>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <strong>脑洞探秘局 · VR 与认知科学科普页</strong><br/>
+    把复杂技术变成可看、可玩、可理解的科学体验。
+  </footer>
+
+<script>
+(function(){
+  const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Smooth reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(entry => { if(entry.isIntersecting) entry.target.classList.add('show'); });
+  }, {threshold:.14});
+  reveals.forEach(el => io.observe(el));
+
+  // Three.js Portal
+  function initPortal(){
+    const canvas = document.getElementById('portalCanvas');
+    if(!window.THREE || !canvas) return;
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(70, window.innerWidth/window.innerHeight, .1, 1200);
+    camera.position.z = 230;
+    const renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:true});
+    renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
+    renderer.setSize(window.innerWidth, window.innerHeight);
+
+    const count = 2800;
+    const pos = new Float32Array(count*3);
+    const colors = new Float32Array(count*3);
+    const colorA = new THREE.Color('#27f5ff');
+    const colorB = new THREE.Color('#b86cff');
+    const colorC = new THREE.Color('#65ff9a');
+    for(let i=0;i<count;i++){
+      const t = i / count;
+      const angle = t * Math.PI * 18 + Math.random()*1.2;
+      const radius = 10 + t * 360 + Math.random()*28;
+      const z = (Math.random()-.5)*520;
+      pos[i*3] = Math.cos(angle) * radius;
+      pos[i*3+1] = Math.sin(angle) * radius;
+      pos[i*3+2] = z;
+      const mixed = colorA.clone().lerp(i%3===0 ? colorC : colorB, Math.random()*0.75);
+      colors[i*3] = mixed.r; colors[i*3+1] = mixed.g; colors[i*3+2] = mixed.b;
+    }
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(pos,3));
+    geo.setAttribute('color', new THREE.BufferAttribute(colors,3));
+    const mat = new THREE.PointsMaterial({size:2.2, vertexColors:true, transparent:true, opacity:.86, blending:THREE.AdditiveBlending, depthWrite:false});
+    const points = new THREE.Points(geo, mat);
+    scene.add(points);
+
+    let mx=0,my=0;
+    window.addEventListener('pointermove', e=>{
+      mx = (e.clientX/window.innerWidth - .5);
+      my = (e.clientY/window.innerHeight - .5);
+    }, {passive:true});
+
+    function resize(){
+      camera.aspect = window.innerWidth/window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+    window.addEventListener('resize', resize);
+
+    let frame=0;
+    function animate(){
+      frame++;
+      if(!reduceMotion){
+        points.rotation.z += .0019;
+        points.rotation.x += (my*.18 - points.rotation.x)*.025;
+        points.rotation.y += (mx*.18 - points.rotation.y)*.025;
+        camera.position.z = 220 + Math.sin(frame*.01)*10;
+      }
+      renderer.render(scene,camera);
+      requestAnimationFrame(animate);
+    }
+    animate();
+  }
+
+  // Three.js VR headset model
+  function initVRModel(){
+    const canvas = document.getElementById('vrCanvas');
+    if(!window.THREE || !canvas) return;
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(45, 1, .1, 1000);
+    camera.position.set(0,50,250);
+    const renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:true});
+    renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
+
+    const group = new THREE.Group();
+    scene.add(group);
+    const bodyMat = new THREE.MeshPhysicalMaterial({color:0x111b46, roughness:.35, metalness:.25, clearcoat:.7, transparent:true, opacity:.95});
+    const glowMat = new THREE.MeshBasicMaterial({color:0x27f5ff, transparent:true, opacity:.72});
+    const lensMat = new THREE.MeshPhysicalMaterial({color:0x1ff4ff, roughness:.05, metalness:.1, transmission:.2, transparent:true, opacity:.58});
+    const strapMat = new THREE.MeshPhysicalMaterial({color:0x0a0e27, roughness:.55, metalness:.18});
+
+    const body = new THREE.Mesh(new THREE.BoxGeometry(150,70,58,8,4,4), bodyMat);
+    body.name='body';
+    group.add(body);
+    const face = new THREE.Mesh(new THREE.BoxGeometry(136,52,8,8,3,1), new THREE.MeshBasicMaterial({color:0x06101f, transparent:true, opacity:.7}));
+    face.position.z=33; group.add(face);
+
+    [-42,42].forEach(x=>{
+      const lens = new THREE.Mesh(new THREE.CylinderGeometry(22,26,10,48), lensMat);
+      lens.rotation.x = Math.PI/2; lens.position.set(x,0,42); group.add(lens);
+      const ring = new THREE.Mesh(new THREE.TorusGeometry(27,2.2,10,80), glowMat);
+      ring.position.set(x,0,48); group.add(ring);
+    });
+    const bridge = new THREE.Mesh(new THREE.BoxGeometry(28,12,12), glowMat); bridge.position.set(0,0,44); group.add(bridge);
+    const sensor = new THREE.Mesh(new THREE.SphereGeometry(5.6,24,12), new THREE.MeshBasicMaterial({color:0x65ff9a})); sensor.position.set(0,32,38); group.add(sensor);
+    [-67,67].forEach(x=>{
+      const sensor2 = new THREE.Mesh(new THREE.SphereGeometry(4.2,20,10), new THREE.MeshBasicMaterial({color:0xff4fd8}));
+      sensor2.position.set(x,28,36); group.add(sensor2);
+    });
+    const strap = new THREE.Mesh(new THREE.TorusGeometry(92,8,14,100, Math.PI*1.15), strapMat);
+    strap.rotation.y = Math.PI/2; strap.position.z = -28; group.add(strap);
+
+    const lineGeo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-90,-58,0), new THREE.Vector3(90,-58,0)]);
+    const line = new THREE.Line(lineGeo, new THREE.LineBasicMaterial({color:0x27f5ff, transparent:true, opacity:.7}));
+    group.add(line);
+
+    const light1 = new THREE.PointLight(0x27f5ff, 1.8, 500); light1.position.set(100,120,160); scene.add(light1);
+    const light2 = new THREE.PointLight(0xb86cff, 1.1, 450); light2.position.set(-140,-80,120); scene.add(light2);
+    scene.add(new THREE.AmbientLight(0xffffff,.42));
+
+    let dragging=false,lastX=0,lastY=0,targetY=0,targetX=.15;
+    canvas.addEventListener('pointerdown', e=>{dragging=true;lastX=e.clientX;lastY=e.clientY;canvas.setPointerCapture(e.pointerId);});
+    canvas.addEventListener('pointerup', e=>{dragging=false;try{canvas.releasePointerCapture(e.pointerId)}catch(_){}});
+    canvas.addEventListener('pointermove', e=>{
+      if(!dragging) return;
+      const dx = e.clientX-lastX, dy=e.clientY-lastY;
+      targetY += dx*.012; targetX += dy*.008;
+      targetX = Math.max(-.6, Math.min(.65, targetX));
+      lastX=e.clientX;lastY=e.clientY;
+    });
+
+    function resize(){
+      const rect = canvas.getBoundingClientRect();
+      const w = rect.width || 600, h = rect.height || 480;
+      renderer.setSize(w,h,false);
+      camera.aspect = w/h; camera.updateProjectionMatrix();
+    }
+    window.addEventListener('resize',resize); resize();
+
+    const cards = document.querySelectorAll('.part-card');
+    cards.forEach((card,idx)=>{
+      card.addEventListener('mouseenter',()=>{
+        cards.forEach(c=>c.classList.remove('active'));
+        card.classList.add('active');
+        targetY = [-.35,.28,.05,.72][idx];
+      });
+      card.addEventListener('click',()=>card.dispatchEvent(new Event('mouseenter')));
+    });
+
+    function animate(){
+      if(!reduceMotion){
+        group.rotation.y += (targetY - group.rotation.y)*.07;
+        group.rotation.x += (targetX - group.rotation.x)*.07;
+        group.position.y = Math.sin(Date.now()*.002)*4;
+      }
+      renderer.render(scene,camera);
+      requestAnimationFrame(animate);
+    }
+    animate();
+  }
+
+  // Science widgets
+  const disparity = document.getElementById('disparity');
+  const leftDot = document.getElementById('leftDot');
+  const rightDot = document.getElementById('rightDot');
+  function updateDisparity(){
+    const v = Number(disparity.value);
+    leftDot.style.transform = `translate(calc(-50% - ${v/2}px),-50%) rotate(16deg)`;
+    rightDot.style.transform = `translate(calc(-50% + ${v/2}px),-50%) rotate(16deg)`;
+  }
+  disparity && disparity.addEventListener('input', updateDisparity); updateDisparity();
+
+  const depth = document.getElementById('depth');
+  const rock = document.getElementById('rock');
+  const depthMeter = document.getElementById('depthMeter');
+  const depthText = document.getElementById('depthText');
+  function updateDepth(){
+    const v = Number(depth.value);
+    const scale = .55 + v/80;
+    rock.style.transform = `translate(-50%,-50%) scale(${scale}) translateY(${(50-v)*.7}px)`;
+    rock.style.filter = `blur(${Math.max(0,(85-v)/40)}px)`;
+    depthMeter.style.setProperty('--w', v+'%');
+    depthText.textContent = v + '%';
+  }
+  depth && depth.addEventListener('input', updateDepth); updateDepth();
+
+  const motionBtn = document.getElementById('motionBtn');
+  const motionScene = document.getElementById('motionScene');
+  const motionMeter = document.getElementById('motionMeter');
+  const motionText = document.getElementById('motionText');
+  let motionRun=false;
+  motionBtn && motionBtn.addEventListener('click',()=>{
+    motionRun = !motionRun;
+    motionScene.classList.toggle('run', motionRun);
+    motionBtn.textContent = motionRun ? '停止模拟，让大脑休息' : '启动“视觉在飞”模拟';
+    const val = motionRun ? 88 : 20;
+    motionMeter.style.setProperty('--w', val+'%');
+    motionText.textContent = val + '%';
+  });
+
+  // Fog interaction canvas
+  function initFog(){
+    const canvas = document.getElementById('fogCanvas');
+    const stage = document.getElementById('fogStage');
+    const score = document.getElementById('fogScore');
+    const reset = document.getElementById('fogReset');
+    if(!canvas || !stage) return;
+    const ctx = canvas.getContext('2d', {willReadFrequently:true});
+    let w=0,h=0, cleared=0;
+
+    function resize(){
+      const rect = stage.getBoundingClientRect();
+      w = canvas.width = Math.max(1, Math.floor(rect.width * (window.devicePixelRatio || 1)));
+      h = canvas.height = Math.max(1, Math.floor(rect.height * (window.devicePixelRatio || 1)));
+      canvas.style.width = rect.width + 'px';
+      canvas.style.height = rect.height + 'px';
+      drawFog();
+    }
+    function drawFog(){
+      const grad = ctx.createLinearGradient(0,0,w,h);
+      grad.addColorStop(0,'rgba(185,225,255,.92)');
+      grad.addColorStop(.55,'rgba(115,120,210,.87)');
+      grad.addColorStop(1,'rgba(12,18,40,.94)');
+      ctx.globalCompositeOperation='source-over';
+      ctx.fillStyle=grad; ctx.fillRect(0,0,w,h);
+      for(let i=0;i<120;i++){
+        ctx.beginPath();
+        ctx.fillStyle=`rgba(255,255,255,${Math.random()*0.08})`;
+        ctx.arc(Math.random()*w,Math.random()*h,Math.random()*60+10,0,Math.PI*2);ctx.fill();
+      }
+      cleared=0; score.textContent='0%';
+    }
+    function clearAt(clientX,clientY){
+      const rect = canvas.getBoundingClientRect();
+      const x = (clientX - rect.left) * (window.devicePixelRatio || 1);
+      const y = (clientY - rect.top) * (window.devicePixelRatio || 1);
+      ctx.globalCompositeOperation='destination-out';
+      const r = 36 * (window.devicePixelRatio || 1);
+      const g = ctx.createRadialGradient(x,y,4,x,y,r);
+      g.addColorStop(0,'rgba(0,0,0,1)');
+      g.addColorStop(1,'rgba(0,0,0,0)');
+      ctx.fillStyle=g; ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill();
+      if(Math.random()>.68) updateScore();
+    }
+    function updateScore(){
+      const sample = ctx.getImageData(0,0,w,h).data;
+      let transparent=0;
+      for(let i=3;i<sample.length;i+=28){ if(sample[i]<50) transparent++; }
+      cleared = Math.min(100, Math.round(transparent/(sample.length/28/4)*100));
+      score.textContent = cleared + '%';
+      if(cleared >= 70){ score.textContent = cleared + '% · 解锁成功！'; }
+    }
+    canvas.addEventListener('pointermove', e=>{ clearAt(e.clientX,e.clientY); }, {passive:true});
+    canvas.addEventListener('pointerdown', e=>{ clearAt(e.clientX,e.clientY); updateScore(); }, {passive:true});
+    canvas.addEventListener('pointerup', updateScore);
+    reset.addEventListener('click', drawFog);
+    window.addEventListener('resize', resize);
+    resize();
+  }
+
+  // Quiz
+  const result = document.getElementById('quizResult');
+  document.querySelectorAll('.answers').forEach(group=>{
+    group.addEventListener('click',e=>{
+      const btn = e.target.closest('.answer');
+      if(!btn) return;
+      group.querySelectorAll('.answer').forEach(b=>{b.classList.remove('correct','wrong')});
+      const ok = btn.dataset.correct === 'true';
+      btn.classList.add(ok ? 'correct' : 'wrong');
+      if(ok){
+        result.textContent = group.dataset.quiz === '1' ? '破解提示：VR 眩晕常常来自“眼睛看到运动”和“身体感觉没动”的冲突。' : '破解提示：双眼视差是立体视觉的关键，VR 正是给左右眼分别送不同画面。';
+      } else {
+        result.textContent = '再想想：真正的科学答案通常不是神秘力量，而是大脑接收的信息发生了变化。';
+      }
+    });
+  });
+
+  // Form demo
+  const form = document.getElementById('signupForm');
+  const toast = document.getElementById('toast');
+  form && form.addEventListener('submit', e=>{
+    e.preventDefault();
+    const fd = new FormData(form);
+    const name = (fd.get('name') || '同学').toString().trim() || '同学';
+    toast.textContent = `${name}，预约信息已记录在演示页面中。正式活动可接入问卷/表单系统。`;
+    form.reset();
+  });
+
+  try{ initPortal(); initVRModel(); initFog(); }
+  catch(err){ console.warn(err); }
+})();
+</script>
+</body>
+</html>
