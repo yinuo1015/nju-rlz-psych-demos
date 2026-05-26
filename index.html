@@ -84,6 +84,7 @@ body:after{
   box-shadow:0 18px 60px #0009, inset 0 1px 0 #ffffff16;
 }
 .brand{display:flex;align-items:center;gap:12px;font-weight:950}
+.brand span{line-height:1.35;overflow-wrap:anywhere}
 .logo{
   width:42px;
   height:42px;
@@ -115,32 +116,32 @@ body:after{
   position:relative;
   margin-top:24px;
   display:grid;
-  grid-template-columns:minmax(0,.95fr) minmax(360px,.62fr);
-  gap:28px;
+  grid-template-columns:minmax(0,1fr) minmax(460px,.92fr);
+  gap:34px;
   align-items:center;
-  min-height:720px;
-  padding:54px;
+  min-height:780px;
+  padding:58px 56px;
   border:1px solid var(--line);
   border-radius:38px;
   background:
-    linear-gradient(135deg,rgba(5,9,26,.96),rgba(8,12,32,.9) 46%,rgba(17,8,29,.88)),
-    radial-gradient(ellipse at 78% 34%,#6fe7ff28,transparent 34%),
-    radial-gradient(ellipse at 30% 78%,#4df0a016,transparent 40%);
-  box-shadow:0 28px 100px #0009,0 0 60px #6fe7ff12 inset;
+    radial-gradient(ellipse at 86% 44%,rgba(111,231,255,.18),transparent 38%),
+    radial-gradient(ellipse at 24% 18%,rgba(77,240,160,.12),transparent 34%),
+    linear-gradient(135deg,rgba(4,9,24,.97),rgba(7,13,33,.92) 48%,rgba(18,8,31,.9));
+  box-shadow:0 30px 110px #000a,0 0 72px #6fe7ff12 inset;
   overflow:hidden;
 }
 .hero:before{
   content:"";
   position:absolute;
-  right:-160px;
-  top:-170px;
-  width:780px;
-  height:780px;
+  right:-210px;
+  top:-150px;
+  width:880px;
+  height:880px;
   border-radius:50%;
   background:
-    radial-gradient(circle at 50% 50%,transparent 0 25%,#6fe7ff20 26% 27%,transparent 30% 42%,#ff7eb62a 43% 44%,transparent 48%),
-    conic-gradient(from 40deg,transparent,#6fe7ff33,transparent,#ff7eb633,transparent);
-  opacity:.86;
+    radial-gradient(circle at 50% 50%,transparent 0 26%,#6fe7ff20 27% 28%,transparent 31% 43%,#ff7eb629 44% 45%,transparent 50%),
+    conic-gradient(from 40deg,transparent,#6fe7ff32,transparent,#ff7eb62c,transparent);
+  opacity:.72;
   animation:slowSpin 34s linear infinite;
 }
 .hero:after{
@@ -159,89 +160,116 @@ body:after{
   z-index:1;
 }
 .hero-copy{
-  max-width:820px;
+  max-width:860px;
 }
 .hero-visual{
   position:relative;
-  min-height:500px;
-  display:grid;
-  place-items:center;
+  min-height:620px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
   isolation:isolate;
+  cursor:grab;
+  touch-action:none;
 }
-.holo-core{
-  position:relative;
-  width:min(440px,100%);
-  aspect-ratio:1;
+.hero-visual:active{
+  cursor:grabbing;
+}
+#brainScene{
+  position:absolute;
+  inset:-7%;
+  z-index:3;
+  width:114%;
+  height:114%;
+  pointer-events:auto;
+}
+.brain-aura{
+  position:absolute;
+  inset:5%;
   border-radius:50%;
   background:
-    radial-gradient(circle at 43% 39%,#ffffff28 0 4%,transparent 12%),
-    radial-gradient(circle at 50% 50%,#6fe7ff18 0 16%,transparent 17%),
-    conic-gradient(from 145deg,#102548,#071426,#251431,#071426,#102548);
-  box-shadow:
-    0 0 80px #6fe7ff24,
-    0 0 140px #ff7eb61a,
-    inset 0 0 80px #000b;
+    radial-gradient(circle at 50% 50%,rgba(111,231,255,.13),transparent 42%),
+    conic-gradient(from 90deg,transparent,rgba(111,231,255,.18),transparent,rgba(255,126,182,.14),transparent);
+  filter:blur(.2px);
+  opacity:.48;
+  animation:slowSpin 28s linear infinite;
+  z-index:1;
 }
-.holo-core:before,
-.holo-core:after{
+.brain-ring{
+  position:absolute;
+  inset:15%;
+  border-radius:50%;
+  border:1px solid rgba(111,231,255,.14);
+  transform:rotateX(68deg) rotateZ(-12deg);
+  box-shadow:0 0 32px rgba(111,231,255,.12);
+  z-index:2;
+  pointer-events:none;
+}
+.brain-ring.two{
+  inset:8%;
+  border-color:rgba(255,126,182,.1);
+  transform:rotateX(66deg) rotateZ(28deg);
+}
+.brain-chip{
+  position:absolute;
+  z-index:4;
+  display:flex;
+  align-items:center;
+  gap:9px;
+  padding:10px 14px;
+  border-radius:999px;
+  background:rgba(7,16,38,.58);
+  border:1px solid rgba(111,231,255,.28);
+  color:#dff8ff;
+  font-size:13px;
+  font-weight:900;
+  letter-spacing:1px;
+  backdrop-filter:blur(12px);
+  box-shadow:0 12px 34px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,255,255,.12);
+  pointer-events:none;
+}
+.brain-chip.top{top:9%;left:7%}
+.brain-chip.bottom{right:6%;bottom:9%}
+.brain-chip:before{
   content:"";
-  position:absolute;
-  inset:-12%;
-  border-radius:50%;
-  border:2px solid #6fe7ff2f;
-  transform:rotateX(66deg) rotateZ(-18deg);
-  box-shadow:0 0 34px #6fe7ff22;
-}
-.holo-core:after{
-  inset:12%;
-  border-color:#ff7eb633;
-  transform:rotateX(68deg) rotateZ(28deg);
-}
-.orbit-ring{
-  position:absolute;
-  inset:9%;
-  border-radius:50%;
-  border:1px dashed #ffffff24;
-  animation:slowSpin 18s linear infinite reverse;
-}
-.orbit-ring.two{
-  inset:-5%;
-  border-color:#4df0a033;
-  animation-duration:26s;
-}
-.orbit-node{
-  position:absolute;
-  width:12px;
-  height:12px;
+  width:8px;
+  height:8px;
   border-radius:50%;
   background:var(--green);
-  box-shadow:0 0 18px var(--green);
+  box-shadow:0 0 10px var(--green);
+  animation:blinkStatus 1s infinite alternate;
 }
-.orbit-node.a{top:6%;left:50%}
-.orbit-node.b{right:7%;bottom:26%;background:var(--pink);box-shadow:0 0 18px var(--pink)}
-.orbit-node.c{left:14%;bottom:18%;background:var(--cyan);box-shadow:0 0 18px var(--cyan)}
-.holo-panel{
+.brain-readout{
   position:absolute;
-  left:2%;
-  bottom:4%;
-  width:min(260px,72%);
-  padding:13px 14px;
-  border-radius:18px;
-  border:1px solid #6fe7ff36;
-  background:#071026a8;
-  box-shadow:0 18px 44px #0007,inset 0 1px 0 #ffffff14;
-  backdrop-filter:blur(12px);
+  left:5%;
+  bottom:18%;
+  z-index:4;
+  width:min(260px,48%);
+  padding:14px 15px;
+  border-radius:20px;
+  border:1px solid rgba(111,231,255,.22);
+  background:linear-gradient(145deg,rgba(7,16,38,.68),rgba(16,26,58,.36));
+  backdrop-filter:blur(14px);
+  box-shadow:0 18px 50px rgba(0,0,0,.36),inset 0 1px 0 rgba(255,255,255,.12);
+  pointer-events:none;
 }
-.holo-line{
+.brain-readout b{
+  display:block;
+  color:#fff;
+  font-size:13px;
+  margin-bottom:10px;
+}
+.brain-readout span{
+  display:block;
   height:7px;
   border-radius:999px;
   background:linear-gradient(90deg,var(--cyan),var(--green));
-  box-shadow:0 0 18px #6fe7ff4d;
+  box-shadow:0 0 18px rgba(111,231,255,.35);
 }
-.holo-line + .holo-line{
-  margin-top:10px;
-  width:68%;
-  opacity:.52;
+.brain-readout span + span{
+  width:66%;
+  margin-top:9px;
+  opacity:.55;
 }
 .badge{
   display:inline-flex;
@@ -251,42 +279,68 @@ body:after{
   border:1px solid #6fe7ff38;
   color:#dff8ff;
   font-weight:900;
+  margin-bottom:20px;
 }
 h1{
-  font-size:clamp(38px,6vw,72px);
+  font-size:clamp(42px,6vw,72px);
   line-height:1.06;
-  margin:20px 0 18px;
-  letter-spacing:-1.4px;
+  margin:0 0 18px;
+  letter-spacing:0;
 }
 h2{font-size:clamp(30px,4vw,46px);margin:0 0 14px}
 h3{font-size:23px;margin:0 0 10px}
 p{color:var(--muted);line-height:1.75;font-size:18px}
-.hero p{font-size:21px;max-width:860px}
+.hero p{font-size:20px;max-width:880px}
 .hl{color:#fff;text-shadow:0 0 18px #6fe7ff99}
+.hl-cyan{color:var(--cyan);font-weight:900;text-shadow:0 0 12px rgba(111,231,255,.4)}
+.hl-pink{color:var(--pink);font-weight:900;text-shadow:0 0 12px rgba(255,126,182,.4)}
 
-.btns{display:flex;gap:14px;flex-wrap:wrap;margin-top:28px}
+.btns{display:flex;gap:14px;flex-wrap:wrap;margin-top:32px}
 .btn{
+  position:relative;
   display:inline-flex;
   align-items:center;
   justify-content:center;
-  padding:14px 20px;
+  padding:14px 24px;
   border-radius:18px;
   background:linear-gradient(135deg,var(--cyan),var(--green));
   color:#07111c;
   text-decoration:none;
   font-weight:950;
-  box-shadow:0 12px 32px #4df0a033;
-  transition:transform .18s ease,filter .18s ease;
+  font-size:16px;
+  box-shadow:0 12px 32px rgba(77,240,160,.3);
+  transition:transform .2s cubic-bezier(.34,1.56,.64,1),box-shadow .2s ease;
+  overflow:hidden;
+}
+.btn:after{
+  content:"";
+  position:absolute;
+  top:0;
+  left:-100%;
+  width:50%;
+  height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.5),transparent);
+  transform:skewX(-20deg);
+  transition:left .5s ease;
 }
 .btn:hover{
-  transform:translateY(-2px);
-  filter:saturate(1.1);
+  transform:translateY(-4px) scale(1.02);
+  box-shadow:0 16px 40px rgba(77,240,160,.5),0 0 20px rgba(111,231,255,.4);
+}
+.btn:hover:after{
+  left:200%;
 }
 .btn.alt{
   background:linear-gradient(135deg,var(--cyan),var(--green));
   color:#07111c;
   border:0;
-  box-shadow:0 12px 32px #4df0a033;
+  box-shadow:0 12px 32px rgba(77,240,160,.3);
+}
+.btn.alt:after{
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.5),transparent);
+}
+.btn.alt:hover{
+  box-shadow:0 16px 40px rgba(77,240,160,.5),0 0 20px rgba(111,231,255,.4);
 }
 .stats{
   display:grid;
@@ -625,14 +679,14 @@ p{color:var(--muted);line-height:1.75;font-size:18px}
     padding:30px 22px;
   }
   .hero-visual{
-    min-height:330px;
+    min-height:430px;
   }
-  .holo-core{
-    width:min(320px,88vw);
-  }
-  .holo-panel{
-    left:50%;
-    transform:translateX(-50%);
+  .brain-chip.top{top:6%;left:5%}
+  .brain-chip.bottom{right:5%;bottom:6%}
+  .brain-readout{
+    left:5%;
+    bottom:14%;
+    width:min(230px,58%);
   }
   .grid,.stats{grid-template-columns:1fr}
   .qr-preview{grid-template-columns:72px 1fr}
@@ -651,6 +705,22 @@ p{color:var(--muted);line-height:1.75;font-size:18px}
 }
 @keyframes slowSpin{to{transform:rotate(360deg)}}
 @keyframes galaxyDrift{to{transform:rotate(360deg)}}
+@keyframes spinOuter{
+  0%{transform:translate(-50%,-50%) rotate(0deg)}
+  100%{transform:translate(-50%,-50%) rotate(360deg)}
+}
+@keyframes spinInner{
+  0%{transform:translate(-50%,-50%) rotate(0deg)}
+  100%{transform:translate(-50%,-50%) rotate(360deg)}
+}
+@keyframes pulseCore{
+  0%,100%{transform:translate(-50%,-50%) scale(1);opacity:.8}
+  50%{transform:translate(-50%,-50%) scale(1.05);opacity:1}
+}
+@keyframes blinkStatus{
+  0%{opacity:.3;box-shadow:0 0 2px var(--green)}
+  100%{opacity:1;box-shadow:0 0 12px var(--green)}
+}
 @keyframes energyPulse{
   0%{opacity:.8;transform:translate(-50%,-50%) scale(1)}
   100%{opacity:0;transform:translate(-50%,-50%) scale(24)}
@@ -676,7 +746,7 @@ p{color:var(--muted);line-height:1.75;font-size:18px}
     <div class="hero-copy">
       <div class="badge">凤凰花园城小学心理学科普活动 · 互动体验合集</div>
       <h1>欢迎来到<br><span class="hl">大脑探秘局</span></h1>
-      <p>这里把脑电、心电、VR 等科技体验，与注意、记忆、反应控制、规则切换等心理学范式整合成两大区域。同学们可以像闯关一样认识：大脑如何看、如何记、如何反应，又如何在关键时刻“刹车”。本平台整合适合小学高年级学生体验的互动心理学范式，用小游戏的方式帮助同学们认识注意、记忆、反应控制和规则切换。</p>
+      <p>这里把 <strong class="hl-cyan">脑电</strong>、<strong class="hl-cyan">心电</strong>、<strong class="hl-cyan">VR</strong> 等科技体验，与 <strong class="hl-pink">注意</strong>、<strong class="hl-pink">记忆</strong>、<strong class="hl-pink">反应控制</strong> 等心理学范式整合成两大区域。同学们可以像闯关一样认识：大脑如何看、如何记、如何反应，又如何在关键时刻<strong class="hl-cyan">“刹车”</strong>。</p>
       <div class="btns">
         <a class="btn" href="#tech">进入科技体验区</a>
         <a class="btn alt" href="#challenge">进入认知挑战区</a>
@@ -687,17 +757,17 @@ p{color:var(--muted);line-height:1.75;font-size:18px}
         <div class="stat"><b>50min</b><span>讲解 + 分站体验</span></div>
       </div>
     </div>
-    <div class="hero-visual" aria-hidden="true">
-      <div class="holo-core">
-        <span class="orbit-ring"></span>
-        <span class="orbit-ring two"></span>
-        <span class="orbit-node a"></span>
-        <span class="orbit-node b"></span>
-        <span class="orbit-node c"></span>
-      </div>
-      <div class="holo-panel">
-        <div class="holo-line"></div>
-        <div class="holo-line"></div>
+    <div class="hero-visual" aria-hidden="true" id="brainVisualContainer">
+      <div class="brain-aura"></div>
+      <div class="brain-ring"></div>
+      <div class="brain-ring two"></div>
+      <canvas id="brainScene"></canvas>
+      <div class="brain-chip top">DIGITAL TWIN BRAIN</div>
+      <div class="brain-chip bottom">DRAG TO ROTATE</div>
+      <div class="brain-readout">
+        <b>NEURAL SIGNAL STREAM</b>
+        <span></span>
+        <span></span>
       </div>
     </div>
   </header>
@@ -926,6 +996,7 @@ p{color:var(--muted);line-height:1.75;font-size:18px}
     </div>
   </footer>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 <script>
 (() => {
   const canvas = document.getElementById("starfield");
@@ -1179,6 +1250,247 @@ document.querySelectorAll(".action a").forEach((button) => {
     window.setTimeout(() => button.classList.remove("is-clicking"), 460);
   });
 });
+
+(() => {
+  const container = document.getElementById("brainVisualContainer");
+  const canvas = document.getElementById("brainScene");
+  if (!container || !canvas || !window.THREE) return;
+
+  const THREE = window.THREE;
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
+  const renderer = new THREE.WebGLRenderer({
+    canvas,
+    alpha: true,
+    antialias: true,
+    preserveDrawingBuffer: true,
+    powerPreference: "high-performance"
+  });
+  const brainGroup = new THREE.Group();
+  const targetRotation = { x: -0.08, y: 0.34 };
+  const currentRotation = { x: -0.08, y: 0.34 };
+  const drag = { active: false, x: 0, y: 0 };
+  const clock = new THREE.Clock();
+  let brainPoints;
+  let brainLines;
+
+  camera.position.set(0, 0, 5.7);
+  scene.add(brainGroup);
+
+  function random(min, max) {
+    return Math.random() * (max - min) + min;
+  }
+
+  function makeBrainPoint(side) {
+    const theta = random(0, Math.PI * 2);
+    const phi = Math.acos(random(-1, 1));
+    const shell = Math.random() < 0.72 ? random(0.78, 1) : Math.cbrt(Math.random()) * 0.78;
+    const localX = Math.abs(Math.sin(phi) * Math.cos(theta)) * shell;
+    const localY = Math.sin(phi) * Math.sin(theta) * shell;
+    const localZ = Math.cos(phi) * shell;
+    const fissure = 0.2;
+    let x = side * (fissure + localX * 1.08);
+    let y = localY * 0.82;
+    let z = localZ * 0.74;
+
+    const foldA = Math.sin((x * 5.2 + z * 7.4) * side);
+    const foldB = Math.sin(y * 11.0 + x * 2.5);
+    const fold = foldA * 0.035 + foldB * 0.022;
+    x += side * fold * (0.7 + localX * 0.4);
+    y += Math.sin(localX * 4.0 + z * 3.0) * 0.035;
+    z += fold * 0.7;
+
+    if (y < -0.55) {
+      x *= 0.78;
+      z *= 0.82;
+    }
+    if (y > 0.42) {
+      x *= 0.92;
+    }
+    return new THREE.Vector3(x, y, z);
+  }
+
+  function buildBrainGeometry() {
+    const pointCount = reduceMotion ? 1600 : 2500;
+    const positions = new Float32Array(pointCount * 3);
+    const phases = new Float32Array(pointCount);
+    const intensities = new Float32Array(pointCount);
+    const colors = new Float32Array(pointCount * 3);
+    const points = [];
+    const cyan = new THREE.Color("#6fe7ff");
+    const green = new THREE.Color("#52f7c8");
+    const pink = new THREE.Color("#ff8cc8");
+
+    for (let index = 0; index < pointCount; index += 1) {
+      const side = index % 2 === 0 ? -1 : 1;
+      const point = makeBrainPoint(side);
+      points.push(point);
+      positions[index * 3] = point.x;
+      positions[index * 3 + 1] = point.y;
+      positions[index * 3 + 2] = point.z;
+      phases[index] = random(0, Math.PI * 2);
+      intensities[index] = random(0.75, 1.45);
+      const color = point.y > 0.48 ? pink : point.z > 0.12 ? cyan : green;
+      colors[index * 3] = color.r;
+      colors[index * 3 + 1] = color.g;
+      colors[index * 3 + 2] = color.b;
+    }
+
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+    geometry.setAttribute("aPhase", new THREE.BufferAttribute(phases, 1));
+    geometry.setAttribute("aIntensity", new THREE.BufferAttribute(intensities, 1));
+    geometry.setAttribute("aColor", new THREE.BufferAttribute(colors, 3));
+
+    const material = new THREE.ShaderMaterial({
+      uniforms: {
+        uTime: { value: 0 },
+        uSize: { value: reduceMotion ? 5.6 : 6.4 }
+      },
+      vertexShader: `
+        attribute float aPhase;
+        attribute float aIntensity;
+        attribute vec3 aColor;
+        varying float vPulse;
+        varying vec3 vColor;
+        uniform float uTime;
+        uniform float uSize;
+        void main(){
+          vPulse = 0.55 + 0.45 * sin(uTime * 5.8 + aPhase);
+          vColor = aColor;
+          vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+          gl_PointSize = uSize * aIntensity * (1.0 + vPulse * 0.5) * (6.0 / -mvPosition.z);
+          gl_Position = projectionMatrix * mvPosition;
+        }
+      `,
+      fragmentShader: `
+        varying float vPulse;
+        varying vec3 vColor;
+        void main(){
+          float d = length(gl_PointCoord - vec2(0.5));
+          float alpha = smoothstep(0.5, 0.08, d);
+          gl_FragColor = vec4(vColor, alpha * (0.38 + vPulse * 0.52));
+        }
+      `,
+      transparent: true,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending
+    });
+
+    brainPoints = new THREE.Points(geometry, material);
+    brainGroup.add(brainPoints);
+    buildConnectionLines(points);
+  }
+
+  function buildConnectionLines(points) {
+    const cellSize = 0.18;
+    const buckets = new Map();
+    const linePositions = [];
+    const keyFor = (point) => `${Math.floor(point.x / cellSize)},${Math.floor(point.y / cellSize)},${Math.floor(point.z / cellSize)}`;
+
+    points.forEach((point, index) => {
+      const key = keyFor(point);
+      if (!buckets.has(key)) buckets.set(key, []);
+      buckets.get(key).push(index);
+    });
+
+    for (let index = 0; index < points.length && linePositions.length < 3600; index += 3) {
+      const point = points[index];
+      const cx = Math.floor(point.x / cellSize);
+      const cy = Math.floor(point.y / cellSize);
+      const cz = Math.floor(point.z / cellSize);
+      let best = -1;
+      let bestDist = 0.22;
+
+      for (let dx = -1; dx <= 1; dx += 1) {
+        for (let dy = -1; dy <= 1; dy += 1) {
+          for (let dz = -1; dz <= 1; dz += 1) {
+            const bucket = buckets.get(`${cx + dx},${cy + dy},${cz + dz}`);
+            if (!bucket) continue;
+            for (const candidate of bucket) {
+              if (candidate === index || Math.sign(points[candidate].x) !== Math.sign(point.x)) continue;
+              const dist = point.distanceTo(points[candidate]);
+              if (dist < bestDist) {
+                bestDist = dist;
+                best = candidate;
+              }
+            }
+          }
+        }
+      }
+
+      if (best > -1 && Math.random() > 0.24) {
+        const other = points[best];
+        linePositions.push(point.x, point.y, point.z, other.x, other.y, other.z);
+      }
+    }
+
+    const lineGeometry = new THREE.BufferGeometry();
+    lineGeometry.setAttribute("position", new THREE.Float32BufferAttribute(linePositions, 3));
+    const lineMaterial = new THREE.LineBasicMaterial({
+      color: "#6fe7ff",
+      transparent: true,
+      opacity: 0.2,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false
+    });
+    brainLines = new THREE.LineSegments(lineGeometry, lineMaterial);
+    brainGroup.add(brainLines);
+  }
+
+  function resizeBrain() {
+    const rect = container.getBoundingClientRect();
+    const width = Math.max(rect.width, 320);
+    const height = Math.max(rect.height, 320);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.setSize(width, height, false);
+    camera.aspect = width / height;
+    camera.updateProjectionMatrix();
+  }
+
+  if (!reduceMotion) {
+    canvas.addEventListener("pointerdown", (event) => {
+      drag.active = true;
+      drag.x = event.clientX;
+      drag.y = event.clientY;
+      canvas.setPointerCapture(event.pointerId);
+    });
+    canvas.addEventListener("pointermove", (event) => {
+      if (!drag.active) return;
+      const dx = event.clientX - drag.x;
+      const dy = event.clientY - drag.y;
+      drag.x = event.clientX;
+      drag.y = event.clientY;
+      targetRotation.y += dx * 0.008;
+      targetRotation.x = Math.max(-0.85, Math.min(0.65, targetRotation.x + dy * 0.005));
+    });
+    canvas.addEventListener("pointerup", (event) => {
+      drag.active = false;
+      canvas.releasePointerCapture(event.pointerId);
+    });
+  }
+
+  function animate() {
+    const time = clock.getElapsedTime();
+    if (!drag.active && !reduceMotion) {
+      targetRotation.y += 0.0025;
+    }
+    currentRotation.x += (targetRotation.x - currentRotation.x) * 0.08;
+    currentRotation.y += (targetRotation.y - currentRotation.y) * 0.08;
+    brainGroup.rotation.x = currentRotation.x + Math.sin(time * 0.45) * 0.025;
+    brainGroup.rotation.y = currentRotation.y;
+    brainGroup.rotation.z = Math.sin(time * 0.32) * 0.018;
+    if (brainPoints) brainPoints.material.uniforms.uTime.value = time;
+    if (brainLines) brainLines.material.opacity = 0.13 + Math.sin(time * 1.8) * 0.035;
+    renderer.render(scene, camera);
+  }
+
+  buildBrainGeometry();
+  resizeBrain();
+  window.addEventListener("resize", resizeBrain);
+  renderer.setAnimationLoop(animate);
+})();
 </script>
 </body>
 </html>
