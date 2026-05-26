@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>第三轮 | 红蓝机器人大战</title>
+<link rel="stylesheet" href="./game.css">
+</head>
+<body>
+<canvas id="starfield" aria-hidden="true"></canvas>
+<div class="page">
+  <nav class="nav wrap">
+    <div class="brand"><div class="logo">🤖</div><span>红蓝机器人大战 · 第三轮</span></div>
+    <div class="links"><a href="./round-2.html">上一轮</a><a href="../#challenge">认知挑战区</a><a href="../">返回首页</a></div>
+  </nav>
+  <main class="shell wrap">
+    <section class="hero">
+      <div>
+        <div class="badge">Level 03 · 最终切换挑战</div>
+        <h1 id="roundTitle">第三轮</h1>
+        <p id="roundIntro">这一关红蓝混合出现。</p>
+      </div>
+      <aside class="control-card">
+        <h2>第三轮控制台</h2>
+        <button class="btn" id="startRoundBtn" type="button">开始第三轮</button>
+        <button class="btn secondary" id="resetRoundBtn" type="button">重来本轮</button>
+      </aside>
+    </section>
+    <section class="game">
+      <aside class="panel">
+        <h2>本轮规则</h2>
+        <div class="rule-box rule-blue"><b class="cyan">蓝色机器人：看表情</b><p>笑脸按左边，皱眉按右边。</p></div>
+        <div class="rule-box rule-red"><b class="pink">红色机器人：看手臂</b><p>举手按左边，垂手按右边。</p></div>
+        <div class="stats">
+          <div class="stat"><b id="roundProgress">0/12</b><span>本轮进度</span></div>
+          <div class="stat"><b id="totalProgress">0/28</b><span>总进度</span></div>
+          <div class="stat"><b id="scoreNow">0</b><span>能量分</span></div>
+          <div class="stat"><b id="comboNow">0</b><span>连续正确</span></div>
+        </div>
+      </aside>
+      <section class="arena">
+        <div class="hud">
+          <div class="hud-card"><span>当前规则</span><b id="ruleText">待机</b></div>
+          <div class="hud-card"><span>本轮正确率</span><b id="accNow">--</b></div>
+          <div class="hud-card"><span>倒计时</span><b id="countText">--</b></div>
+        </div>
+        <div class="robot-zone">
+          <div class="robot-wrap" id="robotWrap">
+            <div class="robot-glow"></div>
+            <div class="robot blue arms-up" id="robot">
+              <div class="antenna"></div><div class="eye left"></div><div class="eye right"></div><div class="mouth smile" id="mouth"></div><div class="arm left"></div><div class="arm right"></div>
+            </div>
+          </div>
+        </div>
+        <div class="feedback" id="feedback">准备接收任务信号</div>
+        <div class="answers">
+          <button class="answer" id="leftBtn" type="button" disabled>笑脸 / 举手<small>A 或 ←</small></button>
+          <button class="answer" id="rightBtn" type="button" disabled>皱眉 / 垂手<small>L 或 →</small></button>
+        </div>
+        <div class="phase-layer" id="phaseLayer">
+          <div><h2 id="phaseTitle">第三轮</h2><p id="phaseText">准备开始。点击右侧“开始第三轮”进入最终挑战。</p><a class="btn secondary" id="nextBtn" href="#" style="display:none">查看总成绩</a></div>
+        </div>
+      </section>
+      <aside class="result">
+        <h2>本轮反馈</h2>
+        <div class="result-grid">
+          <div class="result-item"><span>正确率</span><b id="accResult">--</b></div>
+          <div class="result-item"><span>平均反应</span><b id="rtResult">--</b></div>
+          <div class="result-item"><span>切换正确率</span><b id="switchResult">等待切换</b></div>
+          <div class="result-item"><span>最佳连击</span><b id="bestComboResult">--</b></div>
+        </div>
+        <div class="tip">这一关才是真正的规则切换：先看颜色，再决定看表情还是手臂。</div>
+      </aside>
+    </section>
+  </main>
+</div>
+<script src="./game.js"></script>
+<script>RobotQuest.initRound(3);</script>
+</body>
+</html>
